@@ -26,7 +26,7 @@ export default function Login() {
     }
 
     return (
-        <div className='justify-center w-1/2 border border-[#055CBB] p-10 bg-white rounded-xl'>
+        <div className='justify-center w-full m-5 md:m-0 md:w-1/2 border border-[#055CBB] p-10 bg-white rounded-xl'>
             <h2 className='text-xl text-[#055CBB] font-bold mb-3'>INGRESAR</h2>
             <form onSubmit={handleLogin}>
                 <Input

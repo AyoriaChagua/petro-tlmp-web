@@ -34,13 +34,13 @@ export const useApprovalPersonnel = () => {
         setApprovalPersonnelRequest(prevState => ({
             ...prevState,
             [field]: value
-        }))
+        }));
     };
 
     const onSubmit = async (e: FormEvent<HTMLFormElement>) => {
         e.preventDefault();
         try {
-            let dataForToSend: ApprovalPersonnelRequest | ApprovalPersonnelUpdateRequest
+            let dataForToSend: ApprovalPersonnelRequest | ApprovalPersonnelUpdateRequest;
             let newData: ApprovalPersonnel;
 
             if (personnelToUpdate) {
@@ -55,7 +55,7 @@ export const useApprovalPersonnel = () => {
                         prevPersonnel.map(item => item.id === personnelToUpdate ? newData : item)
                     );
                 } else {
-                    throw new Error("Invalid data for update operation");
+                    throw new Error("Información invalida para actualizar");
                 }
             } else {
                 dataForToSend = {
@@ -67,7 +67,7 @@ export const useApprovalPersonnel = () => {
                     newData = await postApprovalPersonnel.create(dataForToSend);
                     setApprovalPersonnel(prevPersonnel => [...prevPersonnel, newData]);
                 } else {
-                    throw new Error("Invalid data for create operation");
+                    throw new Error("No se pudo crear al personal");
                 }
             }
             setApprovalPersonnelRequest(initialApprovalPersonnelRequest);
