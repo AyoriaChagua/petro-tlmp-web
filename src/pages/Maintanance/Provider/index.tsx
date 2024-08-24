@@ -92,7 +92,7 @@ export default function Provider() {
                             className="flex flex-col w-1/3"
                             value={querySearch}
                             required={true}
-                            onChange={(e) => { setQuerySearch(e.target.value) }}
+                            onChange={(e) => { setQuerySearch(e.target.value.toUpperCase()) }}
                         />
                     </div>
                     <Table<ProviderMP> columns={columns} data={providers} />
@@ -104,7 +104,7 @@ export default function Provider() {
                             <select
                                 className="mr-4 p-2 border rounded"
                                 value={paginationOptions.itemsPerPage}
-                                onChange={(e) => changeItemsPerPage(Number(e.target.value))}
+                                onChange={(e) => changeItemsPerPage(Number(e.target.value.toUpperCase()))}
                             >
                                 {[10, 15, 20, 25, 30].map(value => (
                                     <option key={value} value={value}>{value}</option>
@@ -158,7 +158,7 @@ export default function Provider() {
                         typeForm="maintanance"
                         className="flex flex-col w-full"
                         value={formProvider.ruc}
-                        onChange={(e) => handleInputChangeNewProvider(e.target.value, "ruc")}
+                        onChange={(e) => handleInputChangeNewProvider(e.target.value.toUpperCase(), "ruc")}
                         type={(updateProvider as { ruc: string }) ? "text" : "number"}
                         required={true}
                         maxLength={11}
@@ -170,7 +170,7 @@ export default function Provider() {
                         className="flex flex-col w-full"
                         value={formProvider.description}
                         required={true}
-                        onChange={(e) => handleInputChangeNewProvider(e.target.value, "description")}
+                        onChange={(e) => handleInputChangeNewProvider(e.target.value.toUpperCase(), "description")}
                     />
                     <Input
                         id="provider_address"
@@ -178,7 +178,7 @@ export default function Provider() {
                         typeForm="maintanance"
                         className="flex flex-col w-full"
                         value={formProvider.address}
-                        onChange={(e) => handleInputChangeNewProvider(e.target.value, "address")}
+                        onChange={(e) => handleInputChangeNewProvider(e.target.value.toUpperCase(), "address")}
                     />
                     <Input
                         id="provider_phone"
@@ -187,7 +187,7 @@ export default function Provider() {
                         className="flex flex-col w-full"
                         value={formProvider.phone}
                         type="number"
-                        onChange={(e) => handleInputChangeNewProvider(e.target.value, "phone")}
+                        onChange={(e) => handleInputChangeNewProvider(e.target.value.toUpperCase(), "phone")}
                     />
                     <Input
                         id="provider_email"
@@ -196,7 +196,7 @@ export default function Provider() {
                         className="flex flex-col w-full"
                         value={formProvider.email}
                         type="email"
-                        onChange={(e) => handleInputChangeNewProvider(e.target.value, "email")}
+                        onChange={(e) => handleInputChangeNewProvider(e.target.value.toUpperCase(), "email")}
                     />
                     <div className="flex flex-row justify-between items-center">
                         <label className="text-lg font-semibold text-gray-400 mb-4">Cuentas bancarias:</label>
@@ -214,7 +214,7 @@ export default function Provider() {
                                                 typeForm="maintanance"
                                                 className="flex flex-col w-1/2"
                                                 value={account.accountNumber}
-                                                onChange={(e) => handleInputChangeNewProvider(e.target.value, "accountNumber", index)}
+                                                onChange={(e) => handleInputChangeNewProvider(e.target.value.toUpperCase(), "accountNumber", index)}
                                                 required={true}
                                             />
                                             <CustomSelect
@@ -237,7 +237,7 @@ export default function Provider() {
                                                 typeForm="maintanance"
                                                 className="flex flex-col w-1/2"
                                                 value={account.cci}
-                                                onChange={(e) => handleInputChangeNewProvider(e.target.value, "cci", index)}
+                                                onChange={(e) => handleInputChangeNewProvider(e.target.value.toUpperCase(), "cci", index)}
                                             />
                                             <CustomSelect
                                                 id={`bank_type_${index}`}

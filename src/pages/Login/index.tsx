@@ -9,7 +9,9 @@ export default function Login() {
         handleSelectCompany,
         handleLogin,
         setUserId,
-        setPassword
+        setPassword,
+        userId,
+        password
     } = useLogin();
 
     const { companies } = useAuth();
@@ -31,11 +33,13 @@ export default function Login() {
                     id='userId'
                     label='Usuario'
                     onChange={(e) => setUserId(e.target.value)}
+                    value={userId}
                 />
                 <Input
                     id='password'
                     label='Contraseña'
                     onChange={(e) => setPassword(e.target.value)}
+                    value={password}
                     type='password'
                 />
                 <CustomSelect
