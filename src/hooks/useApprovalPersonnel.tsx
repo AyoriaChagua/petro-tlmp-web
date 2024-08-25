@@ -77,13 +77,19 @@ export const useApprovalPersonnel = () => {
         }
     }
 
-    const handleSelectPersonnelToUpdate = (personnel: ApprovalPersonnel) => {
-        setPersonnelToUpdate(personnel.id);
-        setApprovalPersonnelRequest({
-            description: personnel.description,
-            phone: personnel.phone,
-            modificationUser: user?.id
-        });
+    const handleSelectPersonnelToUpdate = (personnel: ApprovalPersonnel | null) => {
+        if(personnel) {
+            setPersonnelToUpdate(personnel.id);
+            setApprovalPersonnelRequest({
+                description: personnel.description,
+                phone: personnel.phone,
+                modificationUser: user?.id
+            });
+        } else {
+            setPersonnelToUpdate(null);
+            setApprovalPersonnelRequest(initialApprovalPersonnelRequest);
+        }
+        
     };
 
     const handleDeletePersonnel = async (id: number) => {

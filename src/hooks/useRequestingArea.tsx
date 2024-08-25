@@ -33,11 +33,16 @@ export const useRequestingArea = () => {
         });
     };
 
-    const handleSelectAreaToUpdate = (requestingArea: RequestingAreaI) => {
-        setIdAreaToUpdate(requestingArea.id);
-        setRequestingAreaRequest({
-            description: requestingArea.description
-        });
+    const handleSelectAreaToUpdate = (requestingArea: RequestingAreaI | null) => {
+        if (requestingArea) {
+            setIdAreaToUpdate(requestingArea.id);
+            setRequestingAreaRequest({
+                description: requestingArea.description
+            });
+        } else {
+            setIdAreaToUpdate(null);
+            setRequestingAreaRequest(initialRequestingArea);
+        }
     };
 
     const handleDeleteArea = async (id: number) => {
@@ -64,10 +69,10 @@ export const useRequestingArea = () => {
     const onSubmit = async (e: FormEvent<HTMLFormElement>) => {
         e.preventDefault();
         try {
-            if(idAreaToUpdate){
+            if (idAreaToUpdate) {
                 const areaUpdated = await putRequestingArea.update(idAreaToUpdate, requestingAreaRequest);
                 setRequestingAreas(prevRequestingAreas =>
-                    prevRequestingAreas.map(area => area.id === areaUpdated.id? areaUpdated : area)
+                    prevRequestingAreas.map(area => area.id === areaUpdated.id ? areaUpdated : area)
                 );
             } else {
                 const newArea = await postRequestingArea.create(requestingAreaRequest);

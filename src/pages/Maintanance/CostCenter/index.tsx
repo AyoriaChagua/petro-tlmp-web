@@ -6,9 +6,9 @@ import { CostCenterI } from "../../../types/cost-center";
 
 export default function CostCenter() {
 
-    const { 
-        costCenters, 
-        isLoading ,
+    const {
+        costCenters,
+        isLoading,
         costCenterRequest,
         costCenterToUpdate,
         handleDeletePersonnel,
@@ -24,7 +24,7 @@ export default function CostCenter() {
         {
             key: "actions", label: "Acciones", actions: (row) => (
                 <div className="flex flex-row gap-3">
-                    <IconButton icon="edit" isSelected={costCenterToUpdate === row.id} onClick={() => handleSelectCostCenterToUpdate(row)} />
+                    <IconButton icon="edit" isSelected={costCenterToUpdate === row.id} onClick={() => handleSelectCostCenterToUpdate(costCenterToUpdate !== row.id ? row : null)} />
                     <IconButton icon="delete" isSelected onClick={() => handleDeletePersonnel(row.id)} />
                 </div>
             )
@@ -54,7 +54,7 @@ export default function CostCenter() {
                     className="flex flex-col w-full"
                     value={costCenterRequest.aliasReport}
                 />
-                <Button text={costCenterToUpdate ? "Actualizar": "Crear"} type="submit" styleType="form" />
+                <Button text={costCenterToUpdate ? "Actualizar" : "Crear"} type="submit" styleType="form" />
             </form>
         </MaintananceLayout>
     )

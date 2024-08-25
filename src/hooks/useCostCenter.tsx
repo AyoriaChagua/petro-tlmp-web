@@ -41,15 +41,15 @@ export const useCostCenter = () => {
         try {
             let dataForToSend: CostCenterRequestI | CostCenterUpdateRequestI;
             let newData: CostCenterI;
-            if(costCenterToUpdate){
+            if (costCenterToUpdate) {
                 dataForToSend = {
                     companyId: costCenterRequest.companyId,
                     description: costCenterRequest.description,
                     aliasReport: costCenterRequest.aliasReport
                 } as CostCenterUpdateRequestI;
                 newData = await putCostCenter.update(costCenterToUpdate, dataForToSend);
-                setCostCenters(prevCostCenters => 
-                    prevCostCenters.map(costCenter => costCenter.id === costCenterToUpdate? newData : costCenter)
+                setCostCenters(prevCostCenters =>
+                    prevCostCenters.map(costCenter => costCenter.id === costCenterToUpdate ? newData : costCenter)
                 );
             } else {
                 dataForToSend = {
@@ -60,25 +60,30 @@ export const useCostCenter = () => {
                 } as CostCenterRequestI;
                 if ('systemUser' in dataForToSend) {
                     newData = await postCostCenter.create(dataForToSend);
-                    setCostCenters(prevCostCenters => [...prevCostCenters, newData]);
                     showSuccessMessage('Centro de costo creado con éxito');
+                    setCostCenters(prevCostCenters => [...prevCostCenters, newData]);
                 } else {
                     showErrorMessage('No se pudo crear el centro de costo');
                 }
-                
+
             }
         } catch (error) {
             showErrorMessage((error as Error).message);
         }
     }
 
-    const handleSelectCostCenterToUpdate = (costCenter: CostCenterI) => {
-        setCostCenterToUpdate(costCenter.id);
-        setCostCenterRequest({
-            companyId: costCenter.companyId,
-            description: costCenter.description,
-            aliasReport: costCenter.aliasReport
-        });
+    const handleSelectCostCenterToUpdate = (costCenter: CostCenterI | null) => {
+        if (costCenter) {
+            setCostCenterToUpdate(costCenter.id);
+            setCostCenterRequest({
+                companyId: costCenter.companyId,
+                description: costCenter.description,
+                aliasReport: costCenter.aliasReport
+            });
+        } else {
+            setCostCenterToUpdate(null);
+            setCostCenterRequest(initialCostCenterRequest);
+        }
     };
 
     const handleDeletePersonnel = async (id: number) => {
@@ -92,7 +97,7 @@ export const useCostCenter = () => {
         if (isConfirmed) {
             try {
                 await deleteCostCenter.delete(id);
-                setCostCenters(prevCostCenters => 
+                setCostCenters(prevCostCenters =>
                     prevCostCenters.filter(costCenter => costCenter.id !== id)
                 );
                 showSuccessMessage('Centro de costo eliminado con éxito');

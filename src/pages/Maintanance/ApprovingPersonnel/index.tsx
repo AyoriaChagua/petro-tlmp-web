@@ -22,7 +22,7 @@ export default function ApprovingPersonnel() {
         {
             key: "actions", label: "Acciones", actions: (row) => (
                 <div className="flex flex-row gap-3">
-                    <IconButton icon="edit" isSelected={personnelToUpdate === row.id} onClick={() => handleSelectPersonnelToUpdate(row)} />
+                    <IconButton icon="edit" isSelected={personnelToUpdate === row.id} onClick={() => handleSelectPersonnelToUpdate(personnelToUpdate !== row.id ? row : null)} />
                     <IconButton icon="delete" isSelected onClick={() => handleDeletePersonnel(row.id)} />
                 </div>
             )

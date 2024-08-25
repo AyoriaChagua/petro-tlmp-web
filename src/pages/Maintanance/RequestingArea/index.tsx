@@ -21,7 +21,7 @@ export default function RequestingArea() {
         {
             key: "actions", label: "Acciones", actions: (row) => (
                 <div className="flex flex-row gap-3">
-                    <IconButton icon="edit" isSelected={idAreaToUpdate === row.id} onClick={() => handleSelectAreaToUpdate(row)} />
+                    <IconButton icon="edit" isSelected={idAreaToUpdate === row.id} onClick={() => handleSelectAreaToUpdate(idAreaToUpdate !== row.id ? row : null)} />
                     <IconButton icon="delete" isSelected onClick={() => handleDeleteArea(row.id)} />
                 </div>
             )
