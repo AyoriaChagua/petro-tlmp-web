@@ -1,4 +1,4 @@
-import { OptionType } from "../types/common/select";
+import { OptionType } from "../types/common/inputs";
 
 export const orderTypeOptions: OptionType[] = [
     { label: "Orden de compra", value: "O/C" },

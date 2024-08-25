@@ -3,7 +3,7 @@ import { useAuth } from "../context/AuthContext";
 import { useNavigate } from "react-router-dom";
 import { login } from "../api/auth/post";
 import { MultiValue, SingleValue } from "react-select";
-import { OptionType } from "../types/common/select";
+import { OptionType } from "../types/common/inputs";
 import Swal from 'sweetalert2';
 
 export const useLogin = () => {

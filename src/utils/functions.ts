@@ -1,6 +1,6 @@
 
 import Swal from "sweetalert2";
-import { OptionType } from "../types/common/select";
+import { CheckboxOption, OptionType } from "../types/common/inputs";
 interface ConvertOptionsParams<T> {
     data: T[];
     valueKey: keyof T;
@@ -12,13 +12,32 @@ export const convertToOptions = <T>({
     valueKey,
     labelKey
 }: ConvertOptionsParams<T>): OptionType[] => {
-    const optiones = data.map((item: T) => ({
+    const options = data.map((item: T) => ({
         value: String(item[valueKey]),
         label: String(item[labelKey]),
     } as OptionType))
-    return optiones;
+    return options;
 }
 
+
+interface ConvertToCheckboxOptions<T>{
+    data: T[];
+    valueKey: keyof T;
+    labelKey: keyof T;
+}
+
+export const convertToCheckboxOptions = <T>({
+    data,
+    valueKey,
+    labelKey,
+} : ConvertToCheckboxOptions<T>): CheckboxOption[] => {
+    const options = data.map((item: T, index) => ({
+        id: String(index),
+        label: String(item[labelKey]),
+        value: String(item[valueKey]),
+    } as CheckboxOption))
+    return options;
+}
 
 export const showErrorMessage = (msg: string) => {
     Swal.fire({

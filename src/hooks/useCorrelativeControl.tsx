@@ -2,7 +2,7 @@ import { useEffect, useState } from "react"
 import { CorrelativeControlReq, CorrelativeControlRes } from "../types/correlative-control"
 import { getCorrelativeControl } from "../api/correlative-control/get";
 import { useAuth } from "../context/AuthContext";
-import { OptionType, OptionTypeParam } from "../types/common/select";
+import { OptionType, OptionTypeParam } from "../types/common/inputs";
 import { SingleValue } from "react-select";
 import { postCorrelativeControl } from "../api/correlative-control/post";
 import { orderTypeOptions } from "../utils/constants";

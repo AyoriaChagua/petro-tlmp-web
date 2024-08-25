@@ -2,7 +2,7 @@ import { useLogin } from '../../hooks/useLogin'
 import { CustomSelect, Input } from '../../components';
 import { useAuth } from '../../context/AuthContext';
 import { convertToOptions } from '../../utils/functions';
-import { OptionType } from '../../types/common/select';
+import { OptionType } from '../../types/common/inputs';
 
 export default function Login() {
     const {

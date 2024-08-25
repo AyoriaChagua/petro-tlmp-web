@@ -5,8 +5,10 @@ export const getApiBaseUrl = () => {
     const currentURL = window.location.href;
     if (currentURL.indexOf("localhost") !== -1 || currentURL.indexOf("127.0.0.1") !== -1) {
         return "http://localhost:4500/api";
-    } else {
+    } else if(currentURL.indexOf("192.168.1.12") !== 1){
         return "http://192.168.1.12:4500/api";
+    } else {
+        "http://190.116.6.12:4500/api"
     }
 }
 

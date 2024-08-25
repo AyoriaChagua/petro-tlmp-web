@@ -12,3 +12,5 @@ export { default as YearPicker } from './UI/YearPicker';
 export { default as Loader } from './common/Loader';
 export { default as IconButton } from './UI/IconButton';
 export { default as AccountCard } from './UI/AccountCard';
+export { default as CheckboList } from './UI/CheckboxList';
+export { default as Tag } from './UI/Tag';

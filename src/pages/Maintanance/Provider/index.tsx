@@ -4,7 +4,7 @@ import { useProvider } from "../../../hooks/useProvider";
 import { TableColumn } from "../../../types/common/table";
 import { ProviderAccount, ProviderMP } from "../../../types/provider";
 import { TbPlayerTrackNext, TbPlayerTrackPrev } from "react-icons/tb";
-import { OptionType } from "../../../types/common/select";
+import { OptionType } from "../../../types/common/inputs";
 import { bankOptions, typeAccountOptions } from "../../../utils/constants";
 
 
@@ -199,7 +199,7 @@ export default function Provider() {
                         onChange={(e) => handleInputChangeNewProvider(e.target.value.toUpperCase(), "email")}
                     />
                     <div className="flex flex-row justify-between items-center">
-                        <label className="text-lg font-semibold text-gray-400 mb-4">Cuentas bancarias:</label>
+                        <label className="text-lg font-semibold text-gray-300 mb-4">Cuentas bancarias:</label>
                         <IconButton icon="plus" isSelected={false} onClick={addAccount} />
                     </div>
                     <div className="overflow-x-auto whitespace-nowrap">

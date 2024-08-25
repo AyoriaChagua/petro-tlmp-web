@@ -1,5 +1,5 @@
 import Select, { MultiValue, SingleValue, StylesConfig } from 'react-select';
-import { OptionType } from '../../../types/common/select';
+import { OptionType } from '../../../types/common/inputs';
 
 interface Props {
     readonly options: OptionType[],

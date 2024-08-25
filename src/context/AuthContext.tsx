@@ -2,7 +2,7 @@ import { createContext, useState, useContext, ReactNode, useEffect } from 'react
 import { jwtDecode } from 'jwt-decode';
 import { Cia } from '../types/cia';
 import { getCia } from '../api/cia/get';
-import { OptionType } from '../types/common/select';
+import { OptionType } from '../types/common/inputs';
 import { role, User } from '../types/auth';
 
 interface AuthContextType {
