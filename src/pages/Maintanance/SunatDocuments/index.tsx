@@ -1,4 +1,4 @@
-import { Button, IconButton, Input, Loader, MaintananceLayout, Table } from "../../../components";
+import { Button, IconButton, Input, Loader, MaintananceLayout, Pagination, Table } from "../../../components";
 import { useSunatDocument } from "../../../hooks/useSunatDocument"
 import { TableColumn } from "../../../types/common/table";
 import { SunatDocumentI, SunatDocumentRequestI } from "../../../types/sunat-document";
@@ -14,8 +14,9 @@ export default function SunatDocuments() {
     idSunatDocumentToUpdate,
     onSubmit,
     sunatDocumentRequest,
-    sunatDocumentChunks,
-    handleSelectChunk
+    currentPage,
+    handlePageChange,
+    sunatDocumentChunks
   } = useSunatDocument();
 
   const columns: TableColumn<SunatDocumentI>[] = [
@@ -35,19 +36,14 @@ export default function SunatDocuments() {
   if (isLoading) return <Loader />;
   return (
     <MaintananceLayout title="Tipos de documento Sunat">
-      <div className="flex flex-col gap-4">
+      <div className="flex flex-col justify-between h-full">
         <Table<SunatDocumentI> columns={columns} data={sunatDocuments} />
-        <nav aria-label="Page navigation example">
-          <ul className="inline-flex -space-x-px text-base h-10">
-            {
-              sunatDocumentChunks.map((_, index) => (
-                <li>
-                  <button type="button" onClick={() => handleSelectChunk(index)} className="flex items-center justify-center px-4 h-10 leading-tight text-gray-500 bg-white border border-gray-300 hover:bg-gray-100 hover:text-gray-700 ">{index + 1}</button>
-                </li>
-              ))
-            }
-          </ul>
-        </nav>
+        <br />
+        <Pagination
+          totalPages={sunatDocumentChunks.length}
+          currentPage={currentPage}
+          onPageChange={handlePageChange}
+        />
       </div>
       <form onSubmit={onSubmit} className="flex w-full flex-col">
         <Input

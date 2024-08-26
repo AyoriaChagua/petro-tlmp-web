@@ -55,7 +55,7 @@ export default function Input({ id, label, required, type, value, placeholder, o
                 className={inputStyles}
                 placeholder={placeholder}
                 required={required}
-                value={value || ""}
+                value={value ?? ""}
                 onChange={onChange}
                 maxLength={maxLength}
             />

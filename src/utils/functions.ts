@@ -1,5 +1,5 @@
 
-import Swal from "sweetalert2";
+import Swal, { SweetAlertIcon } from "sweetalert2";
 import { CheckboxOption, OptionType } from "../types/common/inputs";
 interface ConvertOptionsParams<T> {
     data: T[];
@@ -39,9 +39,9 @@ export const convertToCheckboxOptions = <T>({
     return options;
 }
 
-export const showErrorMessage = (msg: string) => {
+export const showErrorMessage = (msg: string, icon: SweetAlertIcon = 'error') => {
     Swal.fire({
-        icon: 'error',
+        icon: icon,
         title: 'Error',
         text: msg
     })
@@ -81,4 +81,12 @@ export const splitArrayIntoChunks = <T>(array: T[], chunkSize: number):T[][] => 
         chunks.push(array.slice(i, i + chunkSize));
     }
     return chunks;
+}
+
+export const arraysIsEqual = <T>(arr1: T[], arr2: T[]): boolean => {
+    if (arr1.length !== arr2.length) return false;
+    for (let i = 0; i < arr1.length; i++) {
+        if (arr1[i] !== arr2[i]) return false;
+    }
+    return true;
 }

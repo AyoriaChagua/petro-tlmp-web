@@ -13,12 +13,13 @@ export const useSunatDocument = () => {
     const [sunatDocumentChunks, setSunatDocumentChunks] = useState<SunatDocumentI[][]>([]);
     const [isLoading, setIsLoading] = useState(false);
     const [sunatDocumentRequest, setSunatDocumentRequest] = useState<SunatDocumentRequestI | SunatDocumentRequestToUpdateI>(initialSunatDocument);
-    const [idSunatDocumentToUpdate, setidSunatDocumentToUpdate] = useState<string | null>(null);
+    const [idSunatDocumentToUpdate, setIdSunatDocumentToUpdate] = useState<string | null>(null);
+    const [currentPage, setCurrentPage] = useState(1);
     const { user } = useAuth();
 
     const fetchSunatDocuments = async () => {
-        setIsLoading(true);
         try {
+            setIsLoading(true);
             const data = await getSunatDocument.getAll();
             const dataChunks = splitArrayIntoChunks(data, 10);
             setSunatDocumentChunks(dataChunks);
@@ -52,8 +53,7 @@ export const useSunatDocument = () => {
                 setSunatDocuments(prevState =>
                     prevState.map(doc => doc.documentTypeId === idSunatDocumentToUpdate ? newData : doc)
                 );
-            } else {
-                if ('documentTypeId' in sunatDocumentRequest) {
+            } else if ('documentTypeId' in sunatDocumentRequest) {
                     dataForToSend = {
                         documentTypeId: sunatDocumentRequest.documentTypeId,
                         description: sunatDocumentRequest.description,
@@ -68,7 +68,6 @@ export const useSunatDocument = () => {
                 } else {
                     throw new Error("Campos invalidos para crear el tipo de documento")
                 }
-            }
         } catch (error) {
             showErrorMessage((error as Error).message);
         }
@@ -76,7 +75,7 @@ export const useSunatDocument = () => {
 
     const handleSelectSunatDocument = (sunatDocument: SunatDocumentI | null) => {
         if (sunatDocument) {
-            setidSunatDocumentToUpdate(sunatDocument.documentTypeId);
+            setIdSunatDocumentToUpdate(sunatDocument.documentTypeId);
             setSunatDocumentRequest({
                 description: sunatDocument.description,
                 sunatCode: sunatDocument.sunatCode,
@@ -84,7 +83,7 @@ export const useSunatDocument = () => {
                 modifiedUser: user?.id!
             });
         } else {
-            setidSunatDocumentToUpdate(null);
+            setIdSunatDocumentToUpdate(null);
             setSunatDocumentRequest(initialSunatDocument);
         }
     };
@@ -110,11 +109,15 @@ export const useSunatDocument = () => {
         }
     };
 
-    const handleSelectChunk = (index: number) => {
-        setSunatDocuments(sunatDocumentChunks[index]);
-    }
+    
+    const handlePageChange = (pageNumber: number) => {
+        setCurrentPage(pageNumber);
+        setSunatDocuments(sunatDocumentChunks[pageNumber - 1]);
+    };
 
     useEffect(() => {
+        setCurrentPage(1);
+        setSunatDocuments(sunatDocumentChunks[0]);
         fetchSunatDocuments();
     }, []);
 
@@ -128,6 +131,7 @@ export const useSunatDocument = () => {
         idSunatDocumentToUpdate,
         sunatDocumentRequest,
         sunatDocumentChunks,
-        handleSelectChunk
+        handlePageChange,
+        currentPage
     };
 }

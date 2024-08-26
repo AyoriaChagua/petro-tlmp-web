@@ -41,8 +41,8 @@ export default function Provider() {
                     <hr />
                 </div>
                 <ul className="py-2" aria-labelledby="user-menu-button">
-                    {accounts.map((account, index) => (
-                        <li key={index} className="px-4 py-2 text-sm text-gray-700 hover:bg-blue-200">
+                    {accounts.map((account) => (
+                        <li key={account.id} className="px-4 py-2 text-sm text-gray-700 hover:bg-blue-200">
                             <div className="flex flex-col">
                                 <p className="text-xs"><span className="font-semibold">Banco:</span> {account.bank}</p>
                                 <p className="text-xs"><span className="font-semibold">Cuenta:</span> {account.type}</p>
@@ -199,7 +199,7 @@ export default function Provider() {
                         onChange={(e) => handleInputChangeNewProvider(e.target.value.toUpperCase(), "email")}
                     />
                     <div className="flex flex-row justify-between items-center">
-                        <label className="text-lg font-semibold text-gray-300 mb-4">Cuentas bancarias:</label>
+                        <span className="text-lg font-semibold text-gray-300 mb-4">Cuentas bancarias:</span>
                         <IconButton icon="plus" isSelected={false} onClick={addAccount} />
                     </div>
                     <div className="overflow-x-auto whitespace-nowrap">
@@ -224,8 +224,8 @@ export default function Provider() {
                                                 options={bankOptions}
                                                 typeForm="maintanance"
                                                 value={{
-                                                    label: bankOptions.find(banK => banK.value === formProvider.accounts[index].bank)?.label || "",
-                                                    value: formProvider.accounts[index].bank || ""
+                                                    label: bankOptions.find(banK => banK.value === formProvider.accounts[index].bank)?.label ?? "",
+                                                    value: formProvider.accounts[index].bank ?? ""
                                                 }}
                                                 className="flex flex-col w-1/2"
                                             />
@@ -246,8 +246,8 @@ export default function Provider() {
                                                 options={typeAccountOptions}
                                                 typeForm="maintanance"
                                                 value={{
-                                                    label: typeAccountOptions.find(banK => banK.value === formProvider.accounts[index].type)?.label || "",
-                                                    value: formProvider.accounts[index].type || ""
+                                                    label: typeAccountOptions.find(banK => banK.value === formProvider.accounts[index].type)?.label ?? "",
+                                                    value: formProvider.accounts[index].type ?? ""
                                                 }}
                                                 className="flex flex-col w-1/2"
                                             />

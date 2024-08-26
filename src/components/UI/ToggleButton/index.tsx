@@ -1,5 +1,5 @@
 interface Props {
-    readonly name: string;
+    readonly name?: string;
     readonly checked: boolean;
     readonly onChange: (event: React.ChangeEvent<HTMLInputElement>) => void;
 }

@@ -8,7 +8,7 @@ export const getApiBaseUrl = () => {
     } else if(currentURL.indexOf("192.168.1.12") !== 1){
         return "http://192.168.1.12:4500/api";
     } else {
-        "http://190.116.6.12:4500/api"
+        return "http://190.116.6.12:4500/api"
     }
 }
 
