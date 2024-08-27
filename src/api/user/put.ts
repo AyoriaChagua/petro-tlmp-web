@@ -1,3 +1,4 @@
+import { ChangePasswordByUserRequestI } from "../../types/profile";
 import { ChangePassowrdByAdminRequestI, UserI, UserRequestUpdateI, UserRoleRequestI } from "../../types/user";
 import { axiosAuthInstance } from "../config";
 
@@ -33,8 +34,14 @@ export const putUser = {
             console.log(response)
             if(response.status !== 200) throw new Error("No se pudo cambiar la contraseña"); 
         } catch (error) {
-            console.log(error)
             throw new Error((error as Error).message);
+        }
+    },
+    updatePasswordByUser: async (userId: string, changePasswordRequest: ChangePasswordByUserRequestI) => {
+        try {
+            await axiosAuthInstance.patch<void>(`/users/change-password-by-user/${userId}`, changePasswordRequest);
+        } catch (error) {
+            throw new Error("No se pudo cambiar la contraseña, posiblemente la contraseña antigua no es correcta");
         }
     }
 }

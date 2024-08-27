@@ -1,50 +1,114 @@
-# React + TypeScript + Vite
+# PETRO WEB - TLMP
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Sistema para Petroamerica, desarrollado con el fin de agilizar y optimizar las actividades entre distintas áreas como tesoreria y mesa de partes.
 
-Currently, two official plugins are available:
+## Características principales
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+- Diseño responsive
+- Interfaces amigables
+- Seguridad con JWT
 
-## Expanding the ESLint configuration
+## Tecnologías utilizadas
 
-If you are developing a production application, we recommend updating the configuration to enable type aware lint rules:
+- TypeScript
+- React.js
+- TailwindCSS
+- Axios
+- Jwt
+- ExcelJS
+- CSS3
 
-- Configure the top-level `parserOptions` property like this:
-
-```js
-export default tseslint.config({
-  languageOptions: {
-    // other options...
-    parserOptions: {
-      project: ['./tsconfig.node.json', './tsconfig.app.json'],
-      tsconfigRootDir: import.meta.dirname,
-    },
-  },
-})
+## Estructura del proyecto
+```shell
+petro-tlmp-web/
+│
+├── src/
+│   ├── api/
+│   │   ├── provider-mp/
+│   │   │   ├── delete.ts
+│   │   │   ├── get.ts
+│   │   │   ├── post.ts
+│   │   │   └── put.ts
+│   │   ├── auth/
+│   │   ├── cia/
+│   │   ├── user/
+│   │   ├── cost-center/
+│   │   ├── sunat-document-type/
+│   │   ├── correlative-control/
+│   │   ├── requesting-area/
+│   │   └── config.ts
+│   │   
+│   ├── hooks/
+│   │   ├── intial-states/
+│   │   ├── useApprovalPersonnel.tsx
+│   │   ├── useCorrelativeControl.tsx
+│   │   ├── useProfile.tsx
+│   │   ├── useDebounce.tsx
+│   │   ├── useRequestingArea.tsx
+│   │   ├── useSunatDocument.tsx
+│   │   ├── useUser.tsx
+│   │   ├── useCostCenter.tsx
+│   │   └── useLogin.tsx
+│   │ 
+│   ├── context/
+│   │   ├── AuthContext.tsx
+│   │   └── CorrelativeContext.tsx
+│   │ 
+│   ├── components/
+│   │   ├── common/
+│   │   ├── layouts/
+│   │   ├── UI/
+│   │   └── index.tsx
+│   │
+│   ├── pages/
+│   │   ├── Home/
+│   │   ├── Login/
+│   │   ├── Maintanance/
+│   │   │   ├── ApprovingPersonnel/
+│   │   │   ├── CorrelativeControl/
+│   │   │   ├── CostCenter/
+│   │   │   ├── Provider/
+│   │   │   ├── RequestingArea/
+│   │   │   ├── SunatDocuments/
+│   │   │   └── Users/
+│   │   ├── NotFount/
+│   │   ├── Order/
+│   │   ├── Profile/
+│   │   ├── Reports/
+│   │   │   ├── OrderDocument/
+│   │   │   ├── PettyCash/
+│   │   │   └── Purchasing/
+│   │   └── index.tsx
+│   │
+│   ├── utils/
+│   │   ├── constants.ts/
+│   │   └── functions.js
+│   │
+│   └── App.tsx
+│
+├── public/
+│   └── img/
+│
+├── node_modules/
+│
+├── package.json
+├── package-lock.json
+└── README.md
 ```
 
-- Replace `tseslint.configs.recommended` to `tseslint.configs.recommendedTypeChecked` or `tseslint.configs.strictTypeChecked`
-- Optionally add `...tseslint.configs.stylisticTypeChecked`
-- Install [eslint-plugin-react](https://github.com/jsx-eslint/eslint-plugin-react) and update the config:
+### Descripción de Directorios y Archivos
 
-```js
-// eslint.config.js
-import react from 'eslint-plugin-react'
 
-export default tseslint.config({
-  // Set the react version
-  settings: { react: { version: '18.3' } },
-  plugins: {
-    // Add the react plugin
-    react,
-  },
-  rules: {
-    // other rules...
-    // Enable its recommended rules
-    ...react.configs.recommended.rules,
-    ...react.configs['jsx-runtime'].rules,
-  },
-})
-```
+- **/src/**: Directorio principal que contiene el código fuente de la aplicación.
+  - **/components/**: Componentes reutilizables de la aplicación (aplicable a proyectos de React u otros frameworks).
+  - **/hooks/**: Custom hooks para cada modulo funcional.
+  - **/context/**: Información que se va necesitar en el resto de los componentes.
+  - **/utils/**: Funciones auxiliares y utilidades que son utilizadas en diferentes partes de la aplicación.
+  - **App.tsx**: Componente principal que estructura la aplicación.
+  - **main.tsx**: Punto de entrada de la aplicación.
+- **/public/**: Archivos estáticos que se servirán al cliente, como HTML, imágenes e íconos.
+- **package.json**: Archivo que maneja las dependencias del proyecto, scripts y metadatos.
+- **README.md**: Archivo de documentación que proporciona una visión general del proyecto, cómo configurarlo y cómo contribuir.
+- **.gitignore**: Archivo que especifica qué archivos o directorios deben ser ignorados por Git.
+
+---
