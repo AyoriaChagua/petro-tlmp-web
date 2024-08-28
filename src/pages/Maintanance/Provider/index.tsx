@@ -254,7 +254,7 @@ export default function Provider() {
                                         </div>
                                     </div>
                                     {index !== 0 && <div className="  w-1/12">
-                                        <IconButton icon="minus" isSelected={false} onClick={() => { account.id ? handleDeleteProviderAccount(account.id, index) : removeAccount(index) }} />
+                                        <IconButton icon="minus" isSelected={true} onClick={() => { account.id ? handleDeleteProviderAccount(account.id, index) : removeAccount(index) }} />
                                     </div>}
                                 </div>
                             </div>

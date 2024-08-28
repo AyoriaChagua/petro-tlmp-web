@@ -3,7 +3,7 @@ import { IoAlertCircleOutline } from "react-icons/io5";
 interface Props {
     readonly id: string;
     readonly label?: string;
-    readonly type?: 'text' | 'number' | 'email' | 'password' | 'checkbox' | 'radio';
+    readonly type?: 'text' | 'number' | 'email' | 'password' | 'checkbox' | 'radio' | "date";
     readonly required?: boolean;
     readonly value?: string;
     readonly placeholder?: string
@@ -28,8 +28,8 @@ export default function Input({ id, label, required, type, value, placeholder, o
             labelStyles = "block mb-2 text-sm font-medium  text-white"
             break;
         case "create":
-            inputStyles = `bg-red-500 `;
-            labelStyles = "block mb-2 text-sm font-medium  text-red-600"
+            inputStyles = `border border-gray-300 text-gray-900  rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2 `;
+            labelStyles = "block mb-2 text-sm font-medium  text-gray-600"
             break;
         default:
             inputStyles = `bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 `;

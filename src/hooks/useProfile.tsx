@@ -13,7 +13,7 @@ export const useProfile = () => {
         oldPassword: ""
     });
 
-    const { user, roles } = useAuth();
+    const { user, roles, logout } = useAuth();
 
     const handleInputPasswordChange = (value: string, field : keyof NewFormPasswordI) => {
         setNewPassFormRequest({
@@ -31,7 +31,8 @@ export const useProfile = () => {
             } else {
                 await putUser.updatePasswordByUser(user?.id!, {newPassword: newPassFormRequest.newPassword, oldPassword: newPassFormRequest.oldPassword});
                 setIsChangePass(false);
-                showSuccessMessage("Contraseña cambiada con exito");
+                showSuccessMessage("Contraseña cambiada con exito, vuelva a iniciar sesión");
+                logout();
             }
         } catch (error) {
             showErrorMessage((error as Error).message, "warning");

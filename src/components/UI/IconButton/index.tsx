@@ -1,6 +1,7 @@
 import { IconType } from 'react-icons';
+import { BiPlusCircle } from 'react-icons/bi';
 import { BsEyeFill } from 'react-icons/bs';
-import { FaCreditCard, FaUser, FaPen, FaTrash, FaPlus, FaMinus } from 'react-icons/fa';
+import { FaCreditCard, FaUser, FaPen, FaTrash, FaMinus } from 'react-icons/fa';
 
 type IconName = 'card' | 'user' | 'edit' | 'delete' | "eye" | "plus" | "minus";
 
@@ -16,7 +17,7 @@ const iconMap: Record<IconName, IconType> = {
     edit: FaPen,
     delete: FaTrash,
     eye: BsEyeFill,
-    plus: FaPlus,
+    plus: BiPlusCircle,
     minus: FaMinus
 };
 
@@ -35,6 +36,10 @@ export default function IconButton({ icon, onClick, isSelected = false }: IconBu
                 return isSelected ? 'bg-blue-600 text-white' : 'bg-blue-200 text-blue-700 hover:bg-blue-300';
             case 'eye':
                 return isSelected ? 'bg-purple-600 text-white' : 'bg-purple-200 text-purple-700 hover:bg-purple-300';
+            case 'plus':
+                return 'bg-blue-500  text-white hover:bg-blue-400 text-2xl';
+            case 'minus':
+                return isSelected ? 'bg-gray-200 text-gray-400 hover:bg-blue-500 hover:text-white' : 'bg-gray-200 text-gray-400 hover:bg-blue-500 hover:text-white text-xl shadow-lg shadow-gray-500/50';
             default:
                 return 'bg-gray-200 text-gray-700 hover:bg-gray-300';
         }

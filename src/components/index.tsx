@@ -15,3 +15,6 @@ export { default as IconButton } from './UI/IconButton';
 export { default as AccountCard } from './UI/AccountCard';
 export { default as CheckboList } from './UI/CheckboxList';
 export { default as Tag } from './UI/Tag';
+export { default as RadioGroup } from './UI/RadioGroup';
+export { default as BorderedRadio } from './UI/BorderedRadio';
+export { default as Textarea } from './UI/Textarea';
