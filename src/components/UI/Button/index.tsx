@@ -9,7 +9,7 @@ type ButtonProps = {
     isFilled?: boolean | undefined | null;
 };
 
-const Button: React.FC<ButtonProps> = ({ styleType, text, icon: Icon, onClick, type, isFilled }) => {
+export default function Button ({ styleType, text, icon: Icon, onClick, type, isFilled }: ButtonProps)  {
     let baseClasses = ` font-medium rounded-lg text-lg px-2 py-1.5  mb-2 focus:outline-none focus:ring-4 ${text && "text-center mt-2"}`;
     let typeClasses = "";
 
@@ -47,4 +47,3 @@ const Button: React.FC<ButtonProps> = ({ styleType, text, icon: Icon, onClick, t
     );
 };
 
-export default Button;

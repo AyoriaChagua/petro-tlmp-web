@@ -81,7 +81,7 @@ export const useCorrelativeControl = () => {
         if (resToggle) {
             const updatedCorrelativeControl = correlativeControl.map(cc => (
                 cc.companyId === ccr.companyId && cc.orderTypeId === ccr.orderTypeId && cc.period === ccr.period
-                   ? {...cc, active:!cc.active }
+                    ? { ...cc, active: !cc.active }
                     : cc
             ));
             setCorrelativeControl(updatedCorrelativeControl);
@@ -93,8 +93,8 @@ export const useCorrelativeControl = () => {
     const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
         try {
-            if(!parseInt(correlative, 10)){
-                throw new Error("Correlativo invalido, evite ingresar caracteres no numéricos")
+            if (!parseInt(correlative, 10)) {
+                throw new Error("Correlativo inválido, evite ingresar caracteres no numéricos");
             }
             const newCorrelative: CorrelativeControlReq = {
                 companyId: companySelected?.value!,
@@ -103,21 +103,48 @@ export const useCorrelativeControl = () => {
                 correlative,
                 period: year.toString(),
                 systemUser: user?.id!
-            }
-            let newCorrelativeRes: null | CorrelativeControlRes = null;
-            if (correlativeControlToUpdate) {
-                newCorrelativeRes = await putCorrelativeControl.updateCorrelative(newCorrelative.companyId, newCorrelative.orderTypeId, newCorrelative.period, newCorrelative.correlative);
-            } else {
-                newCorrelativeRes = await postCorrelativeControl.create(newCorrelative);
-            }
+            };
 
-            if (!newCorrelativeRes) {
-                throw new Error("No se pudo realizar la acción");
+            if (correlativeControlToUpdate) {
+                const updatedCorrelative = await putCorrelativeControl.updateCorrelative(
+                    newCorrelative.companyId,
+                    newCorrelative.orderTypeId,
+                    newCorrelative.period,
+                    newCorrelative.correlative
+                );
+
+                if (!updatedCorrelative) {
+                    throw new Error("No se pudo actualizar el correlativo");
+                }
+
+                setCorrelativeControl((prevState) =>
+                    prevState.map((item) =>
+                        item.companyId === correlativeControlToUpdate.companyId &&
+                            item.orderTypeId === correlativeControlToUpdate.orderTypeId &&
+                            item.period === correlativeControlToUpdate.period
+                            ? { ...item, ...updatedCorrelative }
+                            : item
+                    )
+                );
             } else {
-                setCorrelativeControl((prevState) => ([{ ...newCorrelativeRes }, ...prevState]));
+                const createdCorrelative = await postCorrelativeControl.create(newCorrelative);
+
+                if (!createdCorrelative) {
+                    throw new Error("No se pudo crear el correlativo");
+                }
+
+                setCorrelativeControl((prevState) => [...prevState, createdCorrelative]);
             }
+            setOrderTypeState({ label: "Orden de compra", value: "O/C" });
+            setYear(new Date().getFullYear());
+            setCorrelative("00000001");
+            setCorrelativeControlToUpdateState(null);
         } catch (error) {
-            showErrorMessage((error as Error).message.includes("409") ? "El correlativo ya existe" : (error as Error).message);
+            showErrorMessage(
+                (error as Error).message.includes("409")
+                    ? "El correlativo ya existe"
+                    : (error as Error).message
+            );
         }
     };
 

@@ -12,7 +12,7 @@ export const putCorrelativeControl = {
     },
     updateCorrelative: async (companyId: string, orderTypeId: string, period: string, correlative: string) => {
         try {
-            const response = await axiosAuthInstance.patch<CorrelativeControlRes>(`/correlative-control/${companyId}/${orderTypeId}/${period}`, { correlative });
+            const response = await axiosAuthInstance.patch<CorrelativeControlRes>(`/correlative-control/${companyId}/${orderTypeId.replace("/", "%2F")}/${period}`, { correlative });
             return response.data;
         } catch (error) {
             throw new Error(`Error obteniendo los controladores de correlación para la compañía ${companyId}`);
