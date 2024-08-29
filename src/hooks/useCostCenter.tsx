@@ -18,14 +18,10 @@ export const useCostCenter = () => {
 
     const fetchCostCenters = async () => {
         try {
-            setIsLoading(true);
             const data = await getCostCenter.getByCompanyId(companySelected?.value!);
             setCostCenters(data);
         } catch (error) {
             showErrorMessage((error as Error).message);
-        } finally {
-            setIsLoading(false);
-
         }
     }
 
@@ -108,7 +104,8 @@ export const useCostCenter = () => {
     };
 
     useEffect(() => {
-        fetchCostCenters();
+        setIsLoading(true);
+        fetchCostCenters().then(() => setIsLoading(false));
     }, [])
 
     return {

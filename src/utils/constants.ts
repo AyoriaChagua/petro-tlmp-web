@@ -50,6 +50,11 @@ export const taxRetentionOptions: OptionType[] = [
     { label: "Retención 8%", value: "8.00" }
 ]
 
+export const yesOrNoOptions: OptionType[] = [
+    { label: "Si", value: "true" },
+    { label: "No", value: "false" }
+]
+
 export const perceptionOptions: OptionType[] = [
     { label: "1%", value: "1.00" },
     { label: "2%", value: "2.00" },

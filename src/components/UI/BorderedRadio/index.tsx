@@ -4,7 +4,7 @@ interface Props {
     readonly title?: string
     readonly options: OptionType[];
     readonly name: string;
-    readonly onChange: (value: string) => void;
+    readonly onChange: (option: OptionType) => void;
     readonly selectedValue: string;
 }
 
@@ -21,7 +21,7 @@ export default function BorderedRadio({ title, options, name, onChange, selected
                             value={option.value}
                             name={name}
                             checked={selectedValue === option.value}
-                            onChange={() => onChange(option.value)}
+                            onChange={() => onChange(option)}
                             className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 focus:ring-blue-500"
                         />
                         <label htmlFor={`bordered-radio-${index}`} className="w-full py-2 ms-2 text-sm font-medium text-gray-900">

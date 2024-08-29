@@ -1,17 +1,15 @@
 import { OptionType } from '../../../types/common/inputs';
 
-
-
 interface Props {
     readonly options: OptionType[];
-    readonly onChange: (value: string) => void;
+    readonly onChange: (option: OptionType) => void;
     readonly selectedValue: string;
 }
 
 export default function RadioGroup({ options, onChange, selectedValue }: Props) {
     return (
         <div>
-            <ul className="grid w-full gap-3 grid-cols-3">
+            <ul className={`grid w-full gap-3 grid-cols-${options.length}`}>
                 {options.map((option) => (
                     <li key={"orden_" + option.label}>
                         <input
@@ -21,7 +19,7 @@ export default function RadioGroup({ options, onChange, selectedValue }: Props) 
                             value={option.value}
                             className="hidden peer"
                             checked={selectedValue === option.value}
-                            onChange={() => onChange(option.value)}
+                            onChange={() => onChange(option)}
                             required
                         />
                         <label

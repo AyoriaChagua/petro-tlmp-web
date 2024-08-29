@@ -192,7 +192,13 @@ export const useProvider = () => {
         }
     };
 
-    const searchProviders = async (querySearch: string, numberPage: number = 1, numberPerPage: number = 10) => {
+
+
+    const searchProviders = async (
+        querySearch: string,
+        numberPage: number = 1,
+        numberPerPage: number = 10
+    ): Promise<ProviderMP[]> => {
         try {
             const [response, numberResponse] = await Promise.all([
                 getProviderMP.searchProviderWithAccounts(querySearch, numberPage, numberPerPage),
@@ -200,8 +206,10 @@ export const useProvider = () => {
             ]);
             setNumberProviders(numberResponse);
             setProviders(response);
+            return response;
         } catch (error) {
             showErrorMessage((error as Error).message);
+            return [];
         }
     };
 
@@ -301,6 +309,7 @@ export const useProvider = () => {
         handleDeleteProvider,
         selectProviderToUpdate,
         updateProvider,
-        handleDeleteProviderAccount
+        handleDeleteProviderAccount,
+        debouncedSearchProviders
     };
 };

@@ -1,10 +1,10 @@
 import { OrderFormI } from "../../types/order";
 
 export const initialOrderForm: OrderFormI = {
-    orderDate: "",
+    orderDate: new Date().toISOString().split("T")[0],
     currency: "",
     paymentMethod: "",
-    requestinArea: "",
+    requestingArea: "",
     costCenter: "",
     isAffectedIGV: false,
     tax: 0,
@@ -14,13 +14,22 @@ export const initialOrderForm: OrderFormI = {
     total: 0,
     approver: "",
     automaticSignature: false,
-    providerRUC: "",
+    providerRuc: "",
     providerDescription: "",
     providerAddress: "",
     providerAccountNumber: "",
     providerAccountCCI: "",
     providerAccountBank: "",
     observations: "",
+    approvingStaffId: "",
+    companyId: "",
+    correlative: "",
+    costCenterId: "",
+    orderTypeId: "",
+    period: "",
+    requestingAreaId: "",
+    subtotal: 0,
+    systemUser: "",
     details: [
         {
              product: "",

@@ -1,13 +1,32 @@
-import { BorderedRadio, CustomSelect, IconButton, Input, RadioGroup, Textarea } from "../../../components"
-import { currencyOptions, detractionOptions, paymentMethodOptions, perceptionOptions, shortOrderTypeOptions, taxRetentionOptions } from "../../../utils/constants"
+import { BorderedRadio, CustomSelect, IconButton, Input, Loader, RadioGroup, Textarea } from "../../../components"
+import { useOrder } from "../../../hooks/useOrder"
+import { currencyOptions, detractionOptions, paymentMethodOptions, perceptionOptions, taxRetentionOptions, yesOrNoOptions } from "../../../utils/constants";
+import AsyncSelect from 'react-select/async';
 
 
 export default function CreateOrder() {
+    const {
+        costCenterOptions,
+        requestingAreaOptions,
+        approvalPersonnelOptions,
+        orderForm,
+        isDataReady,
+        providerAccountOptions,
+        loadProviderOptions,
+        handleOptionSelection,
+        setOrderForm,
+        orderTypeOptions
+    } = useOrder();
+    if (!isDataReady) return <Loader />
     return (
         <div className="flex flex-col w-full justify-center items-center border-x md:px-4">
-            <RadioGroup onChange={() => { }} options={shortOrderTypeOptions} selectedValue="O/C" />
+            <RadioGroup
+                onChange={(option) => handleOptionSelection(option, "orderTypeId")}
+                options={orderTypeOptions}
+                selectedValue={orderForm.orderTypeId}
+            />
             <br />
-            <h3 className="text-2xl font-semibold text-[#055CBB]">#00000001</h3>
+            <h3 className="text-2xl font-semibold text-[#055CBB]">#{orderForm.correlative}</h3>
             <div className="container mx-auto p-4">
                 <form>
                     {/* Main details  */}
@@ -18,6 +37,8 @@ export default function CreateOrder() {
                                 label="Fecha de orden"
                                 typeForm="create"
                                 type="date"
+                                value={orderForm.orderDate}
+                                onChange={(e) => setOrderForm(prevState => ({ ...prevState, orderDate: e.target.value }))}
                             />
                         </div>
                         <div className="col-span-1">
@@ -25,7 +46,7 @@ export default function CreateOrder() {
                                 id="currency"
                                 label="Moneda"
                                 options={currencyOptions}
-                                onChange={() => { }}
+                                onChange={(option) => handleOptionSelection(option, "currency")}
                                 typeForm="create"
                                 placeholder=""
                             />
@@ -35,7 +56,7 @@ export default function CreateOrder() {
                                 id="paymentMethod"
                                 label="Forma de pago"
                                 options={paymentMethodOptions}
-                                onChange={() => { }}
+                                onChange={(option) => handleOptionSelection(option, "paymentMethod")}
                                 typeForm="create"
                                 placeholder=""
                             />
@@ -44,8 +65,8 @@ export default function CreateOrder() {
                             <CustomSelect
                                 id="costCenter"
                                 label="Centro de costo"
-                                options={[]}
-                                onChange={() => { }}
+                                options={costCenterOptions}
+                                onChange={(option) => handleOptionSelection(option, "costCenter", "costCenterId")}
                                 typeForm="create"
                                 placeholder=""
                             />
@@ -54,21 +75,34 @@ export default function CreateOrder() {
                             <CustomSelect
                                 id="requestingArea"
                                 label="Área solicitante"
-                                options={[]}
-                                onChange={() => { }}
+                                options={requestingAreaOptions}
+                                onChange={(option) => handleOptionSelection(option, "requestingArea", "requestingAreaId")}
                                 typeForm="create"
                                 placeholder=""
                             />
                         </div>
                         <div className="col-span-1">
-                            <CustomSelect
-                                id="approvel"
-                                label="Aprovador"
-                                options={[]}
-                                onChange={() => { }}
-                                typeForm="create"
-                                placeholder=""
-                            />
+                            <div className="grid grid-cols-2 gap-4">
+                                <div className="col-span-1">
+                                    <CustomSelect
+                                        id="approvel"
+                                        label="Aprovador"
+                                        options={approvalPersonnelOptions}
+                                        onChange={(option) => handleOptionSelection(option, "approver", "approvingStaffId")}
+                                        typeForm="create"
+                                        placeholder=""
+                                    />
+                                </div>
+                                <div className="col-span-1">
+                                    <BorderedRadio
+                                        title="Incluye firma?"
+                                        name="signature"
+                                        onChange={(option) => handleOptionSelection(option, "automaticSignature")}
+                                        options={yesOrNoOptions}
+                                        selectedValue="false"
+                                    />
+                                </div>
+                            </div>
                         </div>
                     </div>
                     <hr className="mb-4 mt-3" />
@@ -77,9 +111,9 @@ export default function CreateOrder() {
                             <BorderedRadio
                                 title="Impuesto - Retención"
                                 name="tax-retention"
-                                onChange={() => { }}
+                                onChange={(option) => handleOptionSelection(option, "tax", "retention")}
                                 options={taxRetentionOptions}
-                                selectedValue=""
+                                selectedValue={""}
                             />
                         </div>
                         <div className="col-span-1">
@@ -87,7 +121,7 @@ export default function CreateOrder() {
                                 id="perceptionPer"
                                 label="Percepción"
                                 options={perceptionOptions}
-                                onChange={() => { }}
+                                onChange={(option) => handleOptionSelection(option, "perception")}
                                 typeForm="create"
                                 placeholder=""
                             />
@@ -97,7 +131,7 @@ export default function CreateOrder() {
                                 id="detractionPer"
                                 label="Detracción"
                                 options={detractionOptions}
-                                onChange={() => { }}
+                                onChange={(option) => handleOptionSelection(option, "detraction")}
                                 typeForm="create"
                                 placeholder=""
                             />
@@ -108,20 +142,24 @@ export default function CreateOrder() {
                     <hr className="mb-4 mt-3" />
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div className="col-span-1">
-                            <CustomSelect
-                                id="providerRuc"
-                                label="Proveedor"
-                                options={[]}
-                                onChange={() => { }}
-                                typeForm="create"
-                                placeholder=""
-                            />
+                            <div className="mb-3">
+                                <label htmlFor={"selectProvider"} className={"block mb-2 text-sm font-medium text-gray-600"}>RUC/DNI proveedor</label>
+                                <AsyncSelect
+                                    id="selectProvider"
+                                    loadOptions={loadProviderOptions}
+                                    onChange={(option) => handleOptionSelection(option, "providerRuc")}
+                                    cacheOptions
+                                    defaultOptions
+                                />
+                            </div>
+
                         </div>
                         <div className="col-span-1">
                             <Input
                                 id="providerDescription"
                                 label="Descripción de proveedor"
                                 typeForm="create"
+                                value={orderForm.providerDescription}
                                 disabled
                             />
                         </div>
@@ -130,15 +168,16 @@ export default function CreateOrder() {
                                 id="providerAddress"
                                 label="Dirección de proveedor"
                                 typeForm="create"
+                                value={orderForm.providerAddress}
                                 disabled
                             />
                         </div>
                         <div className="col-span-1">
                             <CustomSelect
                                 id="providerAccount"
-                                label="Cuenta de proveedor"
-                                options={[]}
-                                onChange={() => { }}
+                                label={`Cuenta ${orderForm.providerAccountBank ?? ""} de proveedor`}
+                                options={providerAccountOptions}
+                                onChange={(option) => handleOptionSelection(option, "bankAccountId")}
                                 typeForm="create"
                                 placeholder=""
                             />
@@ -148,6 +187,7 @@ export default function CreateOrder() {
                                 id="numberCCI"
                                 label="Nro. CCI de proveedor"
                                 typeForm="create"
+                                value={orderForm.providerAccountCCI}
                                 disabled
                             />
                         </div>
@@ -221,7 +261,7 @@ export default function CreateOrder() {
                         </div>
                     </div>
                     <div className="flex w-full mt-3">
-                        <Textarea 
+                        <Textarea
                             id="observations"
                             label="Observaciones"
                             onChange={() => { }}

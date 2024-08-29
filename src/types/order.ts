@@ -1,9 +1,9 @@
 
-export interface OrderFormI {
+export interface OrderFormI extends OrderRequestI{
     orderDate: string
     currency: string
     paymentMethod: string
-    requestinArea: string
+    requestingArea: string
     costCenter: string
     isAffectedIGV: boolean
     tax: number
@@ -13,7 +13,7 @@ export interface OrderFormI {
     total: number
     approver: string
     automaticSignature: boolean
-    providerRUC: string
+    providerRuc: string
     providerDescription: string
     providerAddress: string
     providerAccountNumber: string

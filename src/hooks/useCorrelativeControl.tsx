@@ -43,13 +43,10 @@ export const useCorrelativeControl = () => {
 
     const fetchCorrelativeControl = async () => {
         try {
-            setIsLoading(true);
             const data = await getCorrelativeControl.getByCompanyId(companySelected?.value!);
             setCorrelativeControl(data);
         } catch (error) {
             showErrorMessage("No se pudo obtener los correlativos");
-        } finally {
-            setIsLoading(false);
         }
     }
 
@@ -149,7 +146,8 @@ export const useCorrelativeControl = () => {
     };
 
     useEffect(() => {
-        fetchCorrelativeControl();
+        setIsLoading(true);
+        fetchCorrelativeControl().then(() => setIsLoading(false));
     }, [companySelected]);
 
     return {

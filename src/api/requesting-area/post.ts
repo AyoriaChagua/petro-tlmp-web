@@ -2,9 +2,9 @@ import { RequestingAreaI, RequestingAreaRequestI } from "../../types/requesting-
 import { axiosAuthInstance } from "../config"
 
 export const postRequestingArea = {
-    create: async (requestinArea: RequestingAreaRequestI)=>{
+    create: async (requestingArea: RequestingAreaRequestI)=>{
         try {
-            const response = await axiosAuthInstance.post<RequestingAreaI>('/requesting-areas', requestinArea);
+            const response = await axiosAuthInstance.post<RequestingAreaI>('/requesting-areas', requestingArea);
             return response.data;
         } catch (error) {
             throw new Error("Error creando la área solicitada");
