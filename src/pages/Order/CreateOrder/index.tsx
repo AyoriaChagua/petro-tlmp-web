@@ -24,7 +24,6 @@ export default function CreateOrder() {
         onSubmit
     } = useOrder();
 
-
     if (!isDataReady) return <Loader />
 
     return (
@@ -57,7 +56,7 @@ export default function CreateOrder() {
                                 options={currencyOptions}
                                 onChange={(option) => handleOptionSelection(option, "currencyValue", "currencyLabel")}
                                 value={orderForm.paymentMethodValue ? {
-                                    label: orderForm.paymentMethodValue,
+                                    label: orderForm.currencyLabel,
                                     value: orderForm.currencyValue
                                 } : undefined}
                                 typeForm="create"
@@ -152,15 +151,16 @@ export default function CreateOrder() {
                         {
                             orderForm.orderTypeId === "O/S" ?
                                 <div className="col-span-1">
+                                    <div className="hidden">{orderForm.detractionLabel + " " + orderForm.detractionValue}</div>
                                     <CustomSelect
                                         id="detractionPer"
                                         label="Detracción"
                                         options={detractionOptions}
                                         onChange={(option) => handleOptionSelection(option, "detractionValue", "detractionLabel")}
-                                        value={orderForm.detractionValue ? {
+                                        value={(orderForm.orderTypeId === "O/S" || !orderForm.detractionValue )? undefined : {
                                             label: orderForm.detractionLabel,
                                             value: orderForm.detractionValue
-                                        } : undefined}
+                                        }}
                                         typeForm="create"
                                         placeholder=""
                                     />
@@ -171,10 +171,10 @@ export default function CreateOrder() {
                                         label="Percepción"
                                         options={perceptionOptions}
                                         onChange={(option) => handleOptionSelection(option, "perceptionValue", "perceptionLabel")}
-                                        value={orderForm.perceptionValue ? {
+                                        value={(orderForm.orderTypeId !== "O/S" || !orderForm.perceptionValue) ? undefined: {
                                             label: orderForm.perceptionLabel,
                                             value: orderForm.perceptionValue
-                                        } : undefined}
+                                        }}
                                         typeForm="create"
                                         placeholder=""
                                     />
@@ -303,12 +303,14 @@ export default function CreateOrder() {
                                         value={detail.quantity * detail.unitPrice}
                                         readOnly
                                     />
-                                    <div className="absolute top-1/2 -right-3 md:-right-12 transform -translate-y-1/2 ">
-                                        <IconButton
-                                            icon="minus"
-                                            onClick={() => handleRemoveLine(index)}
-                                        />
-                                    </div>
+                                    {index !== 0 && (
+                                        <div className="absolute top-1/2 -right-3 md:-right-12 transform -translate-y-1/2 ">
+                                            <IconButton
+                                                icon="minus"
+                                                onClick={() => handleRemoveLine(index)}
+                                            />
+                                        </div>
+                                    )}
                                 </div>
                             </div>
                         ))}

@@ -1,23 +1,26 @@
 import { useEffect, useState, useCallback } from "react"
 import { initialOrderForm } from "./initial-states/order";
-import { OrderDetailsFormI, OrderFormI } from "../types/order";
+import { OrderDetailRequestI, OrderDetailsFormI, OrderFormI, OrderRequestI } from "../types/order";
 import { useProvider } from "./useProvider";
 import { useCostCenter } from "./useCostCenter";
 import { useRequestingArea } from "./useRequestingArea";
 import { useApprovalPersonnel } from "./useApprovalPersonnel";
 import { OptionType } from "../types/common/inputs";
-import { convertToOptions, getCurrencySymbol, showErrorMessage } from "../utils/functions";
+import { convertToOptions, getCurrencySymbol, showErrorMessage, showSuccessMessage } from "../utils/functions";
 import { MultiValue, SingleValue } from "react-select";
 import { useCorrelativeControl } from "./useCorrelativeControl";
 import { shortOrderTypeOptions } from "../utils/constants";
 import { ProviderAccount, ProviderMP } from "../types/provider";
+import { useAuth } from "../context/AuthContext";
+import { postOrder } from "../api/order/post";
 
 export const useOrder = () => {
     const { debouncedSearchProviders } = useProvider();
     const { costCenters } = useCostCenter();
     const { requestingAreas } = useRequestingArea();
     const { approvalPersonnel } = useApprovalPersonnel();
-    const { correlativeControl } = useCorrelativeControl();
+    const { correlativeControl, fetchCorrelativeControl } = useCorrelativeControl();
+    const { user } = useAuth();
 
     const [orderForm, setOrderForm] = useState<OrderFormI>(initialOrderForm);
 
@@ -128,7 +131,7 @@ export const useOrder = () => {
         const detractionPerc = Number(orderForm.detractionValue) || 0;
         const perceptionPerc = Number(orderForm.perceptionValue) || 0;
 
-        if (tax === 0 && retention === 0 && detractionPerc === 0 && perceptionPerc === 0) {
+        if (tax === 0 && retention === 0) {
             total = subtotal
         } else if (tax === 18.00 && retention === 0) {
             taxRetention = (subtotal * 0.18);
@@ -177,6 +180,14 @@ export const useOrder = () => {
             setOrderForm(prevState => ({ ...prevState, "perceptionValue": "", perceptionLabel: "" }));
         } else if (field1 === "perceptionValue") {
             setOrderForm(prevState => ({ ...prevState, "detractionValue": "", detractionLabel: "" }));
+        } else if (field1 === "orderTypeId") {
+            setOrderForm(prevState => ({
+                ...prevState,
+                perceptionLabel: "",
+                detractionLabel: "",
+                perceptionValue: "",
+                detractionValue: "",
+            }));
         }
 
         if (field2) {
@@ -240,8 +251,67 @@ export const useOrder = () => {
         }));
     }
 
-    const onSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+    const onSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
+        try {
+            const retention = parseFloat(orderForm.retentionValue);
+            const perception = parseFloat(orderForm.perceptionValue);
+            const detraction = parseFloat(orderForm.detractionValue);
+            const tax = parseFloat(orderForm.taxValue);
+            const perceptionDetraccionCalc = parseFloat(orderForm.perceptionDetractionLabel);
+            const taxRetentionCalc = parseFloat(orderForm.taxRetentionLabel);
+            const newOrder: OrderRequestI = {
+                approvingStaffId: Number(orderForm.approverValue),
+                automaticSignature: Boolean(orderForm.automaticSignature),
+                bankAccountId: Number(orderForm.bankAccountId) || null,
+                costCenterId: Number(orderForm.costCenterValue),
+                currency: orderForm.currencyValue,
+                detraction: detraction || null,
+                isAffectedIGV: orderForm.isAffectedIGV,
+                orderDate: new Date(orderForm.orderDate),
+                orderTypeId: orderForm.orderTypeId,
+                paymentMethod: orderForm.paymentMethodValue,
+                perception: perception || null,
+                providerRuc: orderForm.providerRuc || null,
+                retention: retention || null,
+                requestingAreaId: Number(orderForm.requestingAreaValue),
+                systemUser: user?.id!,
+                tax: tax || null,
+                total: Number(orderForm.totalLabel),
+                companyId: orderForm.companyId,
+                correlative: orderForm.correlative,
+                detractionCalc: !perception ? perceptionDetraccionCalc : null,
+                perceptionCalc: !detraction ? perceptionDetraccionCalc : null,
+                observations: orderForm.observations,
+                period: orderForm.period,
+                retentionCalc: (!tax && taxRetentionCalc > 0) ? taxRetentionCalc : null,
+                taxCalc: (!retention && taxRetentionCalc > 0) ? taxRetentionCalc : null,
+                subtotal: Number(orderForm.subtotal),
+            };
+            const newDetails: OrderDetailRequestI[] = orderForm.details.map(detail => ({
+                ...detail,
+                subtotal: Number(detail.quantity) * Number(detail.unitPrice),
+                quantity: Number(detail.quantity),
+                unitPrice: Number(detail.unitPrice),
+                measurement: detail.measurement,
+                companyId: orderForm.companyId,
+                orderTypeId: orderForm.orderTypeId,
+                period: orderForm.period,
+                correlative: orderForm.correlative,
+                user: user?.id!,
+            }));
+            const data = await postOrder.createOrder(newOrder);
+            if (data) {
+                const dataDet = await postOrder.createDetails(newDetails);
+                if(dataDet.status === 201) {
+                    showSuccessMessage(`Orden #${data.correlative} creada con éxito`);
+                    fetchCorrelativeControl();
+                }
+                else throw new Error("Error al crear los detalles de la orden");
+            }
+        } catch (error) {
+            showErrorMessage((error as Error).message);
+        }
     }
 
     return {
