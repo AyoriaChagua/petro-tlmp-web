@@ -9,9 +9,10 @@ interface Props {
 export default function RadioGroup({ options, onChange, selectedValue }: Props) {
     return (
         <div>
-            <ul className={`grid w-full gap-3 grid-cols-${options.length}`}>
+            {/* esta validación es horrible.. pero cuando se trata de dar estilos concatenados a variables.. no funciona, o por lo menos no encuentro una manera 🥲 */}
+            <ul className={`grid w-full gap-3 ${options.length === 2 ? "grid-cols-2" : options.length === 3 ? "grid-cols-3" : "grid-cols-1"}`}>
                 {options.map((option) => (
-                    <li key={"orden_" + option.label}>
+                    <li key={"orden_" + option.label} >
                         <input
                             type="radio"
                             id={"orden_" + option.label}

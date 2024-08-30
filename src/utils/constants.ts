@@ -47,7 +47,8 @@ export const paymentMethodOptions: OptionType[] = [
 
 export const taxRetentionOptions: OptionType[] = [
     { label: "IGV 18%", value: "18.00" },
-    { label: "Retención 8%", value: "8.00" }
+    { label: "Retención 8%", value: "8.00" },
+    { label: "Sin IGV", value: "false" },
 ]
 
 export const yesOrNoOptions: OptionType[] = [
@@ -56,11 +57,13 @@ export const yesOrNoOptions: OptionType[] = [
 ]
 
 export const perceptionOptions: OptionType[] = [
+    { label: "Sin percepción", value: "" },
     { label: "1%", value: "1.00" },
     { label: "2%", value: "2.00" },
 ]
 
 export const detractionOptions: OptionType[] = [
+    { label: "Sin detracción", value: "" },
     { label: "4%", value: "4.00" },
     { label: "10%", value: "10.00" },
     { label: "12%", value: "12.00" },

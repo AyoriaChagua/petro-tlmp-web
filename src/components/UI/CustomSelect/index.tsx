@@ -13,6 +13,7 @@ interface Props {
     readonly className?: string;
     readonly typeForm?: "maintanance" | "create";
     readonly disabled?: boolean;
+    readonly isRequired?: boolean
 }
 
 export default function CustomSelect({
@@ -27,6 +28,7 @@ export default function CustomSelect({
     className,
     typeForm,
     disabled = false,
+    isRequired = false
 }: Props) {
     let labelStyles: string;
 
@@ -77,6 +79,7 @@ export default function CustomSelect({
                 placeholder={placeholder}
                 styles={customStyles}
                 isDisabled={disabled}
+                required={isRequired}
             />
         </div>
     );

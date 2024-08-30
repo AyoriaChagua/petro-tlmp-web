@@ -15,7 +15,12 @@ export default function CreateOrder() {
         loadProviderOptions,
         handleOptionSelection,
         setOrderForm,
-        orderTypeOptions
+        orderTypeOptions,
+        handleRemoveLine,
+        handleAddLine,
+        handleLineInput,
+        handleTaxRetentionSelection,
+        onSubmit
     } = useOrder();
     if (!isDataReady) return <Loader />
     return (
@@ -28,7 +33,7 @@ export default function CreateOrder() {
             <br />
             <h3 className="text-2xl font-semibold text-[#055CBB]">#{orderForm.correlative}</h3>
             <div className="container mx-auto p-4">
-                <form>
+                <form onSubmit={onSubmit}>
                     {/* Main details  */}
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div className="col-span-1">
@@ -46,9 +51,14 @@ export default function CreateOrder() {
                                 id="currency"
                                 label="Moneda"
                                 options={currencyOptions}
-                                onChange={(option) => handleOptionSelection(option, "currency")}
+                                onChange={(option) => handleOptionSelection(option, "currencyValue", "currencyLabel")}
+                                value={orderForm.paymentMethodValue ? {
+                                    label: orderForm.paymentMethodValue,
+                                    value: orderForm.currencyValue
+                                } : undefined}
                                 typeForm="create"
                                 placeholder=""
+                                isRequired={true}
                             />
                         </div>
                         <div className="col-span-1">
@@ -56,9 +66,14 @@ export default function CreateOrder() {
                                 id="paymentMethod"
                                 label="Forma de pago"
                                 options={paymentMethodOptions}
-                                onChange={(option) => handleOptionSelection(option, "paymentMethod")}
+                                onChange={(option) => handleOptionSelection(option, "paymentMethodValue", "paymentMethodLabel")}
+                                value={orderForm.paymentMethodValue ? {
+                                    label: orderForm.paymentMethodLabel,
+                                    value: orderForm.paymentMethodValue
+                                } : undefined}
                                 typeForm="create"
                                 placeholder=""
+                                isRequired={true}
                             />
                         </div>
                         <div className="col-span-1">
@@ -66,9 +81,14 @@ export default function CreateOrder() {
                                 id="costCenter"
                                 label="Centro de costo"
                                 options={costCenterOptions}
-                                onChange={(option) => handleOptionSelection(option, "costCenter", "costCenterId")}
+                                onChange={(option) => handleOptionSelection(option, "costCenterValue", "costCenterLabel")}
+                                value={orderForm.costCenterValue ? {
+                                    label: orderForm.costCenterLabel,
+                                    value: orderForm.costCenterValue
+                                } : undefined}
                                 typeForm="create"
                                 placeholder=""
+                                isRequired={true}
                             />
                         </div>
                         <div className="col-span-1">
@@ -76,7 +96,11 @@ export default function CreateOrder() {
                                 id="requestingArea"
                                 label="Área solicitante"
                                 options={requestingAreaOptions}
-                                onChange={(option) => handleOptionSelection(option, "requestingArea", "requestingAreaId")}
+                                onChange={(option) => handleOptionSelection(option, "requestingAreaValue", "requestingAreaLabel")}
+                                value={orderForm.requestingAreaValue ? {
+                                    label: orderForm.requestingAreaLabel,
+                                    value: orderForm.requestingAreaValue
+                                } : undefined}
                                 typeForm="create"
                                 placeholder=""
                             />
@@ -88,9 +112,14 @@ export default function CreateOrder() {
                                         id="approvel"
                                         label="Aprovador"
                                         options={approvalPersonnelOptions}
-                                        onChange={(option) => handleOptionSelection(option, "approver", "approvingStaffId")}
+                                        onChange={(option) => handleOptionSelection(option, "approverValue", "approverLabel")}
+                                        value={orderForm.approverValue ? {
+                                            label: orderForm.approverLabel,
+                                            value: orderForm.approverValue
+                                        } : undefined}
                                         typeForm="create"
                                         placeholder=""
+                                        isRequired={true}
                                     />
                                 </div>
                                 <div className="col-span-1">
@@ -99,7 +128,7 @@ export default function CreateOrder() {
                                         name="signature"
                                         onChange={(option) => handleOptionSelection(option, "automaticSignature")}
                                         options={yesOrNoOptions}
-                                        selectedValue="false"
+                                        selectedValue={String(orderForm.automaticSignature)}
                                     />
                                 </div>
                             </div>
@@ -111,31 +140,43 @@ export default function CreateOrder() {
                             <BorderedRadio
                                 title="Impuesto - Retención"
                                 name="tax-retention"
-                                onChange={(option) => handleOptionSelection(option, "tax", "retention")}
+                                onChange={handleTaxRetentionSelection}
                                 options={taxRetentionOptions}
-                                selectedValue={""}
+                                selectedValue={orderForm.taxValue || orderForm.retentionValue || orderForm.isAffectedIGVLabel}
                             />
                         </div>
-                        <div className="col-span-1">
-                            <CustomSelect
-                                id="perceptionPer"
-                                label="Percepción"
-                                options={perceptionOptions}
-                                onChange={(option) => handleOptionSelection(option, "perception")}
-                                typeForm="create"
-                                placeholder=""
-                            />
-                        </div>
-                        <div className="col-span-1">
-                            <CustomSelect
-                                id="detractionPer"
-                                label="Detracción"
-                                options={detractionOptions}
-                                onChange={(option) => handleOptionSelection(option, "detraction")}
-                                typeForm="create"
-                                placeholder=""
-                            />
-                        </div>
+                        {
+                            orderForm.orderTypeId === "O/S" ?
+                                <div className="col-span-1">
+                                    <CustomSelect
+                                        id="detractionPer"
+                                        label="Detracción"
+                                        options={detractionOptions}
+                                        onChange={(option) => handleOptionSelection(option, "detractionValue", "detractionLabel")}
+                                        value={orderForm.detractionValue ? {
+                                            label: orderForm.detractionLabel,
+                                            value: orderForm.detractionValue
+                                        } : undefined}
+                                        typeForm="create"
+                                        placeholder=""
+                                    />
+                                </div> :
+                                <div className="col-span-1">
+                                    <CustomSelect
+                                        id="perceptionPer"
+                                        label="Percepción"
+                                        options={perceptionOptions}
+                                        onChange={(option) => handleOptionSelection(option, "perceptionValue", "perceptionLabel")}
+                                        value={orderForm.perceptionValue ? {
+                                            label: orderForm.perceptionLabel,
+                                            value: orderForm.perceptionValue
+                                        } : undefined}
+                                        typeForm="create"
+                                        placeholder=""
+                                    />
+                                </div>
+                        }
+
                     </div>
 
                     {/* Provider section */}
@@ -146,13 +187,17 @@ export default function CreateOrder() {
                                 <label htmlFor={"selectProvider"} className={"block mb-2 text-sm font-medium text-gray-600"}>RUC/DNI proveedor</label>
                                 <AsyncSelect
                                     id="selectProvider"
+                                    placeholder="Buscar..."
                                     loadOptions={loadProviderOptions}
                                     onChange={(option) => handleOptionSelection(option, "providerRuc")}
+                                    value={orderForm.providerRuc ? {
+                                        label: orderForm.providerRuc,
+                                        value: orderForm.providerRuc
+                                    } : undefined}
                                     cacheOptions
                                     defaultOptions
                                 />
                             </div>
-
                         </div>
                         <div className="col-span-1">
                             <Input
@@ -175,9 +220,13 @@ export default function CreateOrder() {
                         <div className="col-span-1">
                             <CustomSelect
                                 id="providerAccount"
-                                label={`Cuenta ${orderForm.providerAccountBank ?? ""} de proveedor`}
+                                label={`Cuenta de banco ${orderForm.providerAccountBank ?? ""} del proveedor`}
                                 options={providerAccountOptions}
-                                onChange={(option) => handleOptionSelection(option, "bankAccountId")}
+                                onChange={(option) => handleOptionSelection(option, "bankAccountId", "providerAccountNumber")}
+                                value={orderForm.bankAccountId ? {
+                                    label: orderForm.providerAccountNumber,
+                                    value: orderForm.providerAccountNumber
+                                } : undefined}
                                 typeForm="create"
                                 placeholder=""
                             />
@@ -192,43 +241,78 @@ export default function CreateOrder() {
                             />
                         </div>
                     </div>
-                    {/* Details section */}
                     <hr className="mb-4 mt-3" />
                     <div className="w-full">
-                        {/* Encabezados */}
                         <div className="hidden md:flex text-gray-500 font-semibold">
-                            <div className="py-2 w-1/5">Producto</div>
-                            <div className="px-4 py-2 w-1/5">Cantidad</div>
-                            <div className="px-4 py-2 w-1/5">Unidad de Medida</div>
-                            <div className="px-4 py-2 w-1/5">Precio Unitario</div>
-                            <div className="px-4 py-2 w-1/5">Subtotal</div>
+                            <div className="py-2 w-2/6">Producto</div>
+                            <div className="px-4 py-2 w-1/6">Unidad de Medida</div>
+                            <div className="px-4 py-2 w-1/6">Cantidad</div>
+                            <div className="px-4 py-2 w-1/6">Precio Unitario</div>
+                            <div className="px-4 py-2 w-1/6">Subtotal</div>
                         </div>
+                        {orderForm.details.map((detail, index) => (
+                            <div className="flex flex-wrap md:flex-nowrap border-b py-1" key={"row_" + index}>
+                                <div className="py-1 w-full md:w-2/6">
+                                    <textarea
+                                        className="w-full p-2"
+                                        placeholder={`Producto ${index + 1}`}
+                                        value={detail.product}
+                                        required
+                                        onChange={(e) => handleLineInput(e.target.value.toUpperCase(), "product", index)}
+                                    />
+                                </div>
 
-                        {/* Fila de datos */}
-                        <div className="flex flex-wrap md:flex-nowrap border-b py-1">
-                            <div className="py-1 w-full md:w-1/5">
-                                <textarea className="w-full p-2" placeholder="Producto" />
-                            </div>
-                            <div className="px-4 py-1 w-full md:w-1/5">
-                                <input type="number" className="w-full p-2" placeholder="Cantidad" />
-                            </div>
-                            <div className="px-4 py-1 w-full md:w-1/5">
-                                <input type="text" className="w-full p-2" placeholder="Unidad" />
-                            </div>
-                            <div className="px-4 py-1 w-full md:w-1/5">
-                                <input type="number" className="w-full p-2" placeholder="Precio" />
-                            </div>
-                            <div className="relative px-4 py-1 w-full md:w-1/5 bg-transparent">
-                                <input type="number" className="w-full p-2" placeholder="Subtotal" readOnly />
-                                <div className="absolute top-1/2 -right-3 md:-right-12 transform -translate-y-1/2 z-50">
-                                    <IconButton icon="minus" />
+                                <div className="px-4 py-1 w-full md:w-1/6">
+                                    <input
+                                        type="text"
+                                        className="w-full p-2"
+                                        placeholder="Unidad"
+                                        value={detail.measurement}
+                                        onChange={(e) => handleLineInput(e.target.value.toUpperCase(), "measurement", index)}
+                                    />
+                                </div>
+                                <div className="px-4 py-1 w-full md:w-1/6">
+                                    <input
+                                        type="number"
+                                        className="w-full p-2"
+                                        placeholder="Cantidad"
+                                        value={detail.quantity}
+                                        required
+                                        onChange={(e) => handleLineInput(e.target.value.toUpperCase(), "quantity", index)}
+                                    />
+                                </div>
+                                <div className="px-4 py-1 w-full md:w-1/6">
+                                    <input
+                                        type="number"
+                                        className="w-full p-2"
+                                        placeholder="Precio"
+                                        value={detail.unitPrice}
+                                        required
+                                        onChange={(e) => handleLineInput(e.target.value, "unitPrice", index)}
+                                    />
+                                </div>
+                                <div className="relative px-4 py-1 w-full md:w-1/6 bg-transparent">
+                                    <input
+                                        type="number"
+                                        className="w-full p-2"
+                                        placeholder="Subtotal"
+                                        value={detail.quantity * detail.unitPrice}
+                                        readOnly
+                                    />
+                                    <div className="absolute top-1/2 -right-3 md:-right-12 transform -translate-y-1/2 ">
+                                        <IconButton
+                                            icon="minus"
+                                            onClick={() => handleRemoveLine(index)}
+                                        />
+                                    </div>
                                 </div>
                             </div>
-                        </div>
+                        ))}
                     </div>
                     <div className="my-10 flex  items-center gap-2">
                         <IconButton
                             icon="plus"
+                            onClick={handleAddLine}
                         />
                         <span className="font-semibold text-blue-700">Agregar linea</span>
                     </div>
@@ -237,11 +321,11 @@ export default function CreateOrder() {
                             <div className="p-4">
                                 <div className="flex justify-between text-gray-400 pb-2 mb-2">
                                     <span className="font-medium">Subtotal:</span>
-                                    <span className="font-medium">100</span>
+                                    <span className="font-medium">{orderForm.subtotal}</span>
                                 </div>
                                 <div className="flex justify-between text-gray-400  pb-2 mb-2">
-                                    <span className="font-medium">IGV/Retención:</span>
-                                    <span className="font-medium">1000</span>
+                                    <span className="font-medium">{orderForm.taxValue ? "IGV:" : orderForm.retentionValue ? "Retención (8%):" : "-"}</span>
+                                    <span className="font-medium">{orderForm.taxRetentionLabel}</span>
                                 </div>
                                 <div className="flex justify-between text-gray-400 pb-2 mb-2">
                                     <span className="font-medium">Percepción:</span>
@@ -253,8 +337,8 @@ export default function CreateOrder() {
                                 </div>
                                 <div className="border-t  pt-2 mt-2">
                                     <div className="flex justify-between font-bold text-lg text-gray-400">
-                                        <span>Total a Pagar:</span>
-                                        <span>1000</span>
+                                        <span>Total:</span>
+                                        <span>{orderForm.totalLabel}</span>
                                     </div>
                                 </div>
                             </div>
@@ -264,8 +348,14 @@ export default function CreateOrder() {
                         <Textarea
                             id="observations"
                             label="Observaciones"
-                            onChange={() => { }}
+                            value={orderForm.observations}
+                            onChange={(e) => setOrderForm(prevState => ({ ...prevState, observations: e.target.value.toUpperCase() }))}
                         />
+                    </div>
+                    <div className="flex flex-row w-full justify-center items-center my-5">
+                        <button className="md:w-1/3 w-full text-white bg-[#055CBB] text-xl py-4 px-4 rounded-lg hover:bg-blue-600" type="submit">
+                            Guardar
+                        </button>
                     </div>
                 </form>
             </div>

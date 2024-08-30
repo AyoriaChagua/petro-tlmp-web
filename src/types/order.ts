@@ -1,17 +1,27 @@
 
 export interface OrderFormI extends OrderRequestI{
     orderDate: string
-    currency: string
-    paymentMethod: string
-    requestingArea: string
-    costCenter: string
+    currencyValue: string
+    currencyLabel: string
+    paymentMethodValue: string
+    paymentMethodLabel: string
+    requestingAreaLabel: string
+    requestingAreaValue: string
+    costCenterValue: string
+    costCenterLabel: string
     isAffectedIGV: boolean
-    tax: number
-    retention: number
-    perception: number
-    detraction: number
-    total: number
-    approver: string
+    isAffectedIGVLabel: string
+    taxLabel: string
+    retentionLabel: string
+    perceptionLabel: string
+    detractionLabel: string
+    taxValue: string
+    retentionValue: string
+    perceptionValue: string
+    detractionValue: string
+    totalLabel: string
+    approverValue: string
+    approverLabel: string
     automaticSignature: boolean
     providerRuc: string
     providerDescription: string
@@ -20,6 +30,7 @@ export interface OrderFormI extends OrderRequestI{
     providerAccountCCI: string
     providerAccountBank: string
     observations: string
+    taxRetentionLabel: string
     details: OrderDetailsFormI[]
 }
 

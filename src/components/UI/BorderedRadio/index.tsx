@@ -12,7 +12,7 @@ export default function BorderedRadio({ title, options, name, onChange, selected
     return (
         <>
             {title && <label className="block mb-2 text-sm font-medium text-gray-600">{title}</label>}
-            <div className="flex flex-wrap gap-2">
+            <div className="flex gap-2">
                 {options.map((option, index) => (
                     <div key={index} className="flex items-center ps-4 border border-gray-200 rounded mb-2 w-[calc(50%-0.25rem)]">
                         <input
