@@ -48,6 +48,7 @@ export const initialOrderForm: OrderFormI = {
     subtotal: 0,
     systemUser: "",
     taxRetentionLabel: "",
+    perceptionDetractionLabel: "",
     details: [
         {
              product: "",

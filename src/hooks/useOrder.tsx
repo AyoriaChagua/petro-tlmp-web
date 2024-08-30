@@ -6,7 +6,7 @@ import { useCostCenter } from "./useCostCenter";
 import { useRequestingArea } from "./useRequestingArea";
 import { useApprovalPersonnel } from "./useApprovalPersonnel";
 import { OptionType } from "../types/common/inputs";
-import { convertToOptions, showErrorMessage } from "../utils/functions";
+import { convertToOptions, getCurrencySymbol, showErrorMessage } from "../utils/functions";
 import { MultiValue, SingleValue } from "react-select";
 import { useCorrelativeControl } from "./useCorrelativeControl";
 import { shortOrderTypeOptions } from "../utils/constants";
@@ -31,6 +31,7 @@ export const useOrder = () => {
     const [providerAccounts, setProviderAccounts] = useState<ProviderAccount[]>([]);
 
     const [isDataReady, setIsDataReady] = useState(false);
+    const [currencySymbol, setCurrencySymbol] = useState("");
 
     useEffect(() => {
         if (costCenters.length > 0 && requestingAreas.length > 0 && approvalPersonnel.length > 0 && correlativeControl.length > 0) {
@@ -117,21 +118,42 @@ export const useOrder = () => {
     const calculateTotal = (subtotal: number) => {
 
         let total: number = 0;
+
         let taxRetention: number = 0;
+        let perceptionDetraction: number = 0;
 
         const tax = Number(orderForm.taxValue) || 0;
         const retention = Number(orderForm.retentionValue) || 0;
 
-        if (tax === 0 && retention === 0) {
+        const detractionPerc = Number(orderForm.detractionValue) || 0;
+        const perceptionPerc = Number(orderForm.perceptionValue) || 0;
+
+        if (tax === 0 && retention === 0 && detractionPerc === 0 && perceptionPerc === 0) {
             total = subtotal
-        } else if(tax === 18.00 && retention === 0){
+        } else if (tax === 18.00 && retention === 0) {
             taxRetention = (subtotal * 0.18);
             total = subtotal + taxRetention;
-        } else if(tax === 0 && retention === 8.00){
+        } else if (tax === 0 && retention === 8.00) {
             taxRetention = (subtotal * 1.08) - subtotal
             total = subtotal - taxRetention
         }
-        setOrderForm(prevState => ({ ...prevState, totalLabel: total.toFixed(2).toString(), taxRetentionLabel: taxRetention.toFixed(2).toString(), subtotal }));
+
+        if (perceptionPerc > 0) {
+            perceptionDetraction = (total * (perceptionPerc / 100));
+            total += perceptionDetraction;
+        }
+
+        if (detractionPerc > 0) {
+            perceptionDetraction = (total * (detractionPerc / 100));
+        }
+
+        setOrderForm(prevState => ({
+            ...prevState,
+            totalLabel: total.toFixed(2).toString(),
+            taxRetentionLabel: taxRetention.toFixed(2).toString(),
+            subtotal,
+            perceptionDetractionLabel: perceptionDetraction.toFixed(2).toString()
+        }));
     };
 
     const loadProviderOptions = async (inputValue: string) => {
@@ -148,6 +170,14 @@ export const useOrder = () => {
         }
 
         const singleOption = option as SingleValue<OptionType>;
+
+        if (field1 === "currencyValue") {
+            setCurrencySymbol(getCurrencySymbol(singleOption?.value!))
+        } else if (field1 === "detractionValue") {
+            setOrderForm(prevState => ({ ...prevState, "perceptionValue": "", perceptionLabel: "" }));
+        } else if (field1 === "perceptionValue") {
+            setOrderForm(prevState => ({ ...prevState, "detractionValue": "", detractionLabel: "" }));
+        }
 
         if (field2) {
             setOrderForm(prevState => ({ ...prevState, [field1]: singleOption?.value, [field2]: singleOption?.label }));
@@ -212,7 +242,6 @@ export const useOrder = () => {
 
     const onSubmit = (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
-        console.log(orderForm);
     }
 
     return {
@@ -232,6 +261,7 @@ export const useOrder = () => {
         handleRemoveLine,
         handleLineInput,
         handleTaxRetentionSelection,
+        currencySymbol,
         onSubmit
     }
 }

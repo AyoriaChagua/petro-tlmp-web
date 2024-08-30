@@ -20,9 +20,13 @@ export default function CreateOrder() {
         handleAddLine,
         handleLineInput,
         handleTaxRetentionSelection,
+        currencySymbol,
         onSubmit
     } = useOrder();
+
+
     if (!isDataReady) return <Loader />
+
     return (
         <div className="flex flex-col w-full justify-center items-center border-x md:px-4">
             <RadioGroup
@@ -321,26 +325,30 @@ export default function CreateOrder() {
                             <div className="p-4">
                                 <div className="flex justify-between text-gray-400 pb-2 mb-2">
                                     <span className="font-medium">Subtotal:</span>
-                                    <span className="font-medium">{orderForm.subtotal}</span>
+                                    <span className="font-medium">{currencySymbol} {orderForm.subtotal}</span>
                                 </div>
                                 <div className="flex justify-between text-gray-400  pb-2 mb-2">
                                     <span className="font-medium">{orderForm.taxValue ? "IGV:" : orderForm.retentionValue ? "Retención (8%):" : "-"}</span>
-                                    <span className="font-medium">{orderForm.taxRetentionLabel}</span>
+                                    <span className="font-medium">{currencySymbol} {orderForm.taxRetentionLabel}</span>
                                 </div>
-                                <div className="flex justify-between text-gray-400 pb-2 mb-2">
-                                    <span className="font-medium">Percepción:</span>
-                                    <span className="font-medium">180</span>
-                                </div>
-                                <div className="flex justify-between text-gray-400 pb-2 mb-2">
-                                    <span className="font-medium">Detracción:</span>
-                                    <span className="font-medium">180</span>
-                                </div>
+                                {orderForm.detractionValue && (
+                                    <div className="flex justify-between text-gray-400 pb-2 mb-2">
+                                        <span className="font-medium">Detracción:</span>
+                                        <span className="font-medium">{orderForm.perceptionDetractionLabel}</span>
+                                    </div>
+                                )}
                                 <div className="border-t  pt-2 mt-2">
                                     <div className="flex justify-between font-bold text-lg text-gray-400">
                                         <span>Total:</span>
-                                        <span>{orderForm.totalLabel}</span>
+                                        <span>{currencySymbol} {orderForm.totalLabel}</span>
                                     </div>
                                 </div>
+                                {orderForm.perceptionValue && (
+                                    <div className="mt-2 flex justify-between text-gray-400">
+                                        <span className="font-semibold">Percepción:</span>
+                                        <span className="font-semibold">{orderForm.perceptionDetractionLabel}</span>
+                                    </div>
+                                )}
                             </div>
                         </div>
                     </div>

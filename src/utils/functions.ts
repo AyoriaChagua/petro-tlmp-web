@@ -90,3 +90,16 @@ export const arraysIsEqual = <T>(arr1: T[], arr2: T[]): boolean => {
     }
     return true;
 }
+
+export const getCurrencySymbol = (currency: string) => {
+    switch (currency) {
+        case "PEN":
+            return "S/"
+        case "USD":
+            return "$"
+        case "EUR":
+            return "€"
+        default:
+            return ""
+    }
+}

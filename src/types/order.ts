@@ -31,6 +31,7 @@ export interface OrderFormI extends OrderRequestI{
     providerAccountBank: string
     observations: string
     taxRetentionLabel: string
+    perceptionDetractionLabel: string
     details: OrderDetailsFormI[]
 }
 
