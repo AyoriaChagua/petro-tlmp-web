@@ -1,7 +1,10 @@
+import { ReportLayout } from "../../../components";
 
 
 export default function PurchasingReport() {
     return (
-        <div className='mt-24'>PurchasingReport</div>
+        <ReportLayout reportType="purchasing">
+            <div className='mt-24'>PettyCashReport</div>
+        </ReportLayout>
     )
 }

@@ -20,7 +20,7 @@ export const convertToOptions = <T>({
 }
 
 
-interface ConvertToCheckboxOptions<T>{
+interface ConvertToCheckboxOptions<T> {
     data: T[];
     valueKey: keyof T;
     labelKey: keyof T;
@@ -30,7 +30,7 @@ export const convertToCheckboxOptions = <T>({
     data,
     valueKey,
     labelKey,
-} : ConvertToCheckboxOptions<T>): CheckboxOption[] => {
+}: ConvertToCheckboxOptions<T>): CheckboxOption[] => {
     const options = data.map((item: T, index) => ({
         id: String(index),
         label: String(item[labelKey]),
@@ -75,7 +75,7 @@ export const showConfirmAlert = async (
     return result.isConfirmed;
 };
 
-export const splitArrayIntoChunks = <T>(array: T[], chunkSize: number):T[][] => {
+export const splitArrayIntoChunks = <T>(array: T[], chunkSize: number): T[][] => {
     const chunks: T[][] = [];
     for (let i = 0; i < array.length; i += chunkSize) {
         chunks.push(array.slice(i, i + chunkSize));
@@ -102,4 +102,32 @@ export const getCurrencySymbol = (currency: string) => {
         default:
             return ""
     }
+}
+
+export const getFirstDayOfCurrentMonth = (): Date => {
+    const now = new Date();
+    return new Date(now.getFullYear(), now.getMonth(), 1);
+}
+
+
+export const formatCurrency = (amount: number): string => {
+    const roundedAmount = Math.round(amount * 100) / 100;
+    const [integerPart, decimalPart = ''] = roundedAmount.toString().split('.');
+    const formatIntegerPart = integerPart.replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+    const formattedDecimalPart = decimalPart.padEnd(2, '0');
+    return `${formatIntegerPart}.${formattedDecimalPart}`;
+}
+
+export const splitVoucher = (input: string): [string, string] => {
+    const match = input.match(/[A-Z]*([0-9]{3})-([0-9]+)/);
+    if (match) {
+        return [match[1], match[2]];
+    }
+    throw new Error('El formato del string es incorrecto');
+}
+
+
+export const formatDate1 = (input: string): string => {
+    const [year, month, day] = input.split('-');
+    return `${day}-${month}-${year}`;
 }

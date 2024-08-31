@@ -1,7 +1,10 @@
+import { ReportLayout } from "../../../components";
 
 
 export default function PettyCashReport() {
     return (
-        <div className='mt-24'>PettyCashReport</div>
+        <ReportLayout reportType="pettyCash">
+            <div className='mt-24'>PettyCashReport</div>
+        </ReportLayout>
     )
 }

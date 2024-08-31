@@ -1,0 +1,9 @@
+.filter-container {
+    overflow: hidden;
+    transition: max-height 0.5s ease-out;
+    max-height: 0;
+}
+
+.filter-container.show {
+    max-height: 600px;
+}
