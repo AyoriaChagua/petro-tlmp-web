@@ -1,5 +1,4 @@
 
-import Swal, { SweetAlertIcon } from "sweetalert2";
 import { CheckboxOption, OptionType } from "../types/common/inputs";
 interface ConvertOptionsParams<T> {
     data: T[];
@@ -39,41 +38,6 @@ export const convertToCheckboxOptions = <T>({
     return options;
 }
 
-export const showErrorMessage = (msg: string, icon: SweetAlertIcon = 'error') => {
-    Swal.fire({
-        icon: icon,
-        title: 'Error',
-        text: msg
-    })
-}
-
-
-export const showSuccessMessage = (msg: string) => {
-    Swal.fire({
-        icon: 'success',
-        title: 'Éxito',
-        text: msg
-    })
-}
-
-export const showConfirmAlert = async (
-    title: string,
-    text: string,
-    confirmButtonText: string = 'Confirmar',
-    cancelButtonText: string = 'Cancelar'
-): Promise<boolean> => {
-    const result = await Swal.fire({
-        title,
-        text,
-        icon: 'question',
-        showCancelButton: true,
-        confirmButtonText,
-        cancelButtonText,
-        reverseButtons: true
-    });
-
-    return result.isConfirmed;
-};
 
 export const splitArrayIntoChunks = <T>(array: T[], chunkSize: number): T[][] => {
     const chunks: T[][] = [];
@@ -104,30 +68,10 @@ export const getCurrencySymbol = (currency: string) => {
     }
 }
 
-export const getFirstDayOfCurrentMonth = (): Date => {
-    const now = new Date();
-    return new Date(now.getFullYear(), now.getMonth(), 1);
+export const encryptString = (str: string) => {
+    return btoa(encodeURIComponent(str))
 }
 
-
-export const formatCurrency = (amount: number): string => {
-    const roundedAmount = Math.round(amount * 100) / 100;
-    const [integerPart, decimalPart = ''] = roundedAmount.toString().split('.');
-    const formatIntegerPart = integerPart.replace(/\B(?=(\d{3})+(?!\d))/g, ",");
-    const formattedDecimalPart = decimalPart.padEnd(2, '0');
-    return `${formatIntegerPart}.${formattedDecimalPart}`;
-}
-
-export const splitVoucher = (input: string): [string, string] => {
-    const match = input.match(/[A-Z]*([0-9]{3})-([0-9]+)/);
-    if (match) {
-        return [match[1], match[2]];
-    }
-    throw new Error('El formato del string es incorrecto');
-}
-
-
-export const formatDate1 = (input: string): string => {
-    const [year, month, day] = input.split('-');
-    return `${day}-${month}-${year}`;
+export const decryptString = (str: string) => {
+    return decodeURIComponent(atob(str))
 }

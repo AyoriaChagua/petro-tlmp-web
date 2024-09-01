@@ -1,10 +1,18 @@
-import { Fragment, useState } from "react";
-import { ReportLayout, Table } from "../../../components";
+import { useState } from "react";
+import { Button, ExternalLink, ReportLayout, Table } from "../../../components";
 import { OrderWithDocumentsI } from "../../../types/reports";
 import { TableColumn } from "../../../types/common/table";
-import { formatCurrency, formatDate1, getCurrencySymbol, splitVoucher } from "../../../utils/functions";
+import { encryptString, getCurrencySymbol } from "../../../utils/functions";
+import { GrDocumentPdf, GrDocumentStore } from "react-icons/gr";
+import { FaRegEdit } from "react-icons/fa";
+import { IoCopyOutline } from "react-icons/io5";
+import { formatCurrency, splitVoucher } from "../../../utils/formats";
+import { formatDate1 } from "../../../utils/dates";
+import { Link, useNavigate } from "react-router-dom";
 
 export default function OrderDocumentReport() {
+
+    const navigate = useNavigate();
 
     const [orderWithDocuments, setOrderWithDocuments] = useState<OrderWithDocumentsI[]>([]);
 
@@ -29,9 +37,11 @@ export default function OrderDocumentReport() {
         { key: "providerDescription", label: "Proveedor" },
         { key: "providerRuc", label: "RUC" },
         { key: "products", label: "Detalle" },
-        { key: "actions", label: "Destino", actions: (orderDocument) => (
-            <>{orderDocument.costcenterAlias || orderDocument.costCenterId}</>
-        )},
+        {
+            key: "actions", label: "Destino", actions: (orderDocument) => (
+                <>{orderDocument.costcenterAlias || orderDocument.costCenterId}</>
+            )
+        },
         {
             key: "actions", label: "Moneda", actions: (orderDocument) => (
                 <>{searchCurrencySymbol(orderDocument.currency)}</>
@@ -44,7 +54,31 @@ export default function OrderDocumentReport() {
         },
         {
             key: "actions", label: "Acciones", actions: (orderDocument) => (
-                <></>
+                <div className="flex flex-row justify-center items-center gap-1 ">
+                    <Button
+                        icon={GrDocumentPdf}
+                        styleType="primary"
+                        type="button"
+                        title="Descargar PDF"
+                    />
+                    <Button
+                        icon={FaRegEdit}
+                        styleType="primary"
+                        type="button"
+                        title="Editar Orden"
+                    />
+                    <Button
+                        icon={IoCopyOutline}
+                        styleType="primary"
+                        type="button"
+                        title="Crear copia"
+                    />
+                    <ExternalLink
+                        to={`/document-mp-voucher/create/${encryptString(orderDocument.companyId)}/${encryptString(orderDocument.orderTypeId)}/${encryptString(orderDocument.period)}/${encryptString(orderDocument.correlative)}`}
+                    >
+                        +
+                    </ExternalLink>
+                </div>
             )
         },
         {

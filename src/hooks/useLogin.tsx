@@ -37,7 +37,7 @@ export const useLogin = () => {
         } else {
             Swal.fire({
                 icon: 'warning',
-                title: 'Cuidado',
+                title: 'Espera',
                 text: 'Debe seleccionar una compañía'
             })
         }

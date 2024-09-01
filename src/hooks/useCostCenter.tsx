@@ -2,7 +2,7 @@ import { FormEvent, useEffect, useState } from "react"
 import { CostCenterI, CostCenterRequestI, CostCenterUpdateRequestI } from "../types/cost-center"
 import { getCostCenter } from "../api/cost-center/get";
 import { useAuth } from "../context/AuthContext";
-import { showConfirmAlert, showErrorMessage, showSuccessMessage } from "../utils/functions";
+import { showConfirmAlert, showErrorMessage, showSuccessMessage } from "../utils/alerts";
 import { initialCostCenterRequest } from "./initial-states/cost-center";
 import { deleteCostCenter } from "../api/cost-center/delete";
 import { putCostCenter } from "../api/cost-center/put";

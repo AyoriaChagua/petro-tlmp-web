@@ -2,8 +2,9 @@ import { useCallback, useEffect, useState } from 'react';
 import { Range } from 'react-date-range';
 import { OrderWithDocumentsI, QueryFieldsI, ReportType } from '../types/reports';
 import { useAuth } from '../context/AuthContext';
-import { getFirstDayOfCurrentMonth, showErrorMessage } from '../utils/functions';
+import { showErrorMessage } from '../utils/alerts';
 import { getOrder } from '../api/order/get';
+import { getFirstDayOfCurrentMonth } from '../utils/dates';
 
 
 export const useMainFilter = (reportType: ReportType) => {

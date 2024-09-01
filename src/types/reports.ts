@@ -29,6 +29,7 @@ export interface OrderWithDocumentsI {
     total: number
     products: string
     documents: DocumentI[]
+    period: string
 }
 
 export interface DocumentI {

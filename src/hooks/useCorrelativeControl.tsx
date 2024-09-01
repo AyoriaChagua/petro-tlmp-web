@@ -8,7 +8,7 @@ import { postCorrelativeControl } from "../api/correlative-control/post";
 import { orderTypeOptions } from "../utils/constants";
 import { putCorrelativeControl } from "../api/correlative-control/put";
 import { deleteCorrelativeControl } from "../api/correlative-control/delete";
-import { showErrorMessage } from "../utils/functions";
+import { showErrorMessage } from "../utils/alerts";
 
 export const useCorrelativeControl = () => {
     const [isLoading, setIsLoading] = useState(false);

@@ -1,7 +1,7 @@
 import { FormEvent, useEffect, useState } from "react"
 import { OnlyProviderRequest, ProviderAccountRequest, ProviderAccountRequestToUpdate, ProviderMP, ProviderRequest, ProviderRequestToUpdate } from "../types/provider"
 import { getProviderMP } from "../api/provider-mp/get";
-import { showConfirmAlert, showErrorMessage, showSuccessMessage } from "../utils/functions";
+import { showConfirmAlert, showErrorMessage, showSuccessMessage } from "../utils/alerts";
 import { useDebounce } from "./useDebounce";
 import { initialPaginationOptions } from "./initial-states/general";
 import { postProviderMP } from "../api/provider-mp/post";

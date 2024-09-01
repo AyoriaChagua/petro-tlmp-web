@@ -1,11 +1,12 @@
 import { FormEvent, useCallback, useEffect, useState } from "react"
 import { RoleI, UserFormRequestI, UserI, UserRequestI, UserRequestUpdateI, UserRoleRequestI } from "../types/user"
 import { getUser } from "../api/user/get";
-import { arraysIsEqual, showErrorMessage, showSuccessMessage, splitArrayIntoChunks } from "../utils/functions";
+import { arraysIsEqual,  splitArrayIntoChunks } from "../utils/functions";
 import { useAuth } from "../context/AuthContext";
 import { userInititalFormRequest } from "./initial-states/user";
 import { postUser } from "../api/user/post";
 import { putUser } from "../api/user/put";
+import { showErrorMessage, showSuccessMessage } from "../utils/alerts";
 
 export const useUser = () => {
     const [isLoading, setIsLoading] = useState(false);

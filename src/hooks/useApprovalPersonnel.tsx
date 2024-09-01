@@ -1,7 +1,7 @@
 import { FormEvent, useEffect, useState } from "react"
 import { ApprovalPersonnel, ApprovalPersonnelRequest, ApprovalPersonnelUpdateRequest } from "../types/approval-personnel"
 import { getApprovalPeronnel } from "../api/approval-personnel/get";
-import { showConfirmAlert, showErrorMessage, showSuccessMessage } from "../utils/functions";
+import { showConfirmAlert, showErrorMessage, showSuccessMessage } from "../utils/alerts";
 import { initialApprovalPersonnelRequest } from "./initial-states/approval-personnel";
 import { postApprovalPersonnel } from "../api/approval-personnel/post";
 import { useAuth } from "../context/AuthContext";

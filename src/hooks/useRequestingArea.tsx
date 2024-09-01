@@ -1,7 +1,7 @@
 import { FormEvent, useEffect, useState } from "react"
 import { RequestingAreaI, RequestingAreaRequestI } from "../types/requesting-area"
 import { getRequestingArea } from "../api/requesting-area/get";
-import { showConfirmAlert, showErrorMessage, showSuccessMessage } from "../utils/functions";
+import { showConfirmAlert, showErrorMessage, showSuccessMessage } from "../utils/alerts";
 import { initialRequestingArea } from "./initial-states/requesting-area";
 import { deleteRequestingAreas } from "../api/requesting-area/delete";
 import { postRequestingArea } from "../api/requesting-area/post";

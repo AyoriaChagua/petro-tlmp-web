@@ -1,12 +1,13 @@
 import { FormEvent, useEffect, useState } from "react"
 import { SunatDocumentI, SunatDocumentRequestI, SunatDocumentRequestToUpdateI } from "../types/sunat-document";
 import { getSunatDocument } from "../api/sunat-document-type/get";
-import { showConfirmAlert, showErrorMessage, showSuccessMessage, splitArrayIntoChunks } from "../utils/functions";
+import { showConfirmAlert, showErrorMessage, showSuccessMessage } from "../utils/alerts";
 import { initialSunatDocument } from "./initial-states/sunat-document";
 import { useAuth } from "../context/AuthContext";
 import { postSunatDocument } from "../api/sunat-document-type/post";
 import { putSunatDocument } from "../api/sunat-document-type/put";
 import { deleteSunatDocument } from "../api/sunat-document-type/delete";
+import { splitArrayIntoChunks } from "../utils/functions";
 
 export const useSunatDocument = () => {
     const [sunatDocuments, setSunatDocuments] = useState<SunatDocumentI[]>([]);

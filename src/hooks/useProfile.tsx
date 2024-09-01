@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react"
 import { NewFormPasswordI, ProfileI } from "../types/profile"
 import { useAuth } from "../context/AuthContext";
-import { showErrorMessage, showSuccessMessage } from "../utils/functions";
+import { showErrorMessage, showSuccessMessage } from "../utils/alerts";
 import { putUser } from "../api/user/put";
 
 export const useProfile = () => {

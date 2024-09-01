@@ -1,21 +1,22 @@
 import { IconType } from 'react-icons';
 
 type ButtonProps = {
-    styleType: 'dark' | 'danger' | 'success' | 'primary' | 'purple' | 'warning' | 'form';
-    text: string;
-    icon?: IconType;
-    onClick?: () => void;
-    type: "button" | "reset" | "submit";
-    isFilled?: boolean | undefined | null;
+    readonly styleType: 'dark' | 'danger' | 'success' | 'primary' | 'purple' | 'warning' | 'form';
+    readonly text?: string;
+    readonly icon?: IconType;
+    readonly onClick?: () => void;
+    readonly type: "button" | "reset" | "submit";
+    readonly isFilled?: boolean | undefined | null;
+    readonly title?: string
 };
 
-export default function Button ({ styleType, text, icon: Icon, onClick, type, isFilled }: ButtonProps)  {
-    let baseClasses = ` font-medium rounded-lg text-lg px-2 py-1.5  mb-2 focus:outline-none focus:ring-4 ${text && "text-center mt-2"}`;
+export default function Button ({ styleType, text, icon: Icon, onClick, type, isFilled, title }: ButtonProps)  {
+    let baseClasses = ` font-medium rounded-lg text-lg px-2 py-1.5  mb-2 focus:outline-none focus:ring-4 text-center mt-2`;
     let typeClasses = "";
 
     switch (styleType) {
         case 'primary':
-            typeClasses = isFilled ? "text-white bg-[#055CBB] hover:bg-blue-800 focus:ring-blue-300 border-2 border-blue-500" : "text-blue-600 bg-white hover:bg-blue-200 focus:ring-blue-600 border-2 border-blue-500 flex justify-center items-center gap-2";
+            typeClasses = isFilled ? "text-white bg-[#055CBB] hover:bg-blue-800 focus:ring-blue-300 border-2 border-blue-500" : "text-blue-600 bg-white hover:bg-blue-200 focus:ring-blue-600 border-2 border-blue-500 flex justify-center items-center gap-2 h-full";
             break;
         case 'dark':
             typeClasses = isFilled ? "text-white bg-gray-800 hover:bg-gray-900 focus:ring-gray-300 border-2 border-black" : "text-black bg-white hover:bg-gray-200 focus:ring-gray-600 border-2 border-black";
@@ -40,7 +41,7 @@ export default function Button ({ styleType, text, icon: Icon, onClick, type, is
     }
 
     return (
-        <button type={type} className={`${baseClasses} ${typeClasses}`} onClick={onClick}>
+        <button type={type} className={`${baseClasses} ${typeClasses}`} onClick={onClick} title={title}>
             {Icon && <Icon />}
             {text}
         </button>
