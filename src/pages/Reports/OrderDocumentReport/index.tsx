@@ -3,20 +3,18 @@ import { Button, ExternalLink, ReportLayout, Table } from "../../../components";
 import { OrderWithDocumentsI } from "../../../types/reports";
 import { TableColumn } from "../../../types/common/table";
 import { encryptString, getCurrencySymbol } from "../../../utils/functions";
-import { GrDocumentPdf, GrDocumentStore } from "react-icons/gr";
+import { GrDocumentPdf } from "react-icons/gr";
 import { FaRegEdit } from "react-icons/fa";
 import { IoCopyOutline } from "react-icons/io5";
 import { formatCurrency, splitVoucher } from "../../../utils/formats";
 import { formatDate1 } from "../../../utils/dates";
-import { Link, useNavigate } from "react-router-dom";
 
 export default function OrderDocumentReport() {
 
-    const navigate = useNavigate();
 
     const [orderWithDocuments, setOrderWithDocuments] = useState<OrderWithDocumentsI[]>([]);
-
     const receiveData = (data: OrderWithDocumentsI[]) => {
+        console.log(data)
         setOrderWithDocuments(data);
     };
 

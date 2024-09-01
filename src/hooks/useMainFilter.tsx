@@ -39,6 +39,7 @@ export const useMainFilter = (reportType: ReportType) => {
     const searchOrderDocuments = useCallback(async () => { 
         try {
             const data = await getOrder.filterOrderWithDocuemts(filters);
+            console.log(data)
             setoOrderWithDocumenst(data);
             return data;
         } catch (error) {
