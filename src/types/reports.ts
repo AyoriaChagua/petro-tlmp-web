@@ -11,6 +11,7 @@ export interface QueryFieldsI {
     supplierRuc?: string;
     minAmount?: number;
     maxAmount?: number;
+    isPettyCash?: boolean
 }
 
 export interface OrderWithDocumentsI extends OrderReportI {
@@ -55,4 +56,46 @@ export interface DocumentI {
     sunatCode: string
     retentionCalc: number | null
     taxCalc?: number | null
+    invoiceFile?: DocumentFile
+    payments?: PaymentI[]
 }
+
+export interface PaymentI {
+    companyId: string
+    paymentDate: string
+    paidAmount: number
+    isActive: boolean
+    orderDocumentNumber: string
+    documentPaymentId: number
+    paymentFile: DocumentFile
+    paymentId: number
+}
+
+export interface DocumentFile {
+    id: number
+    fileTypeId: string
+}
+
+
+export interface DocumentReportResponseI {
+    currency: string
+    providerRuc: string
+    providerDescription: string
+    costCenterId: number
+    costCenterAlias: any
+    correlative: string
+    code: string
+    observations: string
+    chargeDate: string
+    date: string
+    total: number
+    exchangeRate: number
+    documentTypeId: string
+    orderDocumentNumber: string
+    dueDate: string
+    product: string
+    biog: number
+    typeEmission: string
+    annotation: string
+  }
+  

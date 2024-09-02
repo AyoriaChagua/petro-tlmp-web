@@ -6,6 +6,7 @@ import {
     CostCenter,
     CreateDocument,
     CreateOrder,
+    CreatePaymentDocument,
     Home,
     Login,
     NotFound,
@@ -62,6 +63,7 @@ export default function AppRoutes() {
                     <Route path="order-mp/create" element={<CreateOrder />} />
                     <Route path="order-mp/udpate" element={<UpdateOrder />} />
                     <Route path="document-mp-voucher/create/:orderCompanyId/:orderTypeId/:orderPeriod/:orderCorrelative" element={<CreateDocument />} />
+                    <Route path="document-mp-voucher-payment/create/:companyId/:orderDocumentNumber" element={<CreatePaymentDocument />} />
                     <Route path="document-mp-voucher/udpate" element={<UpdateDocument />} />
                     <Route path="reports/order-document" element={<OrderDocumentReport />} />
                     <Route path="reports/petty-cash" element={<PettyCashReport />} />

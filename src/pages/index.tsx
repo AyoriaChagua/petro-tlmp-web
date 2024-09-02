@@ -14,6 +14,7 @@ export { default as CreateOrder } from './Order/CreateOrder';
 export { default as UpdateOrder } from './Order/UpdateOrder';
 
 export { default as CreateDocument } from './Document/CreateDocument';
+export { default as CreatePaymentDocument } from './Document/CreatePaymentDocument';
 export { default as UpdateDocument } from './Document/UpdateDocument';
 
 export { default as Profile } from './Profile';
@@ -23,6 +24,3 @@ export { default as PettyCashReport } from './Reports/PettyCashReport';
 export { default as PurchasingReport } from './Reports/PurchasingReport';
 
 export { default as NotFound } from './NotFound';
-
-
-

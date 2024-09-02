@@ -1,15 +1,15 @@
 import { useState } from "react";
-import { OrderWithDocumentsI } from "../types/reports";
+import { DocumentI, DocumentReportResponseI, OrderWithDocumentsI } from "../types/reports";
 import { getCurrencySymbol } from "../utils/functions";
-import { OrderLSI } from "../types/order-document";
+import { DocumentLSI, OrderLSI } from "../types/order-document";
 
 
 
 
 export const useOrderDocumentReport = () => {
     const [orderWithDocuments, setOrderWithDocuments] = useState<OrderWithDocumentsI[]>([]);
-    const receiveData = (data: OrderWithDocumentsI[]) => {
-        setOrderWithDocuments(data);
+    const receiveData = (data: OrderWithDocumentsI[] | DocumentReportResponseI[]) => {
+        setOrderWithDocuments((data as OrderWithDocumentsI[]));
     };
 
     const searchCurrencySymbol = (code: string) => {
@@ -20,10 +20,45 @@ export const useOrderDocumentReport = () => {
         localStorage.setItem(`order-document-${order.companyId}-${order.orderTypeId}-${order.period}-${order.correlative}`, JSON.stringify(order));
     };
 
+    const handleClickToCreateDocumentPayment = (document: DocumentLSI) => {
+        localStorage.setItem(`order-document-payment-${document.companyId}-${document.orderDocumentNumber}`, JSON.stringify(document));
+    }
+
+    const findLargePayementList = () => {
+        const initialDocument: DocumentI = {
+            orderDocumentNumber: "",
+            subtotal: 0,
+            total: 0,
+            cia: "",
+            correlative: "",
+            period: "",
+            orderTypeId: "",
+            systemUser: "",
+            date: "",
+            documentStatus: "",
+            annotation: "",
+            sunatCode: "",
+            retentionCalc: null,
+            taxCalc: null,
+            invoiceFile: undefined,
+            payments: []
+        };
+        const list = orderWithDocuments.map((orderDocument) => {
+            return orderDocument.documents.reduce<DocumentI>((acc, doc) => {
+                const currentPaymentsLength = doc.payments?.length || 0;
+                const accPaymentsLength = acc.payments?.length || 0;
+                return currentPaymentsLength > accPaymentsLength ? doc : acc;
+            }, initialDocument)
+        });
+        return list;
+    }
+
     return {
         orderWithDocuments,
         receiveData,
         searchCurrencySymbol,
-        handleClickToCreateDocument
+        handleClickToCreateDocument,
+        handleClickToCreateDocumentPayment,
+        findLargePayementList
     }
 }

@@ -1,14 +1,17 @@
-import { useState } from "react";
 import { Button, ExternalLink, ReportLayout, Table } from "../../../components";
 import { OrderWithDocumentsI } from "../../../types/reports";
 import { TableColumn } from "../../../types/common/table";
-import { encryptString, getCurrencySymbol } from "../../../utils/functions";
-import { GrDocumentPdf } from "react-icons/gr";
-import { FaRegEdit } from "react-icons/fa";
+import { encryptString } from "../../../utils/functions";
+import { GrDocumentPdf, GrDocumentStore } from "react-icons/gr";
+import { FaPaperclip, FaRegEdit } from "react-icons/fa";
 import { IoCopyOutline } from "react-icons/io5";
 import { formatCurrency, splitVoucher } from "../../../utils/formats";
 import { formatDate1 } from "../../../utils/dates";
 import { useOrderDocumentReport } from "../../../hooks/useOrderDocumentReport";
+import { MdOutlinePayments } from "react-icons/md";
+import React from "react";
+import { BiDownload } from "react-icons/bi";
+import { getApiBaseUrl } from "../../../api/config";
 
 export default function OrderDocumentReport() {
 
@@ -16,8 +19,11 @@ export default function OrderDocumentReport() {
         orderWithDocuments,
         receiveData,
         searchCurrencySymbol,
-        handleClickToCreateDocument
+        handleClickToCreateDocument,
+        handleClickToCreateDocumentPayment,
     } = useOrderDocumentReport();
+
+
 
     const columns: TableColumn<OrderWithDocumentsI>[] = [
         { key: "orderTypeId", label: "Tipo Orden" },
@@ -82,8 +88,9 @@ export default function OrderDocumentReport() {
                             detraction: orderDocument.detraction,
                             retention: orderDocument.retention,
                         })}
+                        color="blue"
                     >
-                        +
+                        <GrDocumentStore /> +
                     </ExternalLink>
                 </div>
             )
@@ -96,8 +103,8 @@ export default function OrderDocumentReport() {
                             <thead>
                                 <tr className="bg-gray-100">
                                     <th className="px-4 py-2">Código comprobante</th>
-                                    <th className="px-4 py-2">Serie factura</th>
-                                    <th className="px-4 py-2">N° Documento</th>
+                                    <th className="px-4 py-2 sticky">Serie factura</th>
+                                    <th className="px-4 py-2 sticky">N° Documento</th>
                                     <th className="px-4 py-2">Moneda</th>
                                     <th className="px-4 py-2">Subtotal</th>
                                     <th className="px-4 py-2">IGV</th>
@@ -106,14 +113,23 @@ export default function OrderDocumentReport() {
                                     <th className="px-4 py-2">Usuario Sistema</th>
                                     <th className="px-4 py-2">Fecha Comprobante</th>
                                     <th className="px-4 py-2">Estado Comprobante</th>
+                                    <th className="px-4 py-2">Acciones</th>
+                                    {Array.from({
+                                        length: orderDocument.documents.reduce((maxLength, doc) => {
+                                            return doc.payments ? Math.max(maxLength, doc.payments.length) : maxLength;
+                                        }, 0)
+                                    }).map((_, index) => (<th key={index} className="border px-4 py-2 " colSpan={3}>
+                                        Pago {index + 1}
+                                    </th>))
+                                    }
                                 </tr>
                             </thead>
                             <tbody>
                                 {orderDocument.documents.map((doc, docIndex) => (
                                     <tr key={docIndex}>
                                         <td className="border px-4 py-2">{doc.sunatCode}</td>
-                                        <td className="border px-4 py-2">{splitVoucher(doc.orderDocumentNumber)[0]}</td>
-                                        <td className="border px-4 py-2">{splitVoucher(doc.orderDocumentNumber)[1]}</td>
+                                        <td className="border px-4 py-2 sticky">{splitVoucher(doc.orderDocumentNumber)[0]}</td>
+                                        <td className="border px-4 py-2 sticky">{splitVoucher(doc.orderDocumentNumber)[1]}</td>
                                         <td className="border px-4 py-2">{searchCurrencySymbol(orderDocument.currency)}</td>
                                         <td className="border px-4 py-2">{formatCurrency(doc.subtotal)}</td>
                                         <td className="border px-4 py-2">{formatCurrency(doc.retentionCalc || doc.taxCalc || 0)}</td>
@@ -122,6 +138,53 @@ export default function OrderDocumentReport() {
                                         <td className="border px-4 py-2">{doc.systemUser}</td>
                                         <td className="border px-4 py-2">{formatDate1(doc.date)}</td>
                                         <td className="border px-4 py-2">{doc.documentStatus}</td>
+                                        <td className="border px-4 py-2">
+                                            <div className="flex flex-row justify-center items-center gap-1 ">
+                                                <Button
+                                                    icon={FaRegEdit}
+                                                    styleType="primary"
+                                                    type="button"
+                                                    title="Editar Documento"
+                                                />
+                                                <ExternalLink
+                                                    to={`/document-mp-voucher-payment/create/${encryptString(orderDocument.companyId)}/${encryptString(doc.orderDocumentNumber)}`}
+                                                    onClick={() => handleClickToCreateDocumentPayment({
+                                                        companyId: orderDocument.companyId,
+                                                        orderDocumentNumber: doc.orderDocumentNumber,
+                                                    })}
+                                                    color="green"
+                                                >
+                                                    <FaPaperclip className="text-base" /> & <MdOutlinePayments className="text-base" />
+                                                </ExternalLink>
+                                            </div>
+                                        </td>
+                                        {(doc.payments && doc.payments?.length > 0) && (
+                                            <>
+                                                {doc.payments.map((payment, paymentIndex) => (
+                                                    <React.Fragment key={paymentIndex}>
+                                                        <td className="border px-4 py-2">
+                                                            {formatCurrency(payment.paidAmount)}
+                                                        </td>
+                                                        <td className="border px-4 py-2">
+                                                            {formatDate1(payment.paymentDate.split("T")[0])}
+                                                        </td>
+                                                        <td className="border px-4 py-2">
+                                                            {
+                                                                payment.paymentFile && (
+                                                                    <ExternalLink
+                                                                        to={`${getApiBaseUrl()}/file-mp/download/${payment.paymentFile.id}`}
+                                                                        color="blue"
+                                                                    >
+                                                                        <BiDownload className="text-base" />
+                                                                    </ExternalLink>
+                                                                )
+                                                            }
+                                                        </td>
+                                                    </React.Fragment>
+                                                ))}
+
+                                            </>
+                                        )}
                                     </tr>
                                 ))}
                             </tbody>

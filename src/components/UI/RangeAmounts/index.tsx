@@ -18,6 +18,8 @@ export default function RangeAmounts({
     onChange,
     label
 }: Props) {
+
+    console.log(onChange)
     const [fromValue, setFromValue] = useState(initialFrom);
     const [toValue, setToValue] = useState(initialTo);
 

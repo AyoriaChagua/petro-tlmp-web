@@ -7,7 +7,7 @@ import { shortOrderTypeOptions } from "../../../utils/constants"
 import "./styles.css";
 import { RiFileExcel2Line } from "react-icons/ri"
 import { FaSearch } from "react-icons/fa"
-import { OrderWithDocumentsI, ReportType } from "../../../types/reports"
+import { DocumentReportResponseI, OrderWithDocumentsI, ReportType } from "../../../types/reports"
 
 
 
@@ -15,7 +15,7 @@ import { OrderWithDocumentsI, ReportType } from "../../../types/reports"
 interface Props {
   readonly children: React.ReactNode
   readonly reportType: ReportType
-  readonly onSubmit: (data: OrderWithDocumentsI[]) => void
+  readonly onSubmit: (data: OrderWithDocumentsI[] | DocumentReportResponseI[]) => void
   readonly onExport?: () => void
   readonly documentsToExport?: []
 }
@@ -48,6 +48,8 @@ export default function ReportLayout({
     setShowFilter,
     searchOrderDocuments
   } = useMainFilter(reportType);
+  console.log(documentsToExport,
+    onExport,)
 
   const handleSearch = async () => {
     const data = await searchOrderDocuments();

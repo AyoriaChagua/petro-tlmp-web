@@ -1,4 +1,4 @@
-import { OrderDocumentRequestI, OrderDocumentResponseI, PaymentDocumentRequestI, PaymentDocumentResponseI } from "../../types/order-document"
+import { OrderDocumentRequestI, OrderDocumentResponseI, PaymentDocumentRequestI, PaymentResponseI } from "../../types/order-document"
 import { axiosAuthInstance } from "../config"
 
 export const postOrderDocument = {
@@ -13,7 +13,8 @@ export const postOrderDocument = {
 
     createPaymentDocument: async (newPaymentDocument: PaymentDocumentRequestI) => {
         try {
-            const response = await axiosAuthInstance.post<PaymentDocumentResponseI>('/payment-documents', newPaymentDocument);
+            const response = await axiosAuthInstance.post<PaymentResponseI>('/payment-documents', newPaymentDocument);
+            console.log(response)
             return response.data;
         } catch (error) {
             throw new Error('Error creando el pago 🥲, ' + (error as Error).message);

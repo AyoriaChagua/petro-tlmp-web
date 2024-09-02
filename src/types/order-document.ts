@@ -2,7 +2,7 @@ export interface PaymentDocumentRequestI {
     orderDocumentNumber: string
     companyId: string
     paidAmount: number
-    paymentDate: Date
+    paymentDate: string
     systemUser: string
 }
 
@@ -53,6 +53,8 @@ export interface OrderDocumentResponseI extends OrderDocumentRequestI {
 }
 
 
+
+
 export interface OrderLSI {
     orderTypeId: string,
     period: string,
@@ -64,6 +66,11 @@ export interface OrderLSI {
     perception: number | null,
     detraction: number | null,
     retention: number | null,
+}
+
+export interface DocumentLSI {
+    companyId: string
+    orderDocumentNumber: string
 }
 
 export interface DocumentFormI {
@@ -98,3 +105,14 @@ export interface DocumentFormI {
     retentionLabel: string,
     perceptionDetractionValue: string
 }
+
+export interface PaymentResponseI {
+    paymentId: number
+    orderDocumentNumber: string
+    companyId: string
+    paymentDate: Date
+    paidAmount: number
+    systemUser: string
+    systemDate: string
+    isActive: boolean
+  }

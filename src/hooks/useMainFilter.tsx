@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Range } from 'react-date-range';
 import { OrderWithDocumentsI, QueryFieldsI, ReportType } from '../types/reports';
 import { useAuth } from '../context/AuthContext';
@@ -8,6 +8,7 @@ import { getFirstDayOfCurrentMonth } from '../utils/dates';
 
 
 export const useMainFilter = (reportType: ReportType) => {
+    console.log(reportType)
     const { companySelected } = useAuth();
 
     const initialFilterState = {
@@ -25,6 +26,11 @@ export const useMainFilter = (reportType: ReportType) => {
     }, [])
 
     const handleDateRange = (range: Range) => {
+        console.log({
+            startDate: range.startDate!,
+            endDate: range.endDate!
+        })
+
         setFilters(prevState => ({
             ...prevState,
             startDate: range.startDate!,
@@ -36,8 +42,9 @@ export const useMainFilter = (reportType: ReportType) => {
 
     const searchPettyCashDocuments = () => { };
 
-    const searchOrderDocuments = useCallback(async () => {
+    const searchOrderDocuments =async () => {
         try {
+            console.log(filters)
             const data = await getOrder.filterOrderWithDocuemts(filters);
             console.log(data)
             setOrderWithDocumenst(data);
@@ -45,7 +52,7 @@ export const useMainFilter = (reportType: ReportType) => {
         } catch (error) {
             showErrorMessage((error as Error).message);
         }
-    }, []);
+    }
 
     return {
         showFilter,

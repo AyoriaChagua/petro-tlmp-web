@@ -16,7 +16,7 @@ export default function FileInput({ label, id, onChange }: Props) {
                 {label}
             </label>
             <input
-                className="block w-full text-lg text-gray-900 border border-gray-300 rounded-lg cursor-pointer bg-gray-50"
+                className="block w-full text-base text-gray-600 border border-gray-300 rounded-lg cursor-pointer bg-gray-50"
                 id={id}
                 type="file"
                 onChange={onChange}

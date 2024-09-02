@@ -75,3 +75,10 @@ export const encryptString = (str: string) => {
 export const decryptString = (str: string) => {
     return decodeURIComponent(atob(str))
 }
+
+
+export const findLargestList = (lists: any[][]): any[] => {
+    return lists.reduce((largest, current) => {
+        return current.length > largest.length ? current : largest;
+    }, []);
+}
