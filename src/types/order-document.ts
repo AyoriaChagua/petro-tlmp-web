@@ -20,7 +20,6 @@ export interface OrderDocumentRequestI {
     correlative: string
     orderDocumentNumber: string
     subtotal: number
-    igv: number
     total: number
     systemUser: string
     documentStatus: string
@@ -29,23 +28,24 @@ export interface OrderDocumentRequestI {
     chargeDate: Date
     documentTypeId: string
     code: string
-    biog: number | null
-    typeEmission: "ELECTRONICO" | "FISICO"
+    biog: number
+    typeEmission: string
     fise: number | null
     otherPayments: number | null
     exchangeRate: number
     annotation: string
     noOrderFlag: boolean
-    taxPerc: number | null
     retentionPerc: number | null
+    taxPerc: number | null
     perceptionPerc: number | null
     detractionPerc: number | null
-    taxCalc: number | null
     retentionCalc: number | null
+    taxCalc: number | null
     perceptionCalc: number | null
     detractionCalc: number | null
     isPettyCash: boolean
 }
+
 
 
 export interface OrderDocumentResponseI extends OrderDocumentRequestI {
@@ -77,10 +77,10 @@ export interface DocumentFormI {
     exchangeRate: number
     annotation: string
     code: string
-    perceptionPercLabel: string 
-    detractionPercLabel: string 
-    perceptionPercValue: string 
-    detractionPercValue: string 
+    perceptionPercLabel: string
+    detractionPercLabel: string
+    perceptionPercValue: string
+    detractionPercValue: string
     biorgeya: string
     orderDocumentNumber: string
     subtotal: string

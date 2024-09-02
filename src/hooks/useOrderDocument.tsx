@@ -9,7 +9,6 @@ import { showErrorMessage, showSuccessMessage } from "../utils/alerts";
 import { MultiValue, SingleValue } from "react-select";
 import { useAuth } from "../context/AuthContext";
 import { postOrderDocument } from "../api/order-document/post";
-import { formatCurrency } from "../utils/formats";
 
 interface ParamsToCreate {
     readonly companyId: string;
