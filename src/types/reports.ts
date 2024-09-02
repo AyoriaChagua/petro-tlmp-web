@@ -13,7 +13,11 @@ export interface QueryFieldsI {
     maxAmount?: number;
 }
 
-export interface OrderWithDocumentsI {
+export interface OrderWithDocumentsI extends OrderReportI {
+    documents: DocumentI[]
+}
+
+export interface OrderReportI {
     correlative: string
     orderTypeId: string
     orderDate: string
@@ -28,8 +32,12 @@ export interface OrderWithDocumentsI {
     currency: string
     total: number
     products: string
-    documents: DocumentI[]
     period: string
+    tax: number | null,
+    detraction: number | null,
+    retention: number | null,
+    perception: number | null,
+    isAffectedIGV: boolean
 }
 
 export interface DocumentI {

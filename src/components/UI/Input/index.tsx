@@ -12,9 +12,10 @@ interface Props {
     readonly className?: string;
     readonly typeForm?: "maintanance" | "create" | "search";
     readonly maxLength?: number;
+    readonly onBlur?: (event: React.ChangeEvent<HTMLInputElement>) => void;
 }
 
-export default function Input({ id, label, required, type, value, placeholder, onChange, disabled = false, className, typeForm, maxLength }: Props) {
+export default function Input({ id, label, required, type, value, placeholder, onChange, disabled = false, className, typeForm, maxLength, onBlur }: Props) {
     let inputStyles: string
     let labelStyles: string
 
@@ -58,6 +59,7 @@ export default function Input({ id, label, required, type, value, placeholder, o
                 value={value ?? ""}
                 onChange={onChange}
                 maxLength={maxLength}
+                onBlur={onBlur}
             />
         </div>
     )

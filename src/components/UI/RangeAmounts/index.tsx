@@ -2,10 +2,10 @@ import React, { useState, useEffect, useRef } from "react";
 import "./styles.css"
 
 interface Props {
-    min: number;
-    max: number;
-    initialFrom: number;
-    initialTo: number;
+    readonly min: number;
+    readonly max: number;
+    readonly initialFrom: number;
+    readonly initialTo: number;
     readonly onChange?: (value: number) => void;
     readonly label: string;
 }
@@ -103,12 +103,13 @@ export default function RangeAmounts({
                         max={max}
                         value={fromValue}
                         onChange={handleFromInputChange}
+                        className="inputNumber"
                     />
                 </div>
                 <div className="flex  flex-col  md:w-1/4 text-end">
                     <div className="w-full">Max</div>
                     <input
-                        className="text-end"
+                        className="text-end inputNumber"
                         type="number"
                         id="toInput"
                         min={min}

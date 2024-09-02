@@ -11,14 +11,14 @@ export const useMainFilter = (reportType: ReportType) => {
     const { companySelected } = useAuth();
 
     const initialFilterState = {
-        companyId: companySelected?.value || "",
+        companyId: companySelected?.value ?? "",
         startDate: getFirstDayOfCurrentMonth(),
         endDate: new Date,
     }
 
     const [showFilter, setShowFilter] = useState(true);
     const [filters, setFilters] = useState<QueryFieldsI>(initialFilterState);
-    const [orderWithDocumenst, setoOrderWithDocumenst] = useState<OrderWithDocumentsI[]>([]);
+    const [orderWithDocumenst, setOrderWithDocumenst] = useState<OrderWithDocumentsI[]>([]);
 
     useEffect(() => {
         setFilters(initialFilterState)
@@ -36,11 +36,11 @@ export const useMainFilter = (reportType: ReportType) => {
 
     const searchPettyCashDocuments = () => { };
 
-    const searchOrderDocuments = useCallback(async () => { 
+    const searchOrderDocuments = useCallback(async () => {
         try {
             const data = await getOrder.filterOrderWithDocuemts(filters);
             console.log(data)
-            setoOrderWithDocumenst(data);
+            setOrderWithDocumenst(data);
             return data;
         } catch (error) {
             showErrorMessage((error as Error).message);
@@ -55,6 +55,6 @@ export const useMainFilter = (reportType: ReportType) => {
         searchPurchasingDocuments,
         searchPettyCashDocuments,
         searchOrderDocuments,
-        orderWithDocumenst
+        orderWithDocumenst,
     }
 }

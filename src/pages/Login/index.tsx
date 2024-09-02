@@ -14,7 +14,6 @@ export default function Login() {
         userId,
         password
     } = useAuth();
-    console.log("por que?")
     let optionsCompanies: OptionType[] = []
 
     if (companies && companies.length > 0) {

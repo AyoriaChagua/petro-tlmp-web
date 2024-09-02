@@ -68,3 +68,8 @@ export const detractionOptions: OptionType[] = [
     { label: "10%", value: "10.00" },
     { label: "12%", value: "12.00" },
 ]
+
+export const issueTypeOptions: OptionType[] = [
+    { label: "Electrónico", value: "ELECTRÓNICO" },
+    { label: "Físico", value: "FISICO" },
+]

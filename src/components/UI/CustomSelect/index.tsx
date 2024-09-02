@@ -1,5 +1,6 @@
 import Select, { MultiValue, SingleValue, StylesConfig } from 'react-select';
 import { OptionType } from '../../../types/common/inputs';
+import { IoAlertCircleOutline } from 'react-icons/io5';
 
 interface Props {
     readonly options: OptionType[],
@@ -68,7 +69,10 @@ export default function CustomSelect({
 
     return (
         <div className={`mb-3 ${className}`}>
-            <label htmlFor={id} className={labelStyles}>{label}</label>
+            <div className="flex flex-row items-center h-full gap-2">
+                <label htmlFor={id} className={`${labelStyles} align-middle`}>{label}</label>
+                {isRequired && <span className={`${labelStyles} align-middle`}><IoAlertCircleOutline /></span>}
+            </div>
             <Select
                 id={id}
                 options={options}

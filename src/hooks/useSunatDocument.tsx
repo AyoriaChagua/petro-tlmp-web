@@ -18,19 +18,7 @@ export const useSunatDocument = () => {
     const [currentPage, setCurrentPage] = useState(1);
     const { user } = useAuth();
 
-    const fetchSunatDocuments = async () => {
-        try {
-            setIsLoading(true);
-            const data = await getSunatDocument.getAll();
-            const dataChunks = splitArrayIntoChunks(data, 10);
-            setSunatDocumentChunks(dataChunks);
-            setSunatDocuments(dataChunks[0]);
-        } catch (error) {
-            showErrorMessage("No se pudo obtener los tipos de documento de Sunat");
-        } finally {
-            setIsLoading(false);
-        }
-    };
+
 
     const handleInputSunatDocument = (value: string, field: keyof SunatDocumentRequestI | keyof SunatDocumentRequestToUpdateI) => {
         setSunatDocumentRequest(prevState => ({
@@ -55,20 +43,20 @@ export const useSunatDocument = () => {
                     prevState.map(doc => doc.documentTypeId === idSunatDocumentToUpdate ? newData : doc)
                 );
             } else if ('documentTypeId' in sunatDocumentRequest) {
-                    dataForToSend = {
-                        documentTypeId: sunatDocumentRequest.documentTypeId,
-                        description: sunatDocumentRequest.description,
-                        sunatCode: sunatDocumentRequest.sunatCode,
-                        systemUser: user?.id
-                    } as SunatDocumentRequestI;
-                    newData = await postSunatDocument.create(dataForToSend);
-                    showSuccessMessage("Tipo de Documento de sunat creado");
-                    setSunatDocumentChunks(
-                        prevState => [...prevState, [newData]]
-                    );
-                } else {
-                    throw new Error("Campos invalidos para crear el tipo de documento")
-                }
+                dataForToSend = {
+                    documentTypeId: sunatDocumentRequest.documentTypeId,
+                    description: sunatDocumentRequest.description,
+                    sunatCode: sunatDocumentRequest.sunatCode,
+                    systemUser: user?.id
+                } as SunatDocumentRequestI;
+                newData = await postSunatDocument.create(dataForToSend);
+                showSuccessMessage("Tipo de Documento de sunat creado");
+                setSunatDocumentChunks(
+                    prevState => [...prevState, [newData]]
+                );
+            } else {
+                throw new Error("Campos invalidos para crear el tipo de documento")
+            }
         } catch (error) {
             showErrorMessage((error as Error).message);
         }
@@ -110,17 +98,30 @@ export const useSunatDocument = () => {
         }
     };
 
-    
+
     const handlePageChange = (pageNumber: number) => {
         setCurrentPage(pageNumber);
         setSunatDocuments(sunatDocumentChunks[pageNumber - 1]);
     };
 
     useEffect(() => {
+        setIsLoading(true);
         setCurrentPage(1);
         setSunatDocuments(sunatDocumentChunks[0]);
-        fetchSunatDocuments();
+        fetchSunatDocuments().then(() => setIsLoading(false));
     }, []);
+
+    const fetchSunatDocuments = async () => {
+        try {
+            const data = await getSunatDocument.getAll();
+            const dataChunks = splitArrayIntoChunks(data, 10);
+            setSunatDocumentChunks(dataChunks);
+            setSunatDocuments(dataChunks[0]);
+            return data;
+        } catch (error) {
+            showErrorMessage("No se pudo obtener los tipos de documento de Sunat");
+        }
+    };
 
     return {
         sunatDocuments,
@@ -133,6 +134,7 @@ export const useSunatDocument = () => {
         sunatDocumentRequest,
         sunatDocumentChunks,
         handlePageChange,
-        currentPage
+        currentPage,
+        fetchSunatDocuments
     };
 }

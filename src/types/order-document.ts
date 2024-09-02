@@ -24,9 +24,9 @@ export interface OrderDocumentRequestI {
     total: number
     systemUser: string
     documentStatus: string
-    date: string
-    dueDate: string
-    chargeDate: string
+    date: Date
+    dueDate: Date
+    chargeDate: Date
     documentTypeId: string
     code: string
     biog: number | null
@@ -50,4 +50,51 @@ export interface OrderDocumentRequestI {
 
 export interface OrderDocumentResponseI extends OrderDocumentRequestI {
     systemDate: Date
+}
+
+
+export interface OrderLSI {
+    orderTypeId: string,
+    period: string,
+    companyId: string,
+    correlative: string,
+    currency: string,
+    total: number,
+    tax: number | null,
+    perception: number | null,
+    detraction: number | null,
+    retention: number | null,
+}
+
+export interface DocumentFormI {
+    documentTypeLabel: string
+    documentTypeValue: string
+    issueTypeLabel: string
+    issueTypeValue: string
+    receiptDate: Date
+    issueDate: Date
+    dueDate: Date
+    exchangeRate: number
+    annotation: string
+    code: string
+    perceptionPercLabel: string 
+    detractionPercLabel: string 
+    perceptionPercValue: string 
+    detractionPercValue: string 
+    biorgeya: string
+    orderDocumentNumber: string
+    subtotal: string
+    perceptionCalcValue: string
+    detractionCalcValue: string
+    fise: string
+    otherPayments: string
+    isPettyCash: boolean
+    isAffectedTaxRetention: boolean
+    total: string,
+    taxRetentionValue: string,
+    taxLabel: string,
+    retentionValue: string,
+    taxValue: string,
+    retentionLabel: string,
+    perceptionDetractionValue: string
 }

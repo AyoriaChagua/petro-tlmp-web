@@ -8,19 +8,16 @@ import { FaRegEdit } from "react-icons/fa";
 import { IoCopyOutline } from "react-icons/io5";
 import { formatCurrency, splitVoucher } from "../../../utils/formats";
 import { formatDate1 } from "../../../utils/dates";
+import { useOrderDocumentReport } from "../../../hooks/useOrderDocumentReport";
 
 export default function OrderDocumentReport() {
 
-
-    const [orderWithDocuments, setOrderWithDocuments] = useState<OrderWithDocumentsI[]>([]);
-    const receiveData = (data: OrderWithDocumentsI[]) => {
-        console.log(data)
-        setOrderWithDocuments(data);
-    };
-
-    const searchCurrencySymbol = (code: string) => {
-        return getCurrencySymbol(code);
-    }
+    const {
+        orderWithDocuments,
+        receiveData,
+        searchCurrencySymbol,
+        handleClickToCreateDocument
+    } = useOrderDocumentReport();
 
     const columns: TableColumn<OrderWithDocumentsI>[] = [
         { key: "orderTypeId", label: "Tipo Orden" },
@@ -73,6 +70,18 @@ export default function OrderDocumentReport() {
                     />
                     <ExternalLink
                         to={`/document-mp-voucher/create/${encryptString(orderDocument.companyId)}/${encryptString(orderDocument.orderTypeId)}/${encryptString(orderDocument.period)}/${encryptString(orderDocument.correlative)}`}
+                        onClick={() => handleClickToCreateDocument({
+                            orderTypeId: orderDocument.orderTypeId,
+                            period: orderDocument.period,
+                            companyId: orderDocument.companyId,
+                            correlative: orderDocument.correlative,
+                            currency: orderDocument.currency,
+                            total: orderDocument.total,
+                            tax: orderDocument.tax,
+                            perception: orderDocument.perception,
+                            detraction: orderDocument.detraction,
+                            retention: orderDocument.retention,
+                        })}
                     >
                         +
                     </ExternalLink>
