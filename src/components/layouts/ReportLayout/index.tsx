@@ -26,7 +26,7 @@ export default function ReportLayout({
   onSubmit,
   reportType
 }: Props) {
-
+  console.log(onExport, documentsToExport)
   const {
     handleDateRange,
     handleInputChange,
