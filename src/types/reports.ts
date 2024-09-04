@@ -77,7 +77,7 @@ export interface DocumentFile {
 }
 
 
-export interface DocumentReportResponseI {
+export interface PettyCashReportResponseI {
     currency: string
     providerRuc: string
     providerDescription: string

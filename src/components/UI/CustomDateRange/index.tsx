@@ -30,27 +30,30 @@ export default function CustomDateRange({ onChange }: Props) {
     return (
         <>
             <div className='mb-1 text-base text-gray-600'>Desde - hasta</div>
-            <button
-                className='relative py-2 px-3 border border-gray-200 rounded-lg'
-                onClick={() => setShowDatePicker(!showDatePicker)}>
-                {range.startDate!.toLocaleDateString()} - {range.endDate!.toLocaleDateString()}
-            </button>
-            {
-                showDatePicker &&
-                <DateRange
-                    className='absolute border border-gray-200 z-10 rounded-lg'
-                    editableDateInputs={true}
-                    onChange={handleSelect}
-                    moveRangeOnFirstSelection={false}
-                    ranges={[range]}
-                    months={1}
-                    direction="horizontal"
-                    locale={es}
-                    dateDisplayFormat="d MMM yyyy"
-                    monthDisplayFormat="MMMM yyyy"
-                    weekdayDisplayFormat="EEEEEE"
-                />
-            }
+            <div className="relative">
+                <button
+                    className='py-2 px-3 border border-gray-200 rounded-lg w-full'
+                    onClick={() => setShowDatePicker(!showDatePicker)}>
+                    {range.startDate!.toLocaleDateString()} - {range.endDate!.toLocaleDateString()}
+                </button>
+                {
+                    showDatePicker &&
+                    <DateRange
+                        className='absolute top-11 left-0 border border-gray-200 z-10 rounded-lg'
+                        editableDateInputs={true}
+                        onChange={handleSelect}
+                        moveRangeOnFirstSelection={false}
+                        ranges={[range]}
+                        months={1}
+                        direction="horizontal"
+                        locale={es}
+                        dateDisplayFormat="d MMM yyyy"
+                        monthDisplayFormat="MMMM yyyy"
+                        weekdayDisplayFormat="EEEEEE"
+                    />
+                }
+            </div>
+
         </>
     )
 }

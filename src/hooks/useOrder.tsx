@@ -17,11 +17,11 @@ import { showErrorMessage, showSuccessMessage } from "../utils/alerts";
 
 export const useOrder = () => {
     const { debouncedSearchProviders } = useProvider();
-    const { costCenters } = useCostCenter();
+    const { costCenters, fetchCostCenters } = useCostCenter();
     const { requestingAreas } = useRequestingArea();
     const { approvalPersonnel } = useApprovalPersonnel();
     const { correlativeControl, fetchCorrelativeControl } = useCorrelativeControl();
-    const { user } = useAuth();
+    const { user, companySelected } = useAuth();
 
     const [orderForm, setOrderForm] = useState<OrderFormI>(initialOrderForm);
 
@@ -37,8 +37,9 @@ export const useOrder = () => {
     const [isDataReady, setIsDataReady] = useState(false);
     const [currencySymbol, setCurrencySymbol] = useState("");
 
+
     useEffect(() => {
-        if (costCenters.length > 0 && requestingAreas.length > 0 && approvalPersonnel.length > 0 && correlativeControl.length > 0) {
+        if (costCenters.length > 0 && requestingAreas.length > 0 && approvalPersonnel.length > 0 && correlativeControl.length > 0 && !isDataReady) {
             const withCorrelatives = checkCorrelative();
             if (!withCorrelatives) {
                 showErrorMessage("No hay correlativos activos");
@@ -47,11 +48,23 @@ export const useOrder = () => {
             setIsDataReady(true);
         }
     }, [costCenters, requestingAreas, approvalPersonnel, correlativeControl]);
+    
+
+    useEffect(() => {
+        fetchCostCenters().then(() => setIsDataReady(false));
+    }, [companySelected])
+    
 
     useEffect(() => {
         const correlativeC = correlativeControl.find(cc => cc.active && cc.orderTypeId === orderForm.orderTypeId);
         if (correlativeC) {
-            setOrderForm(prevState => ({ ...prevState, correlative: correlativeC.correlative, orderTypeId: correlativeC.orderTypeId, period: correlativeC.period, companyId: correlativeC.companyId }));
+            setOrderForm(prevState => ({
+                ...prevState,
+                correlative: correlativeC.correlative,
+                orderTypeId: correlativeC.orderTypeId,
+                period: correlativeC.period,
+                companyId: correlativeC.companyId
+            }));
         }
     }, [orderForm.orderTypeId])
 
@@ -288,6 +301,8 @@ export const useOrder = () => {
                 retentionCalc: (!tax && taxRetentionCalc > 0) ? taxRetentionCalc : null,
                 taxCalc: (!retention && taxRetentionCalc > 0) ? taxRetentionCalc : null,
                 subtotal: Number(orderForm.subtotal),
+                isPettyCash: orderForm.isPettyCash
+
             };
             const newDetails: OrderDetailRequestI[] = orderForm.details.map(detail => ({
                 ...detail,
@@ -304,7 +319,7 @@ export const useOrder = () => {
             const data = await postOrder.createOrder(newOrder);
             if (data) {
                 const dataDet = await postOrder.createDetails(newDetails);
-                if(dataDet.status === 201) {
+                if (dataDet.status === 201) {
                     showSuccessMessage(`Orden #${data.correlative} creada con éxito`);
                     fetchCorrelativeControl();
                 }

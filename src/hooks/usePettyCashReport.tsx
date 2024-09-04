@@ -1,11 +1,11 @@
 import { useState } from "react"
-import { DocumentReportResponseI, OrderWithDocumentsI } from "../types/reports";
+import { OrderWithDocumentsI, PettyCashReportResponseI } from "../types/reports";
 
 export const usePettyCashReport = () => {
-    const [pettyCashReport, setPettyCashReport] = useState<DocumentReportResponseI[]>([]);
+    const [pettyCashReport, setPettyCashReport] = useState<PettyCashReportResponseI[]>([]);
 
-    const receiveData = (data: DocumentReportResponseI[] | OrderWithDocumentsI[]) => {
-        setPettyCashReport((data as DocumentReportResponseI[]));
+    const receiveData = (data: PettyCashReportResponseI[] | OrderWithDocumentsI[]) => {
+        setPettyCashReport((data as PettyCashReportResponseI[]));
     };
 
     return {

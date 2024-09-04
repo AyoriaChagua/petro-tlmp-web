@@ -6,7 +6,7 @@ interface Props {
     readonly max: number;
     readonly initialFrom: number;
     readonly initialTo: number;
-    readonly onChange?: (value: number) => void;
+    readonly onChange?: (from: number, to: number) => void;
     readonly label: string;
 }
 
@@ -19,7 +19,6 @@ export default function RangeAmounts({
     label
 }: Props) {
 
-    console.log(onChange)
     const [fromValue, setFromValue] = useState(initialFrom);
     const [toValue, setToValue] = useState(initialTo);
 
@@ -56,13 +55,14 @@ export default function RangeAmounts({
     };
 
     const handleFromInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-
         const value = Math.min(Number(e.target.value), toValue);
+        onChange && onChange(value, toValue);
         setFromValue(value);
     };
 
     const handleToInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const value = Math.max(Number(e.target.value), fromValue);
+        onChange && onChange(fromValue, value);
         setToValue(value);
     };
 

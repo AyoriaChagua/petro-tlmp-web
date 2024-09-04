@@ -46,6 +46,7 @@ export interface OrderFormI extends OrderID {
     taxRetentionLabel: string;
     perceptionDetractionLabel: string;
     details: OrderDetailsFormI[];
+    isPettyCash: boolean;
 }
 
 
@@ -72,6 +73,7 @@ export interface OrderRequestI extends OrderID {
     subtotal: number;
     requestingAreaId: number;
     systemUser: string;
+    isPettyCash: boolean;
 }
 
 export interface OrderResponseI extends OrderRequestI {

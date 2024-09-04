@@ -1,4 +1,4 @@
-import { BorderedRadio, CustomSelect, IconButton, Input, Loader, RadioGroup, Textarea } from "../../../components"
+import { BorderedRadio, CustomSelect, IconButton, Input, Loader, RadioGroup, Textarea, ToggleButton } from "../../../components"
 import { useOrder } from "../../../hooks/useOrder"
 import { currencyOptions, detractionOptions, paymentMethodOptions, perceptionOptions, taxRetentionOptions, yesOrNoOptions } from "../../../utils/constants";
 import AsyncSelect from 'react-select/async';
@@ -28,11 +28,31 @@ export default function CreateOrder() {
 
     return (
         <div className="flex flex-col w-full justify-center items-center border-x md:px-4">
-            <RadioGroup
-                onChange={(option) => handleOptionSelection(option, "orderTypeId")}
-                options={orderTypeOptions}
-                selectedValue={orderForm.orderTypeId}
-            />
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 w-full">
+                <div className="md:col-start-1 md:col-end-3">
+                    <div className="flex justify-center md:float-end ">
+                        <RadioGroup
+                            onChange={(option) => handleOptionSelection(option, "orderTypeId")}
+                            options={orderTypeOptions}
+                            selectedValue={orderForm.orderTypeId}
+                        />
+                    </div>
+                </div>
+                <div className="md:col-start-3 md:col-end-4">
+                    <div className="flex justify-center md:float-end">
+                        <ToggleButton
+                            checked={orderForm.isPettyCash}
+                            onChange={() => setOrderForm(prevState => ({
+                                ...prevState,
+                                isPettyCash: !prevState.isPettyCash
+                            }))}
+                            name="Caja chica"
+                        />
+                    </div>
+                </div>
+            </div>
+
+
             <br />
             <h3 className="text-2xl font-semibold text-[#055CBB]">#{orderForm.correlative}</h3>
             <div className="container mx-auto p-4">
@@ -157,7 +177,7 @@ export default function CreateOrder() {
                                         label="Detracción"
                                         options={detractionOptions}
                                         onChange={(option) => handleOptionSelection(option, "detractionValue", "detractionLabel")}
-                                        value={(orderForm.orderTypeId === "O/S" || !orderForm.detractionValue )? undefined : {
+                                        value={(orderForm.orderTypeId === "O/S" || !orderForm.detractionValue) ? undefined : {
                                             label: orderForm.detractionLabel,
                                             value: orderForm.detractionValue
                                         }}
@@ -171,7 +191,7 @@ export default function CreateOrder() {
                                         label="Percepción"
                                         options={perceptionOptions}
                                         onChange={(option) => handleOptionSelection(option, "perceptionValue", "perceptionLabel")}
-                                        value={(orderForm.orderTypeId !== "O/S" || !orderForm.perceptionValue) ? undefined: {
+                                        value={(orderForm.orderTypeId !== "O/S" || !orderForm.perceptionValue) ? undefined : {
                                             label: orderForm.perceptionLabel,
                                             value: orderForm.perceptionValue
                                         }}

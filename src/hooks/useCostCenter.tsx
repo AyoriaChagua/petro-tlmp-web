@@ -19,6 +19,7 @@ export const useCostCenter = () => {
     const fetchCostCenters = async () => {
         try {
             const data = await getCostCenter.getByCompanyId(companySelected?.value!);
+            if(data.length === 0) showErrorMessage("Necesitas tener al menos un centro de costo para poder crear ordenes", "info");
             setCostCenters(data);
         } catch (error) {
             showErrorMessage((error as Error).message);
@@ -106,7 +107,8 @@ export const useCostCenter = () => {
     useEffect(() => {
         setIsLoading(true);
         fetchCostCenters().then(() => setIsLoading(false));
-    }, [])
+    }, []);
+
 
     return {
         costCenters,
@@ -116,6 +118,7 @@ export const useCostCenter = () => {
         handleInputCostCenterRequest,
         handleSelectCostCenterToUpdate,
         costCenterToUpdate,
-        costCenterRequest
+        costCenterRequest,
+        fetchCostCenters
     }
 }

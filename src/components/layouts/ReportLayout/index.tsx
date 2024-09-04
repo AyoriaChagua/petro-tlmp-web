@@ -7,33 +7,17 @@ import { shortOrderTypeOptions } from "../../../utils/constants"
 import "./styles.css";
 import { RiFileExcel2Line } from "react-icons/ri"
 import { FaSearch } from "react-icons/fa"
-import { DocumentReportResponseI, OrderWithDocumentsI, ReportType } from "../../../types/reports"
-
-
+import { OrderWithDocumentsI, PettyCashReportResponseI, ReportType } from "../../../types/reports"
 
 
 interface Props {
   readonly children: React.ReactNode
   readonly reportType: ReportType
-  readonly onSubmit: (data: OrderWithDocumentsI[] | DocumentReportResponseI[]) => void
+  readonly onSubmit: (data: OrderWithDocumentsI[] | PettyCashReportResponseI[]) => void
   readonly onExport?: () => void
   readonly documentsToExport?: []
 }
 
-/**
- * ReportLayout component
- * Filter
- *  by company
- *  by order type
- *  by date range
- *  by document type (voucher)
- *  by order number
- *  by supplier
- *  by total range
- * Functions
- *  export to excel 
- * @returns JSX.Element
- */
 
 export default function ReportLayout({
   children,
@@ -42,18 +26,25 @@ export default function ReportLayout({
   onSubmit,
   reportType
 }: Props) {
+
   const {
     handleDateRange,
+    handleInputChange,
+    handleInputRange,
+    documentTypeOptions,
     showFilter,
     setShowFilter,
-    searchOrderDocuments
-  } = useMainFilter(reportType);
-  console.log(documentsToExport,
-    onExport,)
+    searchOrderDocuments,
+    searchPettyCashDocuments,
+    filters,
+  } = useMainFilter();
+
 
   const handleSearch = async () => {
-    const data = await searchOrderDocuments();
-    if (data) onSubmit(data!);
+    let data: OrderWithDocumentsI[] | PettyCashReportResponseI[] = [];
+    if (reportType === "pettyCash") data = await searchPettyCashDocuments();
+    else if (reportType === "general") data = await searchOrderDocuments();
+    if (data) onSubmit(data);
   };
 
   return (
@@ -87,7 +78,7 @@ export default function ReportLayout({
       </div>
       <div className={`filter-container ${showFilter ? 'show' : ''}`}>
 
-        <div className="grid grid-cols-1 sm:grid-cols-3 md:grid-cols-5 gap-2 border border-gray-200 rounded-lg p-5">
+        <div className="grid grid-cols-1 sm:grid-cols-3 md:grid-cols-5 md:gap-x-20 md:gap-y-5 gap-x-5 gap-y-3  border border-gray-200 rounded-lg p-5">
           <div className="col-span-1">
             <CustomDateRange
               onChange={handleDateRange}
@@ -95,34 +86,28 @@ export default function ReportLayout({
           </div>
           {
             reportType === "general" &&
-            <>
-              <div className="col-span-1 sm:col-span-2">
-                <Input
-                  id="orderNumber"
-                  typeForm="create"
-                  placeholder="0000000000"
-                  label="N° de orden"
-                />
-              </div>
-              <div className="col-span-1 sm:col-span-2">
-                <CustomSelect
-                  id="supplierFilter"
-                  label="Proveedor"
-                  options={[]}
-                  onChange={() => { }}
-                  typeForm="create"
-                />
-              </div>
-
-            </>
+            <div className="col-span-1 sm:col-span-2">
+              <CustomSelect
+                id="supplierFilter"
+                label="Proveedor"
+                options={[]}
+                onChange={() => { }}
+                typeForm="create"
+              />
+            </div>
           }
-          <div className="sm:col-span-2">
-            <RangeAmounts
-              initialFrom={0}
-              initialTo={100000}
-              max={200000}
-              min={0}
-              label="Total"
+
+
+          <div className="col-span-1 sm:col-span-2">
+            <Input
+              id="orderNumber"
+              typeForm="create"
+              placeholder="0000000000"
+              label="N° de orden"
+              type="number"
+              maxLength={10}
+              onChange={(e) => handleInputChange(e, "orderNumber")}
+              value={filters.orderNumber}
             />
           </div>
           {
@@ -137,19 +122,27 @@ export default function ReportLayout({
               />
             </div>
           }
-
           {reportType !== "general" &&
             <div className="col-span-1 md:col-span-2">
               <CustomSelect
                 id="documentType"
                 label="Tipo de comprobante"
-                options={[]}
+                options={documentTypeOptions}
                 onChange={() => { }}
                 typeForm="create"
               />
             </div>
           }
-
+          <div className="sm:col-span-2 ">
+            <RangeAmounts
+              initialFrom={0}
+              initialTo={100000}
+              max={200000}
+              min={0}
+              label="Total"
+              onChange={(from, to) => handleInputRange(from, to)}
+            />
+          </div>
         </div>
       </div>
       {children}

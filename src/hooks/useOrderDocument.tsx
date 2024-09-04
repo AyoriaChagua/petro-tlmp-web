@@ -183,7 +183,6 @@ export const useOrderDocument = ({
                 date: documentForm.issueDate,
                 dueDate: documentForm.dueDate,
                 exchangeRate: Number(documentForm.exchangeRate),
-                isPettyCash: documentForm.isPettyCash,
                 otherPayments: Boolean(documentForm.otherPayments) ? Number(documentForm.otherPayments) : null,
                 fise: Boolean(documentForm.fise) ? Number(documentForm.fise) : null,
                 documentStatus: "ACTIVO",
@@ -204,7 +203,6 @@ export const useOrderDocument = ({
             };
 
             const newDocumentResponse = await postOrderDocument.createDocumentVoucher(newDocument);
-            console.log(newDocumentResponse)
             if (newDocumentResponse) {
                 showSuccessMessage(`El documento ${newDocumentResponse.orderDocumentNumber} fue creado exitosamente`);
                 return;

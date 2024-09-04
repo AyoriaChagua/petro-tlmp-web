@@ -1,10 +1,11 @@
-import { DocumentReportResponseI, QueryFieldsI } from "../../types/reports"
+import { PettyCashReportResponseI, QueryFieldsI } from "../../types/reports"
 import { axiosAuthInstance } from "../config"
 
 export const getReport = {
     getPettyCash: async (params: QueryFieldsI) => {
         try {
-            const response = await axiosAuthInstance.get<DocumentReportResponseI[]>("/order-documents/report",  {
+            console.log(params)
+            const response = await axiosAuthInstance.get<PettyCashReportResponseI[]>("/order-documents/report", {
                 params
             });
             return response.data;

@@ -49,6 +49,7 @@ export const initialOrderForm: OrderFormI = {
     systemUser: "",
     taxRetentionLabel: "",
     perceptionDetractionLabel: "",
+    isPettyCash: false,
     details: [
         {
              product: "",

@@ -22,7 +22,6 @@ export const initialDocumentForm: DocumentFormI = {
     detractionCalcValue: "",
     fise: "",
     otherPayments: "",
-    isPettyCash: false,
     isAffectedTaxRetention: true,
     taxRetentionValue: "",
     retentionLabel: "",

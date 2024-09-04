@@ -43,7 +43,6 @@ export interface OrderDocumentRequestI {
     taxCalc: number | null
     perceptionCalc: number | null
     detractionCalc: number | null
-    isPettyCash: boolean
 }
 
 
@@ -95,7 +94,6 @@ export interface DocumentFormI {
     detractionCalcValue: string
     fise: string
     otherPayments: string
-    isPettyCash: boolean
     isAffectedTaxRetention: boolean
     total: string,
     taxRetentionValue: string,

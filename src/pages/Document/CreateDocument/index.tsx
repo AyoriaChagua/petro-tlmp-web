@@ -73,14 +73,7 @@ export default function CreateDocument() {
                         />
                     </div>
                 </div>
-                <ToggleButton
-                    checked={documentForm.isPettyCash}
-                    onChange={() => setDocumentForm(prevState => ({
-                        ...prevState,
-                        isPettyCash: !prevState.isPettyCash
-                    }))}
-                    name="Caja chica"
-                />
+                
             </div>
 
             <hr className="my-5" />
