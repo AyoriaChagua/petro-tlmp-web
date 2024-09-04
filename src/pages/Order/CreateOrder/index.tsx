@@ -21,7 +21,8 @@ export default function CreateOrder() {
         handleLineInput,
         handleTaxRetentionSelection,
         currencySymbol,
-        onSubmit
+        onSubmit,
+        reloadCorrelative
     } = useOrder();
 
     if (!isDataReady) return <Loader />
@@ -51,10 +52,10 @@ export default function CreateOrder() {
                     </div>
                 </div>
             </div>
-
-
             <br />
-            <h3 className="text-2xl font-semibold text-[#055CBB]">#{orderForm.correlative}</h3>
+            <h3 className="flex items-center gap-2 text-2xl font-semibold text-[#055CBB]">#{orderForm.correlative} 
+                <IconButton icon="reload" onClick={() => reloadCorrelative()} />
+            </h3>
             <div className="container mx-auto p-4">
                 <form onSubmit={onSubmit}>
                     {/* Main details  */}

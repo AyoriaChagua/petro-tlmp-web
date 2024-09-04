@@ -26,7 +26,7 @@ export default function CheckboxList({
   return (
     <div>
       <h3 className="text-lg font-semibold text-gray-300 mb-4">{title}</h3>
-      <ul className="w-48 text-sm font-medium text-gray-900 bg-white border border-gray-200 rounded-lg">
+      <ul className="w-full text-sm font-medium text-gray-900 bg-white border border-gray-200 rounded-lg">
         {options.map((option) => (
           <li key={option.id} className="w-full border-b border-gray-200 rounded-t-lg">
             <div className="flex items-center ps-3">

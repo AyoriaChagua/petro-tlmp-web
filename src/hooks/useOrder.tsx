@@ -39,6 +39,7 @@ export const useOrder = () => {
 
 
     useEffect(() => {
+        console.log(correlativeControl)
         if (costCenters.length > 0 && requestingAreas.length > 0 && approvalPersonnel.length > 0 && correlativeControl.length > 0 && !isDataReady) {
             const withCorrelatives = checkCorrelative();
             if (!withCorrelatives) {
@@ -48,12 +49,14 @@ export const useOrder = () => {
             setIsDataReady(true);
         }
     }, [costCenters, requestingAreas, approvalPersonnel, correlativeControl]);
-    
+
 
     useEffect(() => {
-        fetchCostCenters().then(() => setIsDataReady(false));
+        fetchCostCenters().then(() =>
+            fetchCorrelativeControl().then(() => setIsDataReady(false))
+        );
     }, [companySelected])
-    
+
 
     useEffect(() => {
         const correlativeC = correlativeControl.find(cc => cc.active && cc.orderTypeId === orderForm.orderTypeId);
@@ -66,7 +69,7 @@ export const useOrder = () => {
                 companyId: correlativeC.companyId
             }));
         }
-    }, [orderForm.orderTypeId])
+    }, [orderForm.orderTypeId, correlativeControl]);
 
     const checkCorrelative = (): boolean => {
         const correlatives = correlativeControl.filter(cc => cc.active);
@@ -286,7 +289,7 @@ export const useOrder = () => {
                 orderTypeId: orderForm.orderTypeId,
                 paymentMethod: orderForm.paymentMethodValue,
                 perception: perception || null,
-                providerRuc: orderForm.providerRuc || null,
+                providerRuc: orderForm.providerRuc ?? null,
                 retention: retention || null,
                 requestingAreaId: Number(orderForm.requestingAreaValue),
                 systemUser: user?.id!,
@@ -328,6 +331,11 @@ export const useOrder = () => {
         } catch (error) {
             showErrorMessage((error as Error).message);
         }
+    };
+
+    const reloadCorrelative = async () => {
+        console.log("reload")
+        fetchCorrelativeControl();
     }
 
     return {
@@ -348,6 +356,7 @@ export const useOrder = () => {
         handleLineInput,
         handleTaxRetentionSelection,
         currencySymbol,
-        onSubmit
+        onSubmit,
+        reloadCorrelative
     }
 }
