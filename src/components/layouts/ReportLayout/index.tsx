@@ -8,6 +8,7 @@ import "./styles.css";
 import { RiFileExcel2Line } from "react-icons/ri"
 import { FaSearch } from "react-icons/fa"
 import { OrderWithDocumentsI, PettyCashReportResponseI, ReportType } from "../../../types/reports"
+import AsyncSelect from 'react-select/async';
 
 
 interface Props {
@@ -36,8 +37,11 @@ export default function ReportLayout({
     setShowFilter,
     searchOrderDocuments,
     searchPettyCashDocuments,
+    handleCheckBox,
+    loadProviderOptions,
+    handleOptionSelection,
     filters,
-  } = useMainFilter();
+  } = useMainFilter(reportType);
 
 
   const handleSearch = async () => {
@@ -81,18 +85,22 @@ export default function ReportLayout({
         <div className="grid grid-cols-1 sm:grid-cols-3 md:grid-cols-5 md:gap-x-20 md:gap-y-5 gap-x-5 gap-y-3  border border-gray-200 rounded-lg p-5">
           <div className="col-span-1">
             <CustomDateRange
+              endDate={filters.endDate}
+              startDate={filters.startDate}
               onChange={handleDateRange}
             />
           </div>
           {
             reportType === "general" &&
             <div className="col-span-1 sm:col-span-2">
-              <CustomSelect
-                id="supplierFilter"
-                label="Proveedor"
-                options={[]}
-                onChange={() => { }}
-                typeForm="create"
+              <label htmlFor={"selectProvider"} className={"block mb-2 text-sm font-medium text-gray-600"}>RUC/DNI proveedor</label>
+              <AsyncSelect
+                id="selectProvider"
+                placeholder="Buscar..."
+                loadOptions={loadProviderOptions}
+                onChange={(option) => handleOptionSelection(option, "supplierRuc")}
+                cacheOptions
+                defaultOptions
               />
             </div>
           }
@@ -110,25 +118,13 @@ export default function ReportLayout({
               value={filters.orderNumber}
             />
           </div>
-          {
-            reportType === "general" &&
-            <div className="col-span-1 sm:col-span-2 md:pl-5">
-              <CheckBoxSelector
-                onChange={() => { }}
-                options={shortOrderTypeOptions.map((option) => {
-                  return { ...option, icon: BiCheck }
-                })}
-                title="Tipo de orden"
-              />
-            </div>
-          }
           {reportType !== "general" &&
             <div className="col-span-1 md:col-span-2">
               <CustomSelect
                 id="documentType"
                 label="Tipo de comprobante"
                 options={documentTypeOptions}
-                onChange={() => { }}
+                onChange={(option) => handleOptionSelection(option, "documentTypeId")}
                 typeForm="create"
               />
             </div>
@@ -143,6 +139,20 @@ export default function ReportLayout({
               onChange={(from, to) => handleInputRange(from, to)}
             />
           </div>
+          {
+            reportType === "general" &&
+            <div className="col-span-1 sm:col-span-2">
+              <CheckBoxSelector
+                onChange={handleCheckBox}
+                options={shortOrderTypeOptions.map((option) => {
+                  return { ...option, icon: BiCheck }
+                })}
+                title="Tipo de orden"
+              />
+            </div>
+          }
+
+
         </div>
       </div>
       {children}

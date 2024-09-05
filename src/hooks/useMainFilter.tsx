@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { Range } from 'react-date-range';
-import { OrderWithDocumentsI, PettyCashReportResponseI, QueryFieldsI } from '../types/reports';
+import { OrderWithDocumentsI, PettyCashReportResponseI, QueryFieldsI, ReportType } from '../types/reports';
 import { useAuth } from '../context/AuthContext';
 import { showErrorMessage } from '../utils/alerts';
 import { getOrder } from '../api/order/get';
@@ -9,13 +9,16 @@ import { getReport } from '../api/report/get';
 import { useSunatDocument } from './useSunatDocument';
 import { OptionType } from '../types/common/inputs';
 import { convertToOptions } from '../utils/functions';
+import { useProvider } from './useProvider';
+import { MultiValue, SingleValue } from 'react-select';
 
 
-export const useMainFilter = () => {
+export const useMainFilter = (reportType: ReportType) => {
     const { companySelected } = useAuth();
     const { fetchSunatDocuments } = useSunatDocument();
+    const { debouncedSearchProviders } = useProvider();
 
-    const initialFilterState = {
+    const initialFilterState: QueryFieldsI = {
         companyId: companySelected?.value ?? "",
         startDate: getFirstDayOfCurrentMonth(),
         endDate: new Date,
@@ -30,7 +33,16 @@ export const useMainFilter = () => {
 
     useEffect(() => {
         (async () => {
-            setFilters(initialFilterState);
+            let initialFilter = { ...initialFilterState };
+            if (reportType === "general") initialFilter = {
+                ...initialFilter,
+                orderTypeIds: ["O/C", "O/P", "O/S"]
+            } 
+            else if(reportType === "pettyCash") initialFilter = {
+                ...initialFilter,
+                isPettyCash: true
+            } 
+            setFilters(initialFilter);
             const documentsData = await fetchSunatDocuments();
             documentsData && setDocumentTypeOptions(convertToOptions({
                 data: documentsData,
@@ -41,11 +53,6 @@ export const useMainFilter = () => {
     }, [])
 
     const handleDateRange = (range: Range) => {
-        console.log({
-            startDate: range.startDate!,
-            endDate: range.endDate!
-        })
-
         setFilters(prevState => ({
             ...prevState,
             startDate: range.startDate!,
@@ -59,7 +66,7 @@ export const useMainFilter = () => {
             ...prevState,
             [field]: value
         }));
-    }
+    };
 
     const handleInputRange = (from: number, to: number) => {
         setFilters(prevState => ({
@@ -67,7 +74,28 @@ export const useMainFilter = () => {
             minAmount: from,
             maxAmount: to
         }));
-    }
+    };
+
+    const handleCheckBox = (orderTypes: string[]) => {
+        setFilters(prevState => ({
+            ...prevState,
+            orderTypeIds: orderTypes
+        }));
+    };
+
+    const handleOptionSelection = (option: SingleValue<OptionType> | MultiValue<OptionType>, field: keyof QueryFieldsI) => {
+        const singleOption = option as SingleValue<OptionType>;
+        setFilters(prevState => ({
+            ...prevState,
+            [field]: singleOption?.value
+        }));
+    };
+
+    const loadProviderOptions = async (inputValue: string) => {
+        const providers = await debouncedSearchProviders(inputValue);
+        return convertToOptions({ data: providers, labelKey: "description", valueKey: "ruc" });
+    };
+
 
     const searchPurchasingDocuments = () => { };
 
@@ -107,6 +135,9 @@ export const useMainFilter = () => {
         pettyCashReport,
         handleInputChange,
         handleInputRange,
-        documentTypeOptions
+        documentTypeOptions,
+        handleCheckBox,
+        loadProviderOptions,
+        handleOptionSelection
     }
 }

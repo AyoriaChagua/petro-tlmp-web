@@ -289,7 +289,7 @@ export const useOrder = () => {
                 orderTypeId: orderForm.orderTypeId,
                 paymentMethod: orderForm.paymentMethodValue,
                 perception: perception || null,
-                providerRuc: orderForm.providerRuc ?? null,
+                providerRuc: orderForm.providerRuc || null,
                 retention: retention || null,
                 requestingAreaId: Number(orderForm.requestingAreaValue),
                 systemUser: user?.id!,

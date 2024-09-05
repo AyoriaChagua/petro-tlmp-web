@@ -4,9 +4,11 @@ import { axiosAuthInstance } from "../config";
 export  const postOrder = {
     createOrder: async (order: OrderRequestI) => {
         try {
+            console.log(order)
             const response = await axiosAuthInstance.post<OrderResponseI>("/order-mp", order);
             return response.data
         } catch (error) {
+            console.log(error)
             throw new Error('Error creando la orden 🥲, ' + (error as Error).message);
         }
     },

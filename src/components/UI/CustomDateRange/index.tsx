@@ -6,17 +6,19 @@ import 'react-date-range/dist/styles.css';
 import 'react-date-range/dist/theme/default.css';
 
 interface Props {
-    readonly onChange: (item: Range) => void
+    readonly onChange: (item: Range) => void, 
+    readonly endDate: Date
+    readonly startDate: Date
 }
 
-export default function CustomDateRange({ onChange }: Props) {
+export default function CustomDateRange({ onChange, endDate, startDate }: Props) {
 
     const [showDatePicker, setShowDatePicker] = useState(false);
 
     const [range, setRange] = useState<Range>(
         {
-            startDate: new Date(),
-            endDate: new Date(),
+            startDate,
+            endDate,
             key: 'selection'
         }
     );
