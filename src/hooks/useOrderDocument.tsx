@@ -215,9 +215,9 @@ export const useOrderDocument = ({
     };
 
     const getTotal = (): number => {
-        const subtotal = parseInt(documentForm.subtotal);
-        const taxRetention = parseInt(documentForm.taxRetentionValue);
-        const perceptionDetraction = parseInt(documentForm.perceptionDetractionValue);
+        const subtotal = parseFloat(documentForm.subtotal);
+        const taxRetention = parseFloat(documentForm.taxRetentionValue);
+        const perceptionDetraction = parseFloat(documentForm.perceptionDetractionValue);
         const fise = Number(documentForm.fise);
         const otherPayments = Number(documentForm.otherPayments);
         const total = (Boolean(documentForm.taxValue) ? (subtotal + taxRetention) : (subtotal - taxRetention)) + perceptionDetraction + fise + otherPayments;
