@@ -18,7 +18,6 @@ export interface OrderDocumentRequestI {
     orderTypeId: string
     period: string
     correlative: string
-    orderDocumentNumber: string
     subtotal: number
     total: number
     systemUser: string
@@ -27,7 +26,7 @@ export interface OrderDocumentRequestI {
     dueDate: Date
     chargeDate: Date
     documentTypeId: string
-    code: string
+    providerRuc: string | null
     biog: number
     typeEmission: string
     fise: number | null
@@ -45,7 +44,9 @@ export interface OrderDocumentRequestI {
     detractionCalc: number | null
 }
 
-
+export interface OrderDocumentRequestCreateI extends OrderDocumentRequestI {
+    orderDocumentNumber: string
+}
 
 export interface OrderDocumentResponseI extends OrderDocumentRequestI {
     systemDate: Date
@@ -65,6 +66,7 @@ export interface OrderLSI {
     perception: number | null,
     detraction: number | null,
     retention: number | null,
+    costCenter: string | null
 }
 
 export interface DocumentLSI {
@@ -82,7 +84,8 @@ export interface DocumentFormI {
     dueDate: Date
     exchangeRate: number
     annotation: string
-    code: string
+    providerRuc: string
+    providerDescription: string
     perceptionPercLabel: string
     detractionPercLabel: string
     perceptionPercValue: string
@@ -90,8 +93,6 @@ export interface DocumentFormI {
     biorgeya: string
     orderDocumentNumber: string
     subtotal: string
-    perceptionCalcValue: string
-    detractionCalcValue: string
     fise: string
     otherPayments: string
     isAffectedTaxRetention: boolean
@@ -113,4 +114,32 @@ export interface PaymentResponseI {
     systemUser: string
     systemDate: string
     isActive: boolean
-  }
+}
+
+export interface OrderDocumentToEditResponseI {
+    annotation: string
+    biorgeya: number
+    providerRuc: string | null
+    providerDescription: string | null
+    detractionPerc: number | null
+    detractionCalc: number | null
+    documentType: string 
+    documentTypeDescription?: string | null
+    dueDate: Date
+    exchangeRate: number
+    fise: number | null
+    issueDate: Date
+    issueType: string
+    orderDocumentNumber: string
+    otherPayments: number | null
+    perceptionPerc: number | null
+    perceptionCalc: number | null
+    receiptDate: Date
+    subtotal: number
+    taxPerc: number | null
+    taxCalc: number | null
+    retentionPerc: number | null
+    retentionCalc: number | null
+    total: number
+
+}

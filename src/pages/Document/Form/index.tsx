@@ -3,22 +3,27 @@ import { decryptString, getCurrencySymbol } from "../../../utils/functions";
 import { useOrderDocument } from "../../../hooks/useOrderDocument";
 import { CustomSelect, Input, Tag, ToggleButton } from "../../../components";
 import { formatCurrency } from "../../../utils/formats";
-import { convertStringToDate1, formatDate2 } from "../../../utils/dates";
+import { convertStringToDate1, formatDate2, formatDateForInput } from "../../../utils/dates";
 import { detractionOptions, issueTypeOptions, perceptionOptions } from "../../../utils/constants";
+import AsyncSelect from 'react-select/async';
 
-export default function CreateDocument() {
+export default function DocumentForm() {
 
-    const { orderCompanyId, orderTypeId, orderPeriod, orderCorrelative } = useParams<{
+    const { orderCompanyId, orderTypeId, orderPeriod, orderCorrelative, orderDocumentNumber } = useParams<{
         orderCompanyId: string;
         orderTypeId: string;
         orderPeriod: string;
         orderCorrelative: string;
+        orderDocumentNumber?: string
     }>();
 
     const decryptedCompanyId = decryptString(orderCompanyId!);
     const decryptedOrderTypeId = decryptString(orderTypeId!);
     const decryptedOrderPeriod = decryptString(orderPeriod!);
     const decryptedOrderCorrelative = decryptString(orderCorrelative!);
+
+
+    const orderDocumentNumberValue = orderDocumentNumber ? decryptString(orderDocumentNumber) : null;
 
 
     const {
@@ -30,12 +35,14 @@ export default function CreateDocument() {
         handleInputChange,
         handleBlurInputDocumentNumber,
         onSubmit,
-        getTotal
+        getTotal,
+        loadProviderOptions
     } = useOrderDocument({
         companyId: decryptedCompanyId,
         orderTypeId: decryptedOrderTypeId,
         period: decryptedOrderPeriod,
-        correlative: decryptedOrderCorrelative
+        correlative: decryptedOrderCorrelative,
+        documentNumber: orderDocumentNumberValue
     });
 
     const getTaxOrRetention = () => {
@@ -48,14 +55,12 @@ export default function CreateDocument() {
         }
     }
 
-
-
     return (
         <div className="flex flex-col gap-2">
             <div className="flex flex-col md:flex-row md:justify-between md:items-center gap-3">
                 <div className="flex flex-col gap-2">
-                    <h1 className="text-2xl font-semibold text-gray-500">Crear nuevo comprobante <span className="text-base font-normal">({orderData.orderTypeId} #{orderData.correlative})</span></h1>
-                    <div className="flex flex-row gap-3">
+                    <h1 className="text-2xl font-semibold text-gray-500">{orderDocumentNumberValue ? "Editar": "Crear nuevo"} comprobante <span className="text-base font-normal">({orderData.orderTypeId} #{orderData.correlative})</span></h1>
+                    <div className="flex flex-row gap-3 flex-wrap">
                         <Tag
                             withIcon={false}
                             className="rounded-md border-2 border-blue-600 text-blue-500 bg-white px-2 py-1 text-xs font-semibold"
@@ -71,9 +76,14 @@ export default function CreateDocument() {
                             className="rounded-md border-2 border-blue-600 text-blue-500 bg-white px-2 py-1 text-xs font-semibold"
                             text={`Total: ${formatCurrency(orderData.total)}`}
                         />
+                        <Tag
+                            withIcon={false}
+                            className="rounded-md border-2 border-blue-600 text-blue-500 bg-white px-2 py-1 text-xs font-semibold"
+                            text={`Centro de costo: ${orderData.costCenter}`}
+                        />
                     </div>
                 </div>
-                
+
             </div>
 
             <hr className="my-5" />
@@ -111,10 +121,10 @@ export default function CreateDocument() {
                     <Input
                         id="receptionDate"
                         label="Fecha de recepción"
-                        onChange={(e) => { handleInputChange(convertStringToDate1(e.target.value), "receiptDate") }}
+                        onChange={(e) => handleInputChange(e.target.value, "receiptDate")}
                         typeForm="create"
                         type="date"
-                        value={formatDate2(documentForm.receiptDate)}
+                        value={formatDateForInput(documentForm.receiptDate)}
                         required
                     />
                 </div>
@@ -122,10 +132,10 @@ export default function CreateDocument() {
                     <Input
                         id="issueDate"
                         label="Fecha de emisión"
-                        onChange={(e) => { handleInputChange(convertStringToDate1(e.target.value), "issueDate") }}
+                        onChange={(e) => { handleInputChange(e.target.value, "issueDate") }}
                         typeForm="create"
                         type="date"
-                        value={formatDate2(documentForm.issueDate)}
+                        value={formatDateForInput(documentForm.issueDate)}
                         required
                     />
                 </div>
@@ -133,10 +143,10 @@ export default function CreateDocument() {
                     <Input
                         id="dueDate"
                         label="Fecha de vencimiento"
-                        onChange={(e) => { handleInputChange(convertStringToDate1(e.target.value), "dueDate") }}
+                        onChange={(e) => { handleInputChange(e.target.value, "dueDate") }}
                         typeForm="create"
+                        value={formatDateForInput(documentForm.dueDate)}
                         type="date"
-                        value={formatDate2(documentForm.dueDate)}
                         required
                     />
                 </div>
@@ -159,12 +169,18 @@ export default function CreateDocument() {
                     />
                 </div>
                 <div className="col-span-1">
-                    <Input
-                        id="code"
-                        label="Código"
-                        onChange={(e) => { handleInputChange(e.target.value, "code") }}
-                        value={documentForm.code}
-                        typeForm="create"
+                    <label htmlFor={"selectProvider"} className={"block mb-2 text-sm font-medium text-gray-600"}>Código (proveedor)</label>
+                    <AsyncSelect
+                        id="selectProvider"
+                        placeholder="Buscar..."
+                        loadOptions={loadProviderOptions}
+                        onChange={(option) => handleOptionSelection(option, "providerRuc", "providerDescription")}
+                        value={documentForm.providerRuc ? {
+                            label: documentForm.providerDescription,
+                            value: documentForm.providerRuc
+                        } : undefined}
+                        cacheOptions
+                        defaultOptions
                     />
                 </div>
 
@@ -221,6 +237,7 @@ export default function CreateDocument() {
                         value={documentForm.orderDocumentNumber}
                         onBlur={handleBlurInputDocumentNumber}
                         typeForm="create"
+                        disabled={orderDocumentNumberValue ? true : false}
                         required
                     />
                 </div>
@@ -249,7 +266,7 @@ export default function CreateDocument() {
                         <ToggleButton
                             checked={(documentForm.taxValue || documentForm.retentionValue) ? documentForm.isAffectedTaxRetention : false}
                             onChange={() => {
-                                
+
                                 setDocumentForm(prevState => ({
                                     ...prevState,
                                     isAffectedTaxRetention: !prevState.isAffectedTaxRetention,

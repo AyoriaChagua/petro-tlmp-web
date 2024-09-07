@@ -1,6 +1,6 @@
 import axios from "axios"
 import { axiosAuthInstance } from "../config";
-import { PaymentResponseI } from "../../types/order-document";
+import { OrderDocumentToEditResponseI, PaymentResponseI } from "../../types/order-document";
 
 export const getOrderDocument = {
     getExchangeRateInSoles: async (): Promise<number> => {
@@ -14,6 +14,14 @@ export const getOrderDocument = {
             return response.data;
         } catch (error) {
             throw new Error(`Error al obtener los pagos del documento ${orderDocumentNumber}`);
+        }
+    },
+    getDocumentById: async ( orderDocumentNumber: string, companyId: string ) => {
+        try {
+            const response = await axiosAuthInstance<OrderDocumentToEditResponseI>(`/order-documents/${orderDocumentNumber}/${companyId}`);
+            return response.data;
+        } catch (error) {
+            throw new Error(`Error al obtener el documento ${orderDocumentNumber}`);
         }
     }
 }

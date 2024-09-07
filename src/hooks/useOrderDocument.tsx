@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useState } from "react";
-import { DocumentFormI, OrderDocumentRequestI, OrderLSI } from "../types/order-document";
+import { DocumentFormI, OrderDocumentRequestCreateI, OrderDocumentRequestI, OrderDocumentResponseI, OrderLSI } from "../types/order-document";
 import { initialDocumentForm, initialOrderLSI } from "./initial-states/order-document";
 import { useSunatDocument } from "./useSunatDocument";
 import { convertToOptions } from "../utils/functions";
@@ -9,20 +9,26 @@ import { showErrorMessage, showSuccessMessage } from "../utils/alerts";
 import { MultiValue, SingleValue } from "react-select";
 import { useAuth } from "../context/AuthContext";
 import { postOrderDocument } from "../api/order-document/post";
+import { useProvider } from "./useProvider";
+import { detractionOptions, issueTypeOptions, perceptionOptions, taxRetentionOptions } from "../utils/constants";
+import { putOrderDocument } from "../api/order-document/put";
 
 interface ParamsToCreate {
     readonly companyId: string;
     readonly orderTypeId: string;
     readonly period: string;
     readonly correlative: string;
+    readonly documentNumber: string | null;
 }
 
 export const useOrderDocument = ({
     companyId,
     orderTypeId,
     period,
-    correlative
+    correlative,
+    documentNumber
 }: ParamsToCreate) => {
+    const { debouncedSearchProviders } = useProvider();
 
     const { fetchSunatDocuments } = useSunatDocument();
     const { user } = useAuth();
@@ -60,7 +66,42 @@ export const useOrderDocument = ({
                     setDocumentForm(prevState => ({
                         ...prevState,
                         exchangeRate
-                    }))
+                    }));
+                }
+                if (documentNumber && sunatDocuments) {
+                    const data = await getOrderDocument.getDocumentById(documentNumber, companyId);
+                    console.log(perceptionOptions);
+                    console.log(data.perceptionPerc)
+                    setDocumentForm(prevState => ({
+                        ...prevState,
+                        annotation: data.annotation,
+                        biorgeya: data.biorgeya.toString(),
+                        chargeDate: data.receiptDate,
+                        issueDate: data.issueDate,
+                        dueDate: data.dueDate,
+                        providerDescription: data.providerDescription || "",
+                        providerRuc: data.providerRuc || "",
+                        exchangeRate: data.exchangeRate,
+                        detractionPercValue: data.detractionPerc?.toString() || "",
+                        detractionPercLabel: detractionOptions.find((option) => option.value === data.detractionPerc?.toFixed(2)?.toString())?.label || "",
+                        perceptionPercValue: data.perceptionPerc?.toString() || "",
+                        perceptionPercLabel: perceptionOptions.find((option) => option.value === data.perceptionPerc?.toFixed(2)?.toString())?.label || "",
+                        documentTypeValue: data.documentType || "",
+                        documentTypeLabel: data.documentTypeDescription || "",
+                        taxValue: data.taxPerc?.toString() || "",
+                        taxLabel: taxRetentionOptions.find((option) => option.value === data.taxPerc?.toFixed(2)?.toString())?.label || "",
+                        retentionValue: data.retentionPerc?.toString() || "",
+                        retentionLabel: taxRetentionOptions.find((option) => option.value === data.retentionPerc?.toFixed(2)?.toString())?.label || "",
+                        fise: data.fise?.toString() || "",
+                        otherPayments: data.otherPayments?.toString() || "",
+                        issueTypeValue: data.issueType || "",
+                        issueTypeLabel: issueTypeOptions.find((option) => option.value === data.issueType)?.label || "",
+                        orderDocumentNumber: data.orderDocumentNumber,
+                        subtotal: data.subtotal.toString(),
+                        total: data.total.toString(),
+                        taxRetentionValue: data.taxCalc ? data.taxCalc.toString() : data.retentionCalc ? data.retentionCalc.toString() : "",
+                        perceptionDetractionValue: data.perceptionCalc ? data.perceptionCalc.toString() : data.detractionCalc ? data.detractionCalc.toString() : "",
+                    }));
                 }
             } catch (error) {
                 showErrorMessage("Error al cargar los datos");
@@ -68,7 +109,7 @@ export const useOrderDocument = ({
         };
         setDocumentForm(initialDocumentForm);
         fetchData();
-    }, [companyId, orderTypeId, period, correlative]);
+    }, [companyId, orderTypeId, period, correlative, documentNumber]);
 
     useEffect(() => {
         handleOptionSelection({
@@ -152,6 +193,11 @@ export const useOrderDocument = ({
         setDocumentForm(prevState => ({ ...prevState, [field]: value }));
     }, []);
 
+    const loadProviderOptions = async (inputValue: string) => {
+        const providers = await debouncedSearchProviders(inputValue);
+        return convertToOptions({ data: providers, labelKey: "description", valueKey: "ruc" });
+    };
+
     const handleBlurInputDocumentNumber = () => {
         const chunks = documentForm.orderDocumentNumber.split("-");
         if (chunks.length === 2) {
@@ -170,11 +216,10 @@ export const useOrderDocument = ({
             const perception = parseInt(documentForm.perceptionPercValue);
             const detraction = parseInt(documentForm.detractionPercValue);
 
-            const newDocument: OrderDocumentRequestI = {
-                orderDocumentNumber: documentForm.orderDocumentNumber,
+            let documentRequest: OrderDocumentRequestI | OrderDocumentRequestCreateI = {
                 annotation: documentForm.annotation,
                 biog: Number(documentForm.subtotal),
-                code: documentForm.code,
+                providerRuc: documentForm.providerRuc,
                 chargeDate: documentForm.receiptDate,
                 companyId,
                 orderTypeId,
@@ -202,12 +247,28 @@ export const useOrderDocument = ({
                 taxPerc: Boolean(tax) ? tax : null
             };
 
-            const newDocumentResponse = await postOrderDocument.createDocumentVoucher(newDocument);
-            if (newDocumentResponse) {
-                showSuccessMessage(`El documento ${newDocumentResponse.orderDocumentNumber} fue creado exitosamente`);
-                return;
+            console.log(JSON.stringify(documentRequest, null, 2))
+
+            let newDocumentResponse: OrderDocumentResponseI | OrderDocumentRequestCreateI;
+
+            if (documentNumber) {
+                newDocumentResponse = await putOrderDocument.updateDocument(documentNumber, companyId, documentRequest);
+                if (newDocumentResponse) {
+                    showSuccessMessage(`El documento ${documentNumber} fue actualizado exitosamente`);
+                    return;
+                } else {
+                    throw new Error("Error al actualizar el documento");
+                }
             } else {
-                throw new Error("Error al crear el documento");
+                const createRequest = documentRequest as OrderDocumentRequestCreateI;
+                createRequest.orderDocumentNumber = documentForm.orderDocumentNumber;
+                newDocumentResponse = await postOrderDocument.createDocumentVoucher(createRequest);
+                if (newDocumentResponse) {
+                    showSuccessMessage(`El documento ${createRequest.orderDocumentNumber} fue creado exitosamente`);
+                    return;
+                } else {
+                    throw new Error("Error al crear el documento");
+                }
             }
         } catch (error) {
             showErrorMessage((error as Error).message);
@@ -233,6 +294,7 @@ export const useOrderDocument = ({
         handleInputChange,
         handleBlurInputDocumentNumber,
         onSubmit,
-        getTotal
+        getTotal,
+        loadProviderOptions
     }
 }

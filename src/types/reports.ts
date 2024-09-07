@@ -84,7 +84,8 @@ export interface PettyCashReportResponseI {
     costCenterId: number
     costCenterAlias: any
     correlative: string
-    code: string
+    documentProviderRuc: string | null
+    documentProviderDescription?: string
     observations: string
     chargeDate: string
     date: string

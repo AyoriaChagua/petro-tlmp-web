@@ -37,7 +37,15 @@ export default function OrderDocumentReport() {
         { key: "systemUser", label: "Usuario" },
         { key: "providerDescription", label: "Proveedor" },
         { key: "providerRuc", label: "RUC" },
-        { key: "products", label: "Detalle" },
+        {
+            key: "actions",
+            label: "Detalle",
+            actions: (orderDocument) => (
+                <div style={{ maxWidth: "300px", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+                    {orderDocument.products}
+                </div>
+            ),
+        },
         {
             key: "actions", label: "Destino", actions: (orderDocument) => (
                 <>{orderDocument.costcenterAlias || orderDocument.costCenterId}</>
@@ -75,7 +83,7 @@ export default function OrderDocumentReport() {
                         title="Crear copia"
                     />
                     <ExternalLink
-                        to={`/document-mp-voucher/create/${encryptString(orderDocument.companyId)}/${encryptString(orderDocument.orderTypeId)}/${encryptString(orderDocument.period)}/${encryptString(orderDocument.correlative)}`}
+                        to={`/document-mp-voucher/document-form/${encryptString(orderDocument.companyId)}/${encryptString(orderDocument.orderTypeId)}/${encryptString(orderDocument.period)}/${encryptString(orderDocument.correlative)}`}
                         onClick={() => handleClickToCreateDocument({
                             orderTypeId: orderDocument.orderTypeId,
                             period: orderDocument.period,
@@ -87,6 +95,7 @@ export default function OrderDocumentReport() {
                             perception: orderDocument.perception,
                             detraction: orderDocument.detraction,
                             retention: orderDocument.retention,
+                            costCenter: orderDocument.costCenterDescription
                         })}
                         color="blue"
                     >
@@ -140,12 +149,27 @@ export default function OrderDocumentReport() {
                                         <td className="border px-4 py-2">{doc.documentStatus}</td>
                                         <td className="border px-4 py-2">
                                             <div className="flex flex-row justify-center items-center gap-1 ">
-                                                <Button
-                                                    icon={FaRegEdit}
-                                                    styleType="primary"
-                                                    type="button"
-                                                    title="Editar Documento"
-                                                />
+    
+                                                <ExternalLink
+                                                    to={`/document-mp-voucher/document-form/${encryptString(orderDocument.companyId)}/${encryptString(orderDocument.orderTypeId)}/${encryptString(orderDocument.period)}/${encryptString(orderDocument.correlative)}/${encryptString(doc.orderDocumentNumber)}`}
+                                                    color="blue"
+                                                    title="Editar documento"
+                                                    onClick={() => handleClickToCreateDocument({
+                                                        orderTypeId: orderDocument.orderTypeId,
+                                                        period: orderDocument.period,
+                                                        companyId: orderDocument.companyId,
+                                                        correlative: orderDocument.correlative,
+                                                        currency: orderDocument.currency,
+                                                        total: orderDocument.total,
+                                                        tax: orderDocument.tax,
+                                                        perception: orderDocument.perception,
+                                                        detraction: orderDocument.detraction,
+                                                        retention: orderDocument.retention,
+                                                        costCenter: orderDocument.costCenterDescription
+                                                    })}
+                                                >
+                                                    <FaRegEdit /> 
+                                                </ExternalLink>
                                                 <ExternalLink
                                                     to={`/document-mp-voucher-payment/create/${encryptString(orderDocument.companyId)}/${encryptString(doc.orderDocumentNumber)}`}
                                                     onClick={() => handleClickToCreateDocumentPayment({
@@ -153,6 +177,7 @@ export default function OrderDocumentReport() {
                                                         orderDocumentNumber: doc.orderDocumentNumber,
                                                     })}
                                                     color="green"
+                                                    title="Registrar pago"
                                                 >
                                                     <FaPaperclip className="text-base" /> & <MdOutlinePayments className="text-base" />
                                                 </ExternalLink>
