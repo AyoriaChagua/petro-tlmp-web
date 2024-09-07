@@ -1,101 +1,176 @@
-import * as XLSX from 'xlsx';
-import { OrderWithDocumentsI } from '../../types/reports';
+import Exceljs from 'exceljs';
+import { OrderWithDocumentsI, DocumentI, PaymentI } from '../../types/reports';
+import { formatCurrency } from '../formats';
+import { formatDate1, formatDateForInput } from '../dates';
+import { getCurrencySymbol } from '../functions';
 
-
-export const exportToExcel = (
+export const exportToExcel = async (
     data: OrderWithDocumentsI[],
     fileName: string,
 ) => {
-    const workbook = XLSX.utils.book_new();
-    const worksheet = XLSX.utils.aoa_to_sheet([]);
+    try {
+        const wb = new Exceljs.Workbook();
+        const ws = wb.addWorksheet('ÓRDENES CON DOCUMENTOS');
 
-    let rowIndex = 1;
+        const headers = [
+            'CIA', 'Correlativo', 'Tipo de Orden', 'Periodo', 'Usuario', 'Fecha', 'Observaciones',
+            'RUC Proveedor', 'Proveedor', 'Centro de Costo',
+            'Afecto IGV', 'Moneda', 'Total', 'Impuesto', 'Percepción/Detracción', 'Productos',
+            'N° Documento', 'Subtotal Doc', 'Total Doc', 'Estado Doc', 'Glosa',
+            'Código SUNAT', 'Impuesto',
+            'Fecha Pago', 'Monto Pagado'
+        ];
 
-    const header = [
-        'Número de Orden', 'Tipo de Orden', 'Fecha de Orden', 'Periodo', 'ID de Compañía',
-        'Usuario del Sistema', 'Observaciones', 'RUC del Proveedor', 'Descripción del Proveedor',
-        'ID del Centro de Costo', 'Descripción del Centro de Costo', 'Alias del Centro de Costo',
-        'Moneda', 'Total', 'Detracción', 'Percepción', 'Retención', 'Impuesto', 'Afecto a IGV',
-        'Productos', 'Número de Documento', 'Subtotal', 'Total Documento', 'CIA', 'Fecha Documento',
-        'Estado del Documento', 'Anotación', 'Código SUNAT', 'Cálculo de Retención',
-        'Cálculo de Impuesto', 'Fecha de Pago', 'Monto Pagado', 'Está Activo',
-        'ID de Pago del Documento', 'ID de Pago'
-    ];
+        const headerRow = ws.addRow(headers);
 
-    XLSX.utils.sheet_add_aoa(worksheet, [header], { origin: -1 });
+        headerRow.alignment = { vertical: 'middle', horizontal: 'center' };
 
-    data.forEach((orderDocument) => {
-        const orderRowStart = rowIndex;
 
-        orderDocument.documents.forEach((doc) => {
-            const row = [
-                orderDocument.correlative, orderDocument.orderTypeId, orderDocument.orderDate, orderDocument.period,
-                orderDocument.companyId, orderDocument.systemUser, orderDocument.observations, orderDocument.providerRuc,
-                orderDocument.providerDescription, orderDocument.costCenterId, orderDocument.costCenterDescription,
-                orderDocument.costcenterAlias, orderDocument.currency, orderDocument.total, orderDocument.detraction,
-                orderDocument.perception, orderDocument.retention, orderDocument.tax, orderDocument.isAffectedIGV,
-                orderDocument.products, doc.orderDocumentNumber, doc.subtotal, doc.total, doc.cia,
-                doc.date, doc.documentStatus, doc.annotation, doc.sunatCode,
-                doc.retentionCalc, doc.taxCalc
-            ];
-            XLSX.utils.sheet_add_aoa(worksheet, [row], { origin: `A${rowIndex}` });
-            if (doc.payments && doc.payments.length > 0) {
-                doc.payments.forEach((payment) => {
-                    const paymentRow = [
-                        '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '',
-                        '', '', '', '', '', '', '', '', '', '', '',
-                        payment.paymentDate, payment.paidAmount, payment.isActive,
-                        payment.documentPaymentId, payment.paymentId
-                    ];
-                    rowIndex++;
-                    XLSX.utils.sheet_add_aoa(worksheet, [paymentRow], { origin: `A${rowIndex}` });
-                });
-                for (let col = 20; col < 30; col++) {
-                    const cellRef = XLSX.utils.encode_cell({ r: orderRowStart - 1, c: col });
-                    const mergeRef = XLSX.utils.encode_range({
-                        s: { r: orderRowStart - 1, c: col },
-                        e: { r: rowIndex - 2, c: col }
-                    });
-                    if (worksheet[cellRef]) {
-                        worksheet[cellRef].s = { alignment: { vertical: 'center' } };
-                    }
-                    if (!worksheet['!merges']) worksheet['!merges'] = [];
-                    worksheet['!merges'].push(XLSX.utils.decode_range(mergeRef));
-                }
+        ws.getRow(1).font = { bold: true };
+        ws.getRow(1).fill = {
+            type: 'pattern',
+            pattern: 'solid',
+            fgColor: { argb: 'F0F0F0' },
+            bgColor: { argb: 'F0F0F0' }
+        }
+
+        const addOrderRow = (
+            order: OrderWithDocumentsI,
+            doc: DocumentI | null = null,
+            payment: PaymentI | null = null
+        ) => {
+            const row = ws.addRow([
+                order.companyId,
+                order.correlative,
+                order.orderTypeId,
+                order.period,
+                order.systemUser,
+                formatDate1(order.orderDate),
+                order.observations,
+                order.providerRuc,
+                order.providerDescription,
+                order.costcenterAlias ? order.costcenterAlias : order.costCenterId,
+                order.isAffectedIGV ? 'Sí' : 'No',
+                getCurrencySymbol(order.currency),
+                formatCurrency(order.total),
+                order.tax ? formatCurrency(order.tax) : order.retention ? formatCurrency(order.retention) : '',
+                order.detraction ? formatCurrency(order.detraction) : order.perception ? formatCurrency(order.perception) : '',
+                order.products,
+                doc?.orderDocumentNumber ?? '',
+                doc?.subtotal ? formatCurrency(doc?.subtotal) : '',
+                doc?.total ? formatCurrency(doc?.total) : '',
+                doc?.documentStatus ?? '',
+                doc?.annotation ?? '',
+                doc?.sunatCode ?? '',
+                doc?.taxCalc ? formatCurrency(doc?.taxCalc) : doc?.retentionCalc ? formatCurrency(doc?.retentionCalc) : '',
+                payment?.paymentDate ? formatDate1(formatDateForInput(payment?.paymentDate.split('T')[0])) : '',
+                payment?.paidAmount ? formatCurrency(payment?.paidAmount) : '',
+            ]);
+            row.eachCell({ includeEmpty: true }, cell => {
+                cell.border = {
+                    top: { style: 'thin' },
+                    left: { style: 'thin' },
+                    bottom: { style: 'thin' },
+                    right: { style: 'thin' }
+                };
+                cell.alignment = { vertical: 'middle', horizontal: 'center' };
+            })
+        };
+        data.forEach(order => {
+            if (order.documents.length === 0) {
+                addOrderRow(order);
             } else {
-                rowIndex++;
+                order.documents.forEach(doc => {
+                    if (doc.payments && doc.payments.length > 0) {
+                        doc.payments.forEach(payment => {
+                            addOrderRow(order, doc, payment);
+                        });
+                    } else {
+                        addOrderRow(order, doc);
+                    }
+                })
             }
         });
-        if (orderDocument.documents.length > 1) {
-            for (let col = 0; col < 20; col++) {
-                const cellRef = XLSX.utils.encode_cell({ r: orderRowStart - 1, c: col });
-                const mergeRef = XLSX.utils.encode_range({
-                    s: { r: orderRowStart - 1, c: col },
-                    e: { r: rowIndex - 2, c: col }
-                });
-                if (worksheet[cellRef]) {
-                    worksheet[cellRef].s = { alignment: { vertical: 'center' } };
-                }
 
-                if (!worksheet['!merges']) worksheet['!merges'] = [];
-                worksheet['!merges'].push(XLSX.utils.decode_range(mergeRef));
+        const columnWidths: { [key: string]: number } = {
+            'A': 15,
+            'B': 15,
+            'C': 15,
+            'D': 15,
+            'E': 20,
+            'F': 20,
+            'G': 50,
+            'H': 20,
+            'I': 40,
+            'J': 20,
+            'K': 15,
+            'L': 15,
+            'M': 15,
+            'N': 15,
+            'O': 15,
+            'P': 50,
+            'Q': 15,
+            'R': 15,
+            'S': 25,
+            'T': 15,
+            'U': 40,
+            'V': 15,
+            'W': 15,
+            'X': 15,
+            'Y': 15,
+            'Z': 15
+        };
+
+        ws.columns.forEach((column, index) => {
+            const columnLetter = String.fromCharCode(65 + index);
+            if (columnWidths[columnLetter]) {
+                column.width = columnWidths[columnLetter];
+            } else {
+                column.width = 15;
             }
+        });
 
-        }
-    });
-    XLSX.utils.book_append_sheet(workbook, worksheet, 'Órdenes');
+        let startRow = 2;
+        data.forEach(order => {
+            const rowCount = order.documents.reduce((acc, doc) =>
+                acc + Math.max(1, doc.payments?.length || 0), 0) || 1;
 
-    const range = XLSX.utils.decode_range(worksheet['!ref'] || 'A1');
-    for (let C = range.s.c; C <= range.e.c; ++C) {
-        let max = 0;
-        for (let R = range.s.r; R <= range.e.r; ++R) {
-            const cell = worksheet[XLSX.utils.encode_cell({ c: C, r: R })];
-            if (cell && cell.v) max = Math.max(max, String(cell.v).length);
-        }
-        worksheet['!cols'] = worksheet['!cols'] || [];
-        worksheet['!cols'][C] = { wch: max + 2 };
+            if (rowCount > 1) {
+                for (let col = 1; col <= 16; col++) {
+                    ws.mergeCells(startRow, col, startRow + rowCount - 1, col);
+                    const cell = ws.getCell(startRow, col);
+                    cell.alignment = { vertical: 'middle', horizontal: 'center' };
+                }
+            }
+            startRow += rowCount;
+        });
+
+        startRow = 2;
+        data.forEach(order => {
+           order.documents.forEach(doc => {
+            const rowCount = doc.payments?.length || 1;
+            if (rowCount > 1) {
+                for (let col = 17; col <= 23; col++) {
+                    console.log(startRow, col, startRow + rowCount - 1, col)
+                    ws.mergeCells(startRow, col, startRow + rowCount - 1, col);
+                    const cell = ws.getCell(startRow, col);
+                    cell.alignment = { vertical: 'middle', horizontal: 'center' };
+                }
+            }
+            startRow += rowCount;
+           })
+        });
+
+        const buffer = await wb.xlsx.writeBuffer();
+        const blob = new Blob([buffer], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `${fileName}.xlsx`;
+        a.click();
+        window.URL.revokeObjectURL(url);
+    } catch (error) {
+        console.error(error);
     }
-
-    XLSX.writeFile(workbook, `${fileName}.xlsx`);
-}
+};
 

@@ -4,7 +4,7 @@ import { OrderWithDocumentsI, PettyCashReportResponseI, QueryFieldsI, ReportType
 import { useAuth } from '../context/AuthContext';
 import { showErrorMessage } from '../utils/alerts';
 import { getOrder } from '../api/order/get';
-import { getFirstDayOfCurrentMonth } from '../utils/dates';
+import { formatDate1, formatDate2, getFirstDayOfCurrentMonth } from '../utils/dates';
 import { getReport } from '../api/report/get';
 import { useSunatDocument } from './useSunatDocument';
 import { OptionType } from '../types/common/inputs';
@@ -124,7 +124,7 @@ export const useMainFilter = (reportType: ReportType) => {
     }
 
     const handleExport = (data: OrderWithDocumentsI[]) => {
-        exportToExcel(data, "OrdersExport");
+        exportToExcel(data, `REPORTE-GENERAL-${companySelected?.label}-${formatDate2(new Date())}`);
     };
 
     return {

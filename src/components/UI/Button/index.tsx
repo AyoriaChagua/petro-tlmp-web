@@ -7,12 +7,14 @@ type ButtonProps = {
     readonly onClick?: () => void;
     readonly type: "button" | "reset" | "submit";
     readonly isFilled?: boolean | undefined | null;
-    readonly title?: string
+    readonly title?: string;
+    readonly disabled?: boolean
 };
 
-export default function Button ({ styleType, text, icon: Icon, onClick, type, isFilled, title }: ButtonProps)  {
-    let baseClasses = ` font-medium rounded-lg text-lg px-2 py-1.5  mb-2 focus:outline-none focus:ring-4 text-center mt-2`;
+export default function Button({ styleType, text, icon: Icon, onClick, type, isFilled, title, disabled }: ButtonProps) {
+    let baseClasses = `font-medium rounded-lg text-lg px-2 py-1.5 mb-2 focus:outline-none focus:ring-4 text-center mt-2`;
     let typeClasses = "";
+    let disabledClasses = disabled ? "opacity-50 cursor-not-allowed" : "";
 
     switch (styleType) {
         case 'primary':
@@ -25,7 +27,7 @@ export default function Button ({ styleType, text, icon: Icon, onClick, type, is
             typeClasses = isFilled ? "text-white bg-red-600 hover:bg-red-700 focus:ring-red-300 border-2 border-red-500" : "text-red-600 bg-white hover:bg-red-200 focus:ring-red-600 border-2 border-red-500 flex justify-center items-center gap-2";
             break;
         case 'success':
-            typeClasses = isFilled ? "text-white bg-green-600 hover:bg-green-700 focus:ring-green-300 border-2 border-green-500" : "text-green-600 bg-white hover:bg-green-200 focus:ring-green-600 border-2 border-green-500 flex justify-center items-center gap-2"; 
+            typeClasses = isFilled ? "text-white bg-green-600 hover:bg-green-700 focus:ring-green-300 border-2 border-green-500" : "text-green-600 bg-white hover:bg-green-200 focus:ring-green-600 border-2 border-green-500 flex justify-center items-center gap-2";
             break;
         case 'purple':
             typeClasses = isFilled ? "text-white bg-purple-600 hover:bg-purple-700 focus:ring-purple-300 border-2 border-purple-500" : "text-purple-600 bg-white hover:bg-purple-200 focus:ring-purple-600 border-2 border-purple-500";
@@ -41,10 +43,15 @@ export default function Button ({ styleType, text, icon: Icon, onClick, type, is
     }
 
     return (
-        <button type={type} className={`${baseClasses} ${typeClasses}`} onClick={onClick} title={title}>
+        <button
+            type={type}
+            className={`${baseClasses} ${typeClasses} ${disabledClasses}`}
+            onClick={onClick}
+            title={title}
+            disabled={disabled}
+        >
             {Icon && <Icon />}
             {text}
         </button>
     );
 };
-
