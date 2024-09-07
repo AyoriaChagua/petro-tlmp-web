@@ -41,6 +41,8 @@ export default function ReportLayout({
     loadProviderOptions,
     handleOptionSelection,
     filters,
+    handleExport,
+    orderWithDocuments
   } = useMainFilter(reportType);
 
 
@@ -70,6 +72,7 @@ export default function ReportLayout({
             text="Exportar"
             type="button"
             icon={RiFileExcel2Line}
+            onClick={()=>handleExport(orderWithDocuments)}
           />
           <Button
             styleType="primary"

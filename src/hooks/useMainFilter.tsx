@@ -11,6 +11,7 @@ import { OptionType } from '../types/common/inputs';
 import { convertToOptions } from '../utils/functions';
 import { useProvider } from './useProvider';
 import { MultiValue, SingleValue } from 'react-select';
+import { exportToExcel } from '../utils/excel/report-order-with-documents';
 
 
 export const useMainFilter = (reportType: ReportType) => {
@@ -27,7 +28,7 @@ export const useMainFilter = (reportType: ReportType) => {
     const [showFilter, setShowFilter] = useState(true);
     const [filters, setFilters] = useState<QueryFieldsI>(initialFilterState);
 
-    const [orderWithDocumenst, setOrderWithDocumenst] = useState<OrderWithDocumentsI[]>([]);
+    const [orderWithDocuments, setOrderWithDocuments] = useState<OrderWithDocumentsI[]>([]);
     const [pettyCashReport, setPettyCashReport] = useState<PettyCashReportResponseI[]>([]);
     const [documentTypeOptions, setDocumentTypeOptions] = useState<OptionType[]>([]);
 
@@ -101,7 +102,7 @@ export const useMainFilter = (reportType: ReportType) => {
 
     const searchPettyCashDocuments = async () => {
         try {
-            const data = await getReport.getPettyCash(filters);
+            const data = await getReport.getPettyCash({...filters, isPettyCash: true});
             setPettyCashReport(data);
             return data;
         } catch (error) {
@@ -112,16 +113,19 @@ export const useMainFilter = (reportType: ReportType) => {
 
     const searchOrderDocuments = async () => {
         try {
-            console.log(filters)
-            const data = await getOrder.filterOrderWithDocuemts(filters);
-            console.log(data)
-            setOrderWithDocumenst(data);
+            const data = await getOrder.filterOrderWithDocuments(filters);
+            console.log(JSON.stringify(data, null, 2))
+            setOrderWithDocuments(data);
             return data;
         } catch (error) {
             showErrorMessage((error as Error).message);
             return [];
         }
     }
+
+    const handleExport = (data: OrderWithDocumentsI[]) => {
+        exportToExcel(data, "OrdersExport");
+    };
 
     return {
         showFilter,
@@ -131,13 +135,14 @@ export const useMainFilter = (reportType: ReportType) => {
         searchPurchasingDocuments,
         searchPettyCashDocuments,
         searchOrderDocuments,
-        orderWithDocumenst,
+        orderWithDocuments,
         pettyCashReport,
         handleInputChange,
         handleInputRange,
         documentTypeOptions,
         handleCheckBox,
         loadProviderOptions,
-        handleOptionSelection
+        handleOptionSelection,
+        handleExport
     }
 }

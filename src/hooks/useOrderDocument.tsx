@@ -70,8 +70,6 @@ export const useOrderDocument = ({
                 }
                 if (documentNumber && sunatDocuments) {
                     const data = await getOrderDocument.getDocumentById(documentNumber, companyId);
-                    console.log(perceptionOptions);
-                    console.log(data.perceptionPerc)
                     setDocumentForm(prevState => ({
                         ...prevState,
                         annotation: data.annotation,
@@ -246,8 +244,6 @@ export const useOrderDocument = ({
                 taxCalc: Boolean(tax) ? parseFloat(documentForm.taxRetentionValue) : null,
                 taxPerc: Boolean(tax) ? tax : null
             };
-
-            console.log(JSON.stringify(documentRequest, null, 2))
 
             let newDocumentResponse: OrderDocumentResponseI | OrderDocumentRequestCreateI;
 
