@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { DocumentI, OrderWithDocumentsI, PettyCashReportResponseI } from "../types/reports";
+import { DocumentI, OrderWithDocumentsI, ReportResponseI } from "../types/reports";
 import { getCurrencySymbol } from "../utils/functions";
 import { DocumentLSI, OrderLSI } from "../types/order-document";
 
@@ -8,7 +8,7 @@ import { DocumentLSI, OrderLSI } from "../types/order-document";
 
 export const useOrderDocumentReport = () => {
     const [orderWithDocuments, setOrderWithDocuments] = useState<OrderWithDocumentsI[]>([]);
-    const receiveData = (data: OrderWithDocumentsI[] | PettyCashReportResponseI[]) => {
+    const receiveData = (data: OrderWithDocumentsI[] | ReportResponseI[]) => {
         setOrderWithDocuments((data as OrderWithDocumentsI[]));
     };
 

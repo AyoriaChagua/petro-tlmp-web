@@ -1,7 +1,7 @@
 export const splitVoucher = (input: string): [string, string] => {
-    const match = input.match(/[A-Z]*([0-9]{3})-([0-9]+)/);
+    const match = input.split('-');
     if (match) {
-        return [match[1], match[2]];
+        return [match[0], match[1]];
     }
     throw new Error('El formato del string es incorrecto');
 }

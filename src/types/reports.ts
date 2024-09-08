@@ -77,7 +77,7 @@ export interface DocumentFile {
 }
 
 
-export interface PettyCashReportResponseI {
+export interface ReportResponseI {
     currency: string
     providerRuc: string
     providerDescription: string
@@ -98,5 +98,7 @@ export interface PettyCashReportResponseI {
     biog: number
     typeEmission: string
     annotation: string
+    taxCalc?: number | null
+    retentionCalc?: number | null
   }
   

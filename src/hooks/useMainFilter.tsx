@@ -1,17 +1,17 @@
 import { useEffect, useState } from 'react';
 import { Range } from 'react-date-range';
-import { OrderWithDocumentsI, PettyCashReportResponseI, QueryFieldsI, ReportType } from '../types/reports';
+import { OrderWithDocumentsI, ReportResponseI, QueryFieldsI, ReportType } from '../types/reports';
 import { useAuth } from '../context/AuthContext';
 import { showErrorMessage } from '../utils/alerts';
 import { getOrder } from '../api/order/get';
-import { formatDate1, formatDate2, getFirstDayOfCurrentMonth } from '../utils/dates';
+import { formatDate2, getFirstDayOfCurrentMonth } from '../utils/dates';
 import { getReport } from '../api/report/get';
 import { useSunatDocument } from './useSunatDocument';
 import { OptionType } from '../types/common/inputs';
 import { convertToOptions } from '../utils/functions';
 import { useProvider } from './useProvider';
 import { MultiValue, SingleValue } from 'react-select';
-import { exportToExcel } from '../utils/excel/report-order-with-documents';
+import { exportToExcelGeneralReport } from '../utils/excel/report-order-with-documents';
 
 
 export const useMainFilter = (reportType: ReportType) => {
@@ -29,20 +29,26 @@ export const useMainFilter = (reportType: ReportType) => {
     const [filters, setFilters] = useState<QueryFieldsI>(initialFilterState);
 
     const [orderWithDocuments, setOrderWithDocuments] = useState<OrderWithDocumentsI[]>([]);
-    const [pettyCashReport, setPettyCashReport] = useState<PettyCashReportResponseI[]>([]);
+    const [documentReport, setDocumentReport] = useState<ReportResponseI[]>([]);
+
+
     const [documentTypeOptions, setDocumentTypeOptions] = useState<OptionType[]>([]);
 
     useEffect(() => {
         (async () => {
             let initialFilter = { ...initialFilterState };
-            if (reportType === "general") initialFilter = {
-                ...initialFilter,
-                orderTypeIds: ["O/C", "O/P", "O/S"]
-            } 
-            else if(reportType === "pettyCash") initialFilter = {
-                ...initialFilter,
-                isPettyCash: true
-            } 
+            if (reportType === "general") {
+                initialFilter = {
+                    ...initialFilter,
+                    orderTypeIds: ["O/C", "O/P", "O/S"]
+                }
+            }
+            else if (reportType === "pettyCash") {
+                initialFilter = {
+                    ...initialFilter,
+                    isPettyCash: true
+                }
+            }
             setFilters(initialFilter);
             const documentsData = await fetchSunatDocuments();
             documentsData && setDocumentTypeOptions(convertToOptions({
@@ -84,12 +90,20 @@ export const useMainFilter = (reportType: ReportType) => {
         }));
     };
 
-    const handleOptionSelection = (option: SingleValue<OptionType> | MultiValue<OptionType>, field: keyof QueryFieldsI) => {
+    const handleOptionSelection = (option: SingleValue<OptionType> | MultiValue<OptionType>, field1: keyof QueryFieldsI, field2?: keyof QueryFieldsI) => {
         const singleOption = option as SingleValue<OptionType>;
-        setFilters(prevState => ({
-            ...prevState,
-            [field]: singleOption?.value
-        }));
+        if (field2) {
+            setFilters(prevState => ({
+                ...prevState,
+                [field1]: singleOption?.value,
+                [field2]: singleOption?.label
+            }));
+        } else {
+            setFilters(prevState => ({
+                ...prevState,
+                [field1]: singleOption?.value
+            }));
+        }
     };
 
     const loadProviderOptions = async (inputValue: string) => {
@@ -100,10 +114,15 @@ export const useMainFilter = (reportType: ReportType) => {
 
     const searchPurchasingDocuments = () => { };
 
-    const searchPettyCashDocuments = async () => {
+    const searchDocumentReport = async () => {
         try {
-            const data = await getReport.getPettyCash({...filters, isPettyCash: true});
-            setPettyCashReport(data);
+            let filterApply = { ...filters }
+            if (reportType === "pettyCash") filterApply = {
+                ...filterApply,
+                isPettyCash: true
+            }
+            const data = await getReport.getDocuments(filterApply);
+            setDocumentReport(data);
             return data;
         } catch (error) {
             showErrorMessage((error as Error).message);
@@ -114,7 +133,6 @@ export const useMainFilter = (reportType: ReportType) => {
     const searchOrderDocuments = async () => {
         try {
             const data = await getOrder.filterOrderWithDocuments(filters);
-            console.log(JSON.stringify(data, null, 2))
             setOrderWithDocuments(data);
             return data;
         } catch (error) {
@@ -124,7 +142,15 @@ export const useMainFilter = (reportType: ReportType) => {
     }
 
     const handleExport = (data: OrderWithDocumentsI[]) => {
-        exportToExcel(data, `REPORTE-GENERAL-${companySelected?.label}-${formatDate2(new Date())}`);
+        if(reportType === "general") exportToExcelGeneralReport(data, `REPORTE-GENERAL-${companySelected?.label}-${formatDate2(new Date())}`);
+    };
+
+    const clearFilter = () => {
+        window.location.reload();
+    };
+
+    const handleBlurInputDocumentNumber = () => {
+        setFilters(prevState => ({ ...prevState, orderNumber: filters.orderNumber?.padStart(8, "0") }));
     };
 
     return {
@@ -133,16 +159,18 @@ export const useMainFilter = (reportType: ReportType) => {
         handleDateRange,
         setShowFilter,
         searchPurchasingDocuments,
-        searchPettyCashDocuments,
+        searchDocumentReport,
         searchOrderDocuments,
         orderWithDocuments,
-        pettyCashReport,
+        documentReport,
         handleInputChange,
         handleInputRange,
         documentTypeOptions,
         handleCheckBox,
         loadProviderOptions,
         handleOptionSelection,
-        handleExport
+        handleExport,
+        clearFilter,
+        handleBlurInputDocumentNumber,
     }
 }

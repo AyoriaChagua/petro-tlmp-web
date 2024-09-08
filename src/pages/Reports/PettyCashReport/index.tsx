@@ -1,22 +1,22 @@
 import { ReportLayout, Table } from "../../../components";
-import { usePettyCashReport } from "../../../hooks/usePettyCashReport";
+import { useDocumentReport } from "../../../hooks/useDocumentReport";
 import { TableColumn } from "../../../types/common/table";
-import { PettyCashReportResponseI } from "../../../types/reports";
+import { ReportResponseI } from "../../../types/reports";
 import { formatCurrency, splitVoucher } from "../../../utils/formats";
 import { getCurrencySymbol } from "../../../utils/functions";
 
 
 export default function PettyCashReport() {
     const {
-        pettyCashReport,
+        documentReport,
         receiveData
-    } = usePettyCashReport();
+    } = useDocumentReport();
 
-    const columns: TableColumn<PettyCashReportResponseI>[] = [
+    const columns: TableColumn<ReportResponseI>[] = [
         { key: "correlative", label: "N° orden"},
         { key: "date", label: "Fecha"},
+        { key: "actions", label: "Moneda", actions: (data) => <>{getCurrencySymbol(data.currency)}</>},
         { key: "actions", label: "Monto debe", actions: (data) => <>{formatCurrency(data.total)}</>},
-        { key: "actions", label: "Moneda S/D", actions: (data) => <>{getCurrencySymbol(data.currency)}</>},
         { key: "actions", label: "T. cambio", actions: (data) => <>{formatCurrency(data.exchangeRate)}</>},
         { key: "actions", label: "Doc.", actions: (data) => <>{splitVoucher(data.orderDocumentNumber)[0]}</>},
         { key: "actions", label: "Num. Doc.",actions: (data) => <>{splitVoucher(data.orderDocumentNumber)[1]}</>},
@@ -31,7 +31,7 @@ export default function PettyCashReport() {
     return (
         <ReportLayout reportType="pettyCash" onSubmit={receiveData}>
             <div className="mt-3">
-                <Table<PettyCashReportResponseI> columns={columns} data={pettyCashReport} />
+                <Table<ReportResponseI> columns={columns} data={documentReport} />
             </div>
         </ReportLayout>
     )

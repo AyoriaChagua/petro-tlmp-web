@@ -39,7 +39,6 @@ export const useOrder = () => {
 
 
     useEffect(() => {
-        console.log(correlativeControl)
         if (costCenters.length > 0 && requestingAreas.length > 0 && approvalPersonnel.length > 0 && correlativeControl.length > 0 && !isDataReady) {
             const withCorrelatives = checkCorrelative();
             if (!withCorrelatives) {
@@ -334,7 +333,6 @@ export const useOrder = () => {
     };
 
     const reloadCorrelative = async () => {
-        console.log("reload")
         fetchCorrelativeControl();
     }
 

@@ -67,7 +67,6 @@ export const useDocumentPayment = ({ companyId, orderDocumentNumber }: ParamsToC
         const { value } = event.target;
         setPaymentDocumentForm(prevState => prevState.map((form, i) => {
             if (i === index) {
-                console.log("es index", index)
                 return {
                     ...form,
                     [field]: value
@@ -86,7 +85,6 @@ export const useDocumentPayment = ({ companyId, orderDocumentNumber }: ParamsToC
                 paymentDate,
                 systemUser: user!.id
             });
-            console.log("createPaymentDocuments", data)
 
             if (data) {
                 return data
@@ -102,7 +100,6 @@ export const useDocumentPayment = ({ companyId, orderDocumentNumber }: ParamsToC
         e.preventDefault();
         try {
             await Promise.all(paymentDocumentForm.map(async (form) => {
-                console.log(form)
                 const data = await createPaymentDocuments(parseInt(form.amountPaid), form.issueDate);
 
                 if (data) {

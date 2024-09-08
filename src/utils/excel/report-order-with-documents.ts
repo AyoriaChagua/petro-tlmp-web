@@ -3,8 +3,9 @@ import { OrderWithDocumentsI, DocumentI, PaymentI } from '../../types/reports';
 import { formatCurrency } from '../formats';
 import { formatDate1, formatDateForInput } from '../dates';
 import { getCurrencySymbol } from '../functions';
+import { showErrorMessage } from '../alerts';
 
-export const exportToExcel = async (
+export const exportToExcelGeneralReport = async (
     data: OrderWithDocumentsI[],
     fileName: string,
 ) => {
@@ -151,7 +152,6 @@ export const exportToExcel = async (
             const rowCount = doc.payments?.length || 1;
             if (rowCount > 1) {
                 for (let col = 17; col <= 23; col++) {
-                    console.log(startRow, col, startRow + rowCount - 1, col)
                     ws.mergeCells(startRow, col, startRow + rowCount - 1, col);
                     const cell = ws.getCell(startRow, col);
                     cell.alignment = { vertical: 'middle', horizontal: 'center' };
@@ -170,7 +170,7 @@ export const exportToExcel = async (
         a.click();
         window.URL.revokeObjectURL(url);
     } catch (error) {
-        console.error(error);
+        showErrorMessage('Error al generar el archivo del reporte  😥' + (error as Error).message);
     }
 };
 

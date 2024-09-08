@@ -6,7 +6,6 @@ export const getCia = async (): Promise<Cia[]> => {
         const response = await axiosInstance.get<Cia[]>(`/cia`);
         return response.data;
     } catch (error) {
-        console.error(error);
         throw new Error(`Error obteniendo las companias`);
     }
 }

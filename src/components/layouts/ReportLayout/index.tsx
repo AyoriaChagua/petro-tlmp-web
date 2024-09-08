@@ -7,14 +7,14 @@ import { shortOrderTypeOptions } from "../../../utils/constants"
 import "./styles.css";
 import { RiFileExcel2Line } from "react-icons/ri"
 import { FaSearch } from "react-icons/fa"
-import { OrderWithDocumentsI, PettyCashReportResponseI, ReportType } from "../../../types/reports"
+import { OrderWithDocumentsI, ReportResponseI, ReportType } from "../../../types/reports"
 import AsyncSelect from 'react-select/async';
 
 
 interface Props {
   readonly children: React.ReactNode
   readonly reportType: ReportType
-  readonly onSubmit: (data: OrderWithDocumentsI[] | PettyCashReportResponseI[]) => void
+  readonly onSubmit: (data: OrderWithDocumentsI[] | ReportResponseI[]) => void
   readonly onExport?: () => void
   readonly documentsToExport?: []
 }
@@ -27,7 +27,6 @@ export default function ReportLayout({
   onSubmit,
   reportType
 }: Props) {
-  console.log(onExport, documentsToExport)
   const {
     handleDateRange,
     handleInputChange,
@@ -36,19 +35,22 @@ export default function ReportLayout({
     showFilter,
     setShowFilter,
     searchOrderDocuments,
-    searchPettyCashDocuments,
+    searchDocumentReport,
     handleCheckBox,
     loadProviderOptions,
     handleOptionSelection,
     filters,
     handleExport,
-    orderWithDocuments
+    orderWithDocuments,
+    clearFilter,
+    handleBlurInputDocumentNumber,
+    documentReport
   } = useMainFilter(reportType);
 
 
   const handleSearch = async () => {
-    let data: OrderWithDocumentsI[] | PettyCashReportResponseI[] = [];
-    if (reportType === "pettyCash") data = await searchPettyCashDocuments();
+    let data: OrderWithDocumentsI[] | ReportResponseI[] = [];
+    if (reportType === "pettyCash" || reportType === "purchasing") data = await searchDocumentReport();
     else if (reportType === "general") data = await searchOrderDocuments();
     if (data) onSubmit(data);
   };
@@ -65,6 +67,7 @@ export default function ReportLayout({
             styleType="danger"
             text="Limpiar"
             type="button"
+            onClick={clearFilter}
             icon={BiTrash}
           />
           <Button
@@ -73,7 +76,7 @@ export default function ReportLayout({
             type="button"
             icon={RiFileExcel2Line}
             onClick={()=>handleExport(orderWithDocuments)}
-            disabled={orderWithDocuments.length === 0}
+            disabled={orderWithDocuments.length === 0 && documentReport.length === 0}
           />
           <Button
             styleType="primary"
@@ -120,6 +123,7 @@ export default function ReportLayout({
               maxLength={10}
               onChange={(e) => handleInputChange(e, "orderNumber")}
               value={filters.orderNumber}
+              onBlur={handleBlurInputDocumentNumber}
             />
           </div>
           {reportType !== "general" &&
@@ -155,8 +159,6 @@ export default function ReportLayout({
               />
             </div>
           }
-
-
         </div>
       </div>
       {children}

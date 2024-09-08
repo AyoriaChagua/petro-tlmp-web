@@ -14,7 +14,6 @@ export const postOrderDocument = {
     createPaymentDocument: async (newPaymentDocument: PaymentDocumentRequestI) => {
         try {
             const response = await axiosAuthInstance.post<PaymentResponseI>('/payment-documents', newPaymentDocument);
-            console.log(response)
             return response.data;
         } catch (error) {
             throw new Error('Error creando el pago 🥲, ' + (error as Error).message);

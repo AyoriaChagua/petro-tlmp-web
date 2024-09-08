@@ -16,7 +16,6 @@ export const putUser = {
             const response = await axiosAuthInstance.put<UserI>(`/user-roles/${id}`, userRoles);
             return response.data;
         } catch (error) {
-            console.log(error)
             throw new Error("Error al cambiar los roles del usuario");
         }
     },
@@ -31,7 +30,6 @@ export const putUser = {
     updatePasswordByAdmin: async (changePasswordByAdmin: ChangePassowrdByAdminRequestI) => {
         try {
             const response = await axiosAuthInstance.patch<void>(`/users/change-password-by-admin`, changePasswordByAdmin);
-            console.log(response)
             if(response.status !== 200) throw new Error("No se pudo cambiar la contraseña"); 
         } catch (error) {
             throw new Error((error as Error).message);
