@@ -75,7 +75,7 @@ export default function ReportLayout({
             text="Exportar"
             type="button"
             icon={RiFileExcel2Line}
-            onClick={()=>handleExport(orderWithDocuments)}
+            onClick={()=>handleExport(reportType === "general" ? orderWithDocuments : documentReport)}
             disabled={orderWithDocuments.length === 0 && documentReport.length === 0}
           />
           <Button

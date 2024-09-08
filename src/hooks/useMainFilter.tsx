@@ -12,6 +12,8 @@ import { convertToOptions } from '../utils/functions';
 import { useProvider } from './useProvider';
 import { MultiValue, SingleValue } from 'react-select';
 import { exportToExcelGeneralReport } from '../utils/excel/report-order-with-documents';
+import { exportToExcelPettyCashReport } from '../utils/excel/report-petty-cash';
+import { exportToExcelPurchasingReport } from '../utils/excel/report-purchasing';
 
 
 export const useMainFilter = (reportType: ReportType) => {
@@ -141,9 +143,36 @@ export const useMainFilter = (reportType: ReportType) => {
         }
     }
 
-    const handleExport = (data: OrderWithDocumentsI[]) => {
-        if(reportType === "general") exportToExcelGeneralReport(data, `REPORTE-GENERAL-${companySelected?.label}-${formatDate2(new Date())}`);
+    const handleExport = (data: OrderWithDocumentsI[] | ReportResponseI[]) => {
+        if (reportType === "general") {
+            if (isOrderWithDocumentsArray(data)) {
+                exportToExcelGeneralReport(data, `REPORTE-GENERAL-${companySelected?.label}-${formatDate2(new Date())}`);
+            } else {
+                console.error("Tipo de datos incorrecto para el reporte general");
+            }
+        } else if (reportType === "pettyCash") {
+            console.log(data)
+            if (isReportResponseArray(data)) {
+                exportToExcelPettyCashReport(data, `REPORTE-CAJA-CHICA-${companySelected?.label}-${formatDate2(new Date())}`);
+            } else {
+                console.error("Tipo de datos incorrecto para el reporte de caja chica");
+            }
+        } else if (reportType === "purchasing") {
+            if (isReportResponseArray(data)) {
+                exportToExcelPurchasingReport(data, `REPORTE-PROVEEDORES-${companySelected?.label}-${formatDate2(new Date())}`);
+            } else {
+                console.error("Tipo de datos incorrecto para el reporte de proveedores");
+            }
+        }
     };
+
+    function isOrderWithDocumentsArray(data: any): data is OrderWithDocumentsI[] {
+        return Array.isArray(data) && data.length > 0 && 'documents' in data[0];
+    }
+
+    function isReportResponseArray(data: any): data is ReportResponseI[] {
+        return Array.isArray(data) && data.length > 0 && !('documents' in data[0]);
+    }
 
     const clearFilter = () => {
         window.location.reload();
