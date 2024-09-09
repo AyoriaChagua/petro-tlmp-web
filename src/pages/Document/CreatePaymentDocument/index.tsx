@@ -36,10 +36,10 @@ export default function CreatePaymentDocument() {
                         onClick={handleAddPayment}
                     />
                 </div>
-                <div className="overflow-x-auto">
-                    <form className="flex gap-9 min-w-full px-3 pt-2 pb-10" onSubmit={onSubmit}>
+                <div className="">
+                    <form className="grid lg:grid-cols-3 md:grid-cols-2 grid-cols-1 gap-7 p-5" onSubmit={onSubmit}>
                         {paymentDocumentForm.map((form, index) => (
-                            <div key={index} className="relative flex-shrink-0 p-4 bg-slate-100 rounded-lg min-w-[18rem]">
+                            <div key={index} className="relative col-span-1 px-3 pt-2 pb-10 bg-slate-100 rounded-lg ">
                                 <Input
                                     id={`amountPaid-${index}`}
                                     typeForm="create"
@@ -85,29 +85,9 @@ export default function CreatePaymentDocument() {
                             />
                         </div>
                     </form>
-
                 </div>
 
             </div>
-            <h2 className="text-2xl font-semibold text-gray-500">Adjuntos</h2>
-            <form>
-                <div className="grid grid-cols-2 gap-4">
-                    <div className="col-span-1">
-                        <FileInput
-                            id={`file-document`}
-                            label="Adjuntar comprobante"
-                            onChange={() => { }}
-                        />
-                    </div>
-                    <div className="col-span-1">
-                        <FileInput
-                            id={`file-others`}
-                            label="Otros adjuntos"
-                            onChange={() => { }}
-                        />
-                    </div>
-                </div>
-            </form>
         </div>
     );
 }

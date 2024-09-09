@@ -58,8 +58,18 @@ export default function Provider() {
 
     const columns: TableColumn<ProviderMP>[] = [
         { key: "ruc", label: "RUC" },
-        { key: "description", label: "Descripción" },
-        { key: "address", label: "Dirección" },
+        {
+            key: "actions", label: "Descripción", actions: (row) =>
+                <div style={{ maxWidth: "230px", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+                    {row.description}
+                </div>
+        },
+        {
+            key: "actions", label: "Dirección", actions: (row) =>
+                <div style={{ maxWidth: "150px", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+                    {row.address}
+                </div>
+        },
         { key: "phone", label: "Teléfono" },
         {
             key: "actions", label: "Cuentas", actions: (row) => (
@@ -151,7 +161,7 @@ export default function Provider() {
                         </div>
                     </nav>
                 </div>
-                <form className="flex w-full flex-col" onSubmit={handleSubmit}>
+                <form className="flex w-full flex-col py-3" onSubmit={handleSubmit}>
                     <Input
                         id="provider_ruc"
                         label="RUC/DNI:"
@@ -189,7 +199,7 @@ export default function Provider() {
                         type="number"
                         onChange={(e) => handleInputChangeNewProvider(e.target.value.toUpperCase(), "phone")}
                     />
-                    <Input
+                    {/* <Input
                         id="provider_email"
                         label="Correo electrónico:"
                         typeForm="maintanance"
@@ -197,25 +207,24 @@ export default function Provider() {
                         value={formProvider.email}
                         type="email"
                         onChange={(e) => handleInputChangeNewProvider(e.target.value.toUpperCase(), "email")}
-                    />
+                    /> */}
                     <div className="flex flex-row justify-between items-center">
                         <span className="text-lg font-semibold text-gray-300 mb-4">Cuentas bancarias:</span>
                         <IconButton icon="plus" isSelected={false} onClick={addAccount} />
                     </div>
-                    <div className="overflow-x-auto whitespace-nowrap">
+                    <div className="min-h-48 overflow-x-scroll ">
                         {formProvider.accounts.map((account, index) => (
-                            <div key={index} className="inline-block mr-5">
+                            <div key={index} className="inline-block mr-5 ">
                                 <div className="flex flex-row border border-sky-300 pl-3 pt-2 mb-2 rounded-lg">
-                                    <div className="flex flex-col w-96 pr-2">
+                                    <div className="flex flex-col  pr-2">
                                         <div className="flex flex-row justify-between gap-2">
                                             <Input
                                                 id={`account_number_${index}`}
-                                                label="Número de cuenta:"
+                                                label="N° de cuenta:"
                                                 typeForm="maintanance"
                                                 className="flex flex-col w-1/2"
                                                 value={account.accountNumber}
                                                 onChange={(e) => handleInputChangeNewProvider(e.target.value.toUpperCase(), "accountNumber", index)}
-                                                required={true}
                                             />
                                             <CustomSelect
                                                 id={`bank_name_${index}`}
@@ -261,6 +270,7 @@ export default function Provider() {
                         ))}
                     </div>
                     <Button text={updateProvider ? "Actualizar" : "Crear"} type="submit" styleType="form" />
+                    <br />
                 </form>
             </MaintananceLayout>
         </div>

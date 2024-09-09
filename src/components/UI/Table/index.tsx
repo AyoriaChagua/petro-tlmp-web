@@ -4,7 +4,7 @@ import { TableProps } from "../../../types/common/table";
 const Table = <T,>({ columns, data }: TableProps<T>) => {
     return (
         <div className="overflow-x-auto">
-            <table className="min-w-full bg-white border border-gray-200 rounded-lg shadow-md">
+            <table className="min-w-full bg-white border border-gray-200 rounded-lg shadow-md mb-5">
                 <thead>
                     <tr className="bg-gray-100 border-b border-gray-300">
                         {columns.map((column, index) => (

@@ -19,7 +19,8 @@ import {
     SunatDocuments,
     UpdateDocument,
     UpdateOrder,
-    Users
+    Users,
+    FileFolder
 } from "../pages";
 import { useAuth } from "../context/AuthContext";
 
@@ -47,24 +48,47 @@ const AuthenticatedRedirect = () => {
 };
 
 export default function AppRoutes() {
+    const { roles, isAuthenticated } = useAuth();
     return (
         <Router>
             <Routes>
                 <Route path="/" element={<ProtectedRoute><MainLayout /></ProtectedRoute>}>
                     <Route index element={<Navigate to="/dashboard" replace />} />
                     <Route path="dashboard" element={<Home />} />
-                    <Route path="maintanance/providers" element={<Provider />} />
-                    <Route path="maintanance/cost-center" element={<CostCenter />} />
-                    <Route path="maintanance/approving-personnel" element={<ApprovingPersonnel />} />
-                    <Route path="maintanance/requesting-area" element={<RequestingArea />} />
-                    <Route path="maintanance/sunat-documents" element={<SunatDocuments />} />
-                    <Route path="maintanance/users" element={<Users />} />
-                    <Route path="maintanance/correlative-control" element={<CorrelativeControl />} />
-                    <Route path="order-mp/create" element={<CreateOrder />} />
-                    <Route path="order-mp/udpate" element={<UpdateOrder />} />
-                    <Route path="document-mp-voucher/document-form/:orderCompanyId/:orderTypeId/:orderPeriod/:orderCorrelative/:orderDocumentNumber?" element={<DocumentForm />} />
-                    <Route path="document-mp-voucher-payment/create/:companyId/:orderDocumentNumber" element={<CreatePaymentDocument />} />
-                    <Route path="document-mp-voucher/udpate" element={<UpdateDocument />} />
+                    {(isAuthenticated && (roles?.find(rol => rol === "ADMINISTRADOR"))) &&
+                        <>
+                            <Route path="maintanance/providers" element={<Provider />} />
+                            <Route path="maintanance/cost-center" element={<CostCenter />} />
+                            <Route path="maintanance/approving-personnel" element={<ApprovingPersonnel />} />
+                            <Route path="maintanance/requesting-area" element={<RequestingArea />} />
+                            <Route path="maintanance/sunat-documents" element={<SunatDocuments />} />
+                            <Route path="maintanance/users" element={<Users />} />
+                            <Route path="maintanance/correlative-control" element={<CorrelativeControl />} />
+                        </>
+                    }
+
+
+                    {
+                        roles?.includes("LOGISTICA") &&
+                        <>
+                            <Route path="order-mp/create" element={<CreateOrder />} />
+                            <Route path="order-mp/udpate" element={<UpdateOrder />} />
+                        </>
+                    }
+                    {
+                        roles?.includes("MESA DE PARTES") &&
+                        <>
+                            <Route path="document-mp-voucher/document-form/:orderCompanyId/:orderTypeId/:orderPeriod/:orderCorrelative/:orderDocumentNumber?" element={<DocumentForm />} />
+                            <Route path="maintanance/providers" element={<Provider />} />
+                        </>
+
+                    }
+
+                    {
+                        roles?.includes("TESORERIA") &&
+                        <Route path="document-mp-voucher-payment/create/:companyId/:orderDocumentNumber" element={<CreatePaymentDocument />} />
+                    }
+                    <Route path="file-folder-mp/:folderType/:numberReference" element={<FileFolder />} />
                     <Route path="reports/order-document" element={<OrderDocumentReport />} />
                     <Route path="reports/petty-cash" element={<PettyCashReport />} />
                     <Route path="reports/purchasing" element={<PurchasingReport />} />

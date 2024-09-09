@@ -23,4 +23,6 @@ export { default as OrderDocumentReport } from './Reports/OrderDocumentReport';
 export { default as PettyCashReport } from './Reports/PettyCashReport';
 export { default as PurchasingReport } from './Reports/PurchasingReport';
 
+export { default as FileFolder } from './FileFolder'
+
 export { default as NotFound } from './NotFound';

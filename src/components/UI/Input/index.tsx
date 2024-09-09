@@ -60,6 +60,7 @@ export default function Input({ id, label, required, type, value, placeholder, o
                 onChange={onChange}
                 maxLength={maxLength}
                 onBlur={onBlur}
+                onWheel={(e) => (e.target as HTMLInputElement).blur()}
             />
         </div>
     )

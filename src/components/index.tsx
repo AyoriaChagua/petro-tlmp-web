@@ -24,3 +24,4 @@ export { default as CustomDateRange } from './UI/CustomDateRange';
 export { default as RangeAmounts } from './UI/RangeAmounts';
 export { default as CheckBoxSelector } from './UI/CheckBoxSelector';
 export { default as FileInput } from './UI/FileInput';
+export { default as FolderButton } from './UI/FolderButton';

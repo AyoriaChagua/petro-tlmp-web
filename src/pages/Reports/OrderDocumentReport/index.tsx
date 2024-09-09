@@ -10,8 +10,10 @@ import { formatDate1 } from "../../../utils/dates";
 import { useOrderDocumentReport } from "../../../hooks/useOrderDocumentReport";
 import { MdOutlinePayments } from "react-icons/md";
 import React from "react";
-import { BiDownload } from "react-icons/bi";
+import { BiDownload, BiFolderOpen } from "react-icons/bi";
 import { getApiBaseUrl } from "../../../api/config";
+import { useAuth } from "../../../context/AuthContext";
+import { BsFolder } from "react-icons/bs";
 
 export default function OrderDocumentReport() {
 
@@ -23,7 +25,7 @@ export default function OrderDocumentReport() {
         handleClickToCreateDocumentPayment,
     } = useOrderDocumentReport();
 
-
+    const { roles } = useAuth();
 
     const columns: TableColumn<OrderWithDocumentsI>[] = [
         { key: "orderTypeId", label: "Tipo Orden" },
@@ -70,36 +72,56 @@ export default function OrderDocumentReport() {
                         type="button"
                         title="Descargar PDF"
                     />
-                    <Button
-                        icon={FaRegEdit}
-                        styleType="primary"
-                        type="button"
-                        title="Editar Orden"
-                    />
-                    <Button
-                        icon={IoCopyOutline}
-                        styleType="primary"
-                        type="button"
-                        title="Crear copia"
-                    />
+                    {
+                        roles?.includes("LOGISTICA") &&
+                        <>
+                            <Button
+                                icon={FaRegEdit}
+                                styleType="primary"
+                                type="button"
+                                title="Editar Orden"
+                            />
+                            <Button
+                                icon={IoCopyOutline}
+                                styleType="primary"
+                                type="button"
+                                title="Crear copia"
+                            />
+                        </>
+                    }
+                    {
+                        roles?.includes("MESA DE PARTES") &&
+                        <ExternalLink
+                            to={`/document-mp-voucher/document-form/${encryptString(orderDocument.companyId)}/${encryptString(orderDocument.orderTypeId)}/${encryptString(orderDocument.period)}/${encryptString(orderDocument.correlative)}`}
+                            onClick={() => handleClickToCreateDocument({
+                                orderTypeId: orderDocument.orderTypeId,
+                                period: orderDocument.period,
+                                companyId: orderDocument.companyId,
+                                correlative: orderDocument.correlative,
+                                currency: orderDocument.currency,
+                                total: orderDocument.total,
+                                tax: orderDocument.tax,
+                                perception: orderDocument.perception,
+                                detraction: orderDocument.detraction,
+                                retention: orderDocument.retention,
+                                costCenter: orderDocument.costCenterDescription
+                            })}
+                            color="blue"
+                        >
+                            <GrDocumentStore /> +
+                        </ExternalLink>
+                    }
                     <ExternalLink
-                        to={`/document-mp-voucher/document-form/${encryptString(orderDocument.companyId)}/${encryptString(orderDocument.orderTypeId)}/${encryptString(orderDocument.period)}/${encryptString(orderDocument.correlative)}`}
-                        onClick={() => handleClickToCreateDocument({
+                        to={`/file-folder-mp/order/${encryptString(JSON.stringify({
+                            companyId: orderDocument.companyId,
                             orderTypeId: orderDocument.orderTypeId,
                             period: orderDocument.period,
-                            companyId: orderDocument.companyId,
-                            correlative: orderDocument.correlative,
-                            currency: orderDocument.currency,
-                            total: orderDocument.total,
-                            tax: orderDocument.tax,
-                            perception: orderDocument.perception,
-                            detraction: orderDocument.detraction,
-                            retention: orderDocument.retention,
-                            costCenter: orderDocument.costCenterDescription
-                        })}
+                            correlative: orderDocument.correlative
+                        }))}`}
                         color="blue"
+                        title="Carpeta de archivos"
                     >
-                        <GrDocumentStore /> +
+                        <BsFolder className="text-base" />
                     </ExternalLink>
                 </div>
             )
@@ -149,37 +171,48 @@ export default function OrderDocumentReport() {
                                         <td className="border px-4 py-2">{doc.documentStatus}</td>
                                         <td className="border px-4 py-2">
                                             <div className="flex flex-row justify-center items-center gap-1 ">
-    
+                                                {roles?.includes("MESA DE PARTES") && (
+                                                    <ExternalLink
+                                                        to={`/document-mp-voucher/document-form/${encryptString(orderDocument.companyId)}/${encryptString(orderDocument.orderTypeId)}/${encryptString(orderDocument.period)}/${encryptString(orderDocument.correlative)}/${encryptString(doc.orderDocumentNumber)}`}
+                                                        color="blue"
+                                                        title="Editar documento"
+                                                        onClick={() => handleClickToCreateDocument({
+                                                            orderTypeId: orderDocument.orderTypeId,
+                                                            period: orderDocument.period,
+                                                            companyId: orderDocument.companyId,
+                                                            correlative: orderDocument.correlative,
+                                                            currency: orderDocument.currency,
+                                                            total: orderDocument.total,
+                                                            tax: orderDocument.tax,
+                                                            perception: orderDocument.perception,
+                                                            detraction: orderDocument.detraction,
+                                                            retention: orderDocument.retention,
+                                                            costCenter: orderDocument.costCenterDescription
+                                                        })}
+                                                    >
+                                                        <FaRegEdit />
+                                                    </ExternalLink>
+                                                )}
+                                                {
+                                                    (roles?.includes("TESORERIA") || roles?.includes("MESA DE PARTES")) && (
+                                                        <ExternalLink
+                                                            to={`/document-mp-voucher-payment/create/${encryptString(orderDocument.companyId)}/${encryptString(doc.orderDocumentNumber)}`}
+                                                            onClick={() => handleClickToCreateDocumentPayment({
+                                                                companyId: orderDocument.companyId,
+                                                                orderDocumentNumber: doc.orderDocumentNumber,
+                                                            })}
+                                                            color="green"
+                                                            title="Registrar pago"
+                                                        ><MdOutlinePayments className="text-base" />
+                                                        </ExternalLink>
+                                                    )
+                                                }
                                                 <ExternalLink
-                                                    to={`/document-mp-voucher/document-form/${encryptString(orderDocument.companyId)}/${encryptString(orderDocument.orderTypeId)}/${encryptString(orderDocument.period)}/${encryptString(orderDocument.correlative)}/${encryptString(doc.orderDocumentNumber)}`}
+                                                    to={`/file-folder-mp/document/${encryptString(doc.orderDocumentNumber)}`}
                                                     color="blue"
-                                                    title="Editar documento"
-                                                    onClick={() => handleClickToCreateDocument({
-                                                        orderTypeId: orderDocument.orderTypeId,
-                                                        period: orderDocument.period,
-                                                        companyId: orderDocument.companyId,
-                                                        correlative: orderDocument.correlative,
-                                                        currency: orderDocument.currency,
-                                                        total: orderDocument.total,
-                                                        tax: orderDocument.tax,
-                                                        perception: orderDocument.perception,
-                                                        detraction: orderDocument.detraction,
-                                                        retention: orderDocument.retention,
-                                                        costCenter: orderDocument.costCenterDescription
-                                                    })}
+                                                    title="Carpeta de archivos"
                                                 >
-                                                    <FaRegEdit /> 
-                                                </ExternalLink>
-                                                <ExternalLink
-                                                    to={`/document-mp-voucher-payment/create/${encryptString(orderDocument.companyId)}/${encryptString(doc.orderDocumentNumber)}`}
-                                                    onClick={() => handleClickToCreateDocumentPayment({
-                                                        companyId: orderDocument.companyId,
-                                                        orderDocumentNumber: doc.orderDocumentNumber,
-                                                    })}
-                                                    color="green"
-                                                    title="Registrar pago"
-                                                >
-                                                    <FaPaperclip className="text-base" /> & <MdOutlinePayments className="text-base" />
+                                                    <BsFolder className="text-base" />
                                                 </ExternalLink>
                                             </div>
                                         </td>

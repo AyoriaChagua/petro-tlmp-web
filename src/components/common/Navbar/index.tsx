@@ -29,41 +29,64 @@ export default function Navbar() {
     const navRef = useRef<HTMLDivElement | null>(null);
     const dropdownTimerRef = useRef<NodeJS.Timeout | null>(null);
     const userMenuRef = useRef<HTMLDivElement | null>(null);
+    const { companySelected, logout, user, companies, setCompanySelected, roles } = useAuth();
+
+    const adminItems = {
+        name: 'Mantenimiento',
+        path: '/maintanance',
+        dropdown: [
+            { name: 'Correlativos', path: '/maintanance/correlative-control' },
+            { name: 'Proveedores', path: '/maintanance/providers' },
+            { name: 'Destinos', path: '/maintanance/cost-center' },
+            { name: 'Aprobadores', path: '/maintanance/approving-personnel' },
+            { name: 'Área solicitante', path: '/maintanance/requesting-area' },
+            { name: 'Documentos SUNAT', path: '/maintanance/sunat-documents' },
+            { name: 'Usuarios', path: '/maintanance/users' },
+        ],
+    }
+
+    const logisticItems = {
+        name: 'Crear orden',
+        path: '/order-mp/create',
+    }
+
+    const receptionOfficeItems = [
+        { name: 'General', path: '/reports/order-document' },
+        { name: 'Caja chica', path: '/reports/petty-cash' },
+        { name: 'Compras', path: '/reports/purchasing' },
+        { name: 'Proveedores', path: '/maintanance/providers' },
+    ]
 
     const navItems: NavItem[] = [
         {
             name: 'Petroamerica',
             path: '/dashboard',
         },
-        {
-            name: 'Mantenimiento',
-            path: '/maintanance',
-            dropdown: [
-                { name: 'Correlativos', path: '/maintanance/correlative-control' },
-                { name: 'Proveedores', path: '/maintanance/providers' },
-                { name: 'Destinos', path: '/maintanance/cost-center' },
-                { name: 'Aprobadores', path: '/maintanance/approving-personnel' },
-                { name: 'Área solicitante', path: '/maintanance/requesting-area' },
-                { name: 'Documentos SUNAT', path: '/maintanance/sunat-documents' },
-                { name: 'Usuarios', path: '/maintanance/users' },
-            ],
-        },
-        {
-            name: 'Crear orden',
-            path: '/order-mp/create',
-        },
+
         {
             name: 'Reportes',
             path: '/reports',
             dropdown: [
                 { name: 'General', path: '/reports/order-document' },
-                { name: 'Caja chica', path: '/reports/petty-cash' },
                 { name: 'Compras', path: '/reports/purchasing' },
+                { name: 'Caja chica', path: '/reports/petty-cash' },
             ],
         },
     ];
 
-    const { companySelected, logout, user, companies, setCompanySelected } = useAuth();
+    if (roles?.includes('ADMINISTRADOR')) {
+        navItems.splice(1, 0, adminItems);
+    }
+
+    if (roles?.includes("LOGISTICA")) {
+        navItems.splice(2, 0, logisticItems);
+    }
+
+    if(roles?.includes("MESA DE PARTES")) {
+        receptionOfficeItems.map((item) => navItems.splice(1, 0, item));
+        navItems.pop();
+    }
+
 
     useEffect(() => {
         const handleClickOutside = (event: MouseEvent) => {

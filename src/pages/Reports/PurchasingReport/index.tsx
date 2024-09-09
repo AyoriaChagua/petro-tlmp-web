@@ -29,7 +29,7 @@ export default function PurchasingReport() {
         { key: "actions", label: "C. Costo", actions: (data) => <>{data.costCenterAlias || data.costCenterId}</> },
         { key: "observations", label: "Comentarios" },
         { key: "typeEmission", label: "Emisión" },
-    ]
+    ];
     return (
         <ReportLayout reportType="purchasing" onSubmit={receiveData}>
             <div className="mt-3">

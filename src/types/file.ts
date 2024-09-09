@@ -17,3 +17,5 @@ export interface FileResponsetI {
     paymentId: number
     file: File
 }
+
+export type FolderType = "order" | "document"

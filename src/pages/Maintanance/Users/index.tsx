@@ -30,9 +30,10 @@ export default function Users() {
         { key: "id", label: "ID Usuario" },
         { key: "description", label: "Descripción" },
         {
-            key: "actions", label: "Roles", actions: (row) => (
-                row.userRoles.map(role => <Tag key={role.id} text={role.description} />)
-            )
+            key: "actions", label: "Descripción", actions: (row) =>
+                <div className="flex flex-row flex-wrap gap-2">
+                    {row.userRoles.map(role => <Tag key={role.id} text={role.description} />)}
+                </div>
         },
         {
             key: "actions", label: "Activo", actions: (row) => (

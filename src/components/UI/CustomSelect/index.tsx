@@ -48,7 +48,7 @@ export default function CustomSelect({
     const customStyles: StylesConfig<OptionType, boolean> = {
         control: (provided, state) => ({
             ...provided,
-            backgroundColor: typeForm === "create" ? '#fff' : (state.isFocused ? '#fff' : '#1E66B6'),
+            backgroundColor: typeForm === "create" ? '#fff' : (state.isFocused ? '#1E66B6' : '#1E66B6'),
             borderColor: typeForm === "create" ? '#ccc' : (state.isFocused ? '#ccc' : '#1E66B6'),
             boxShadow: state.isFocused ? '0 0 0 0.2rem rgba(30, 102, 182, 0.25)' : 'none',
             color: typeForm === "create" ? '#000' : (state.isFocused ? '#000' : '#fff'),
@@ -69,7 +69,7 @@ export default function CustomSelect({
 
     return (
         <div className={`mb-3 ${className}`}>
-            <div className="flex flex-row items-center h-full gap-2">
+            <div className="flex flex-row items-center gap-2">
                 <label htmlFor={id} className={`${labelStyles} align-middle`}>{label}</label>
                 {isRequired && <span className={`${labelStyles} align-middle`}><IoAlertCircleOutline /></span>}
             </div>

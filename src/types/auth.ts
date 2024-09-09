@@ -11,16 +11,16 @@ export interface User {
     id: string
     description: string
     userRoles?: UserRole[]
-}
+};
 
 export interface UserRole {
     roleId: number
     role: Role
-}
+};
 
 export interface Role {
     id: number
     description: string
-}
+};
 
-export type role = "ADMINISTRADOR" | "LOGISTICA" | "MESA DE PARTES" | "TESORERIA"
+export type role = "ADMINISTRADOR" | "LOGISTICA" | "MESA DE PARTES" | "TESORERIA" | "CONSULTAS Y REPORTES";

@@ -122,7 +122,8 @@ export const useMainFilter = (reportType: ReportType) => {
             if (reportType === "pettyCash") filterApply = {
                 ...filterApply,
                 isPettyCash: true
-            }
+            };
+            console.log(filterApply)
             const data = await getReport.getDocuments(filterApply);
             setDocumentReport(data);
             return data;
@@ -148,20 +149,19 @@ export const useMainFilter = (reportType: ReportType) => {
             if (isOrderWithDocumentsArray(data)) {
                 exportToExcelGeneralReport(data, `REPORTE-GENERAL-${companySelected?.label}-${formatDate2(new Date())}`);
             } else {
-                console.error("Tipo de datos incorrecto para el reporte general");
+                showErrorMessage("Tipo de datos incorrecto para el reporte general");
             }
         } else if (reportType === "pettyCash") {
-            console.log(data)
             if (isReportResponseArray(data)) {
                 exportToExcelPettyCashReport(data, `REPORTE-CAJA-CHICA-${companySelected?.label}-${formatDate2(new Date())}`);
             } else {
-                console.error("Tipo de datos incorrecto para el reporte de caja chica");
+                showErrorMessage("Tipo de datos incorrecto para el reporte de caja chica");
             }
         } else if (reportType === "purchasing") {
             if (isReportResponseArray(data)) {
                 exportToExcelPurchasingReport(data, `REPORTE-PROVEEDORES-${companySelected?.label}-${formatDate2(new Date())}`);
             } else {
-                console.error("Tipo de datos incorrecto para el reporte de proveedores");
+                showErrorMessage("Tipo de datos incorrecto para el reporte de compras");
             }
         }
     };

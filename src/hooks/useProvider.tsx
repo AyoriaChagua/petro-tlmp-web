@@ -70,20 +70,23 @@ export const useProvider = () => {
                         modifiedUser: user?.id!
                     } as ProviderRequestToUpdate;
                     const responseProviderUpdated = await putProviderMP.updateProvider(onlyProvider, formProvider.ruc);
-                    formProvider.accounts.forEach(async account => {
-                        const accountToUpdate = {
-                            bank: account.bank,
-                            accountNumber: account.accountNumber,
-                            type: account.type,
-                            cci: account.cci,
-                        } as ProviderAccountRequestToUpdate
-                        if (account.id) {
-                            await putProviderMP.updateProvideAccount(accountToUpdate, account.id);
-                        }
-                        else {
-                            await postProviderMP.createProviderAccounts([{ ...account, supplierRUC: formProvider.ruc }]);
-                        }
-                    });
+                    
+                    formProvider.accounts
+                        .filter(account => account.accountNumber) // Filtra cuentas que tengan un accountNumber válido
+                        .forEach(async account => {
+                            const accountToUpdate = {
+                                bank: account.bank,
+                                accountNumber: account.accountNumber,
+                                type: account.type,
+                                cci: account.cci,
+                            } as ProviderAccountRequestToUpdate
+                            if (account.id) {
+                                await putProviderMP.updateProvideAccount(accountToUpdate, account.id);
+                            } else {
+                                await postProviderMP.createProviderAccounts([{ ...account, supplierRUC: formProvider.ruc }]);
+                            }
+                        });
+    
                     responseProviderUpdated && showSuccessMessage("Proveedor actualizado satisfactoriamente");
                 }
                 setUpdateProvider(false);
@@ -100,15 +103,20 @@ export const useProvider = () => {
                 } as OnlyProviderRequest;
                 const responseNewProvider = await postProviderMP.createProvider(onlyProvider);
                 if (responseNewProvider && 'ruc' in responseNewProvider) {
-                    const onlyAccounts: ProviderAccountRequest[] = formProvider.accounts.map(account => ({
-                        ...account,
-                        supplierRUC: responseNewProvider.ruc,
-                        systemUser: user?.id!
-                    }));
+                    const onlyAccounts: ProviderAccountRequest[] = formProvider.accounts
+                        .filter(account => account.accountNumber)
+                        .map(account => ({
+                            ...account,
+                            supplierRUC: responseNewProvider.ruc,
+                            systemUser: user?.id!
+                        }));
                     const responseNewAccounts = await postProviderMP.createProviderAccounts(onlyAccounts);
-                    responseNewAccounts && fetchProviders();
+                    if(responseNewAccounts){
+                        fetchProviders();
+                        setFormProvider(initialProvider);
+                    } 
                 }
-                showSuccessMessage("Proveedor creado satisfactoriamente")
+                showSuccessMessage("Proveedor creado satisfactoriamente");
             }
         } catch (error) {
             showErrorMessage((error as Error).message.includes("409") ? "El proveedor con ese RUC/DNI ya existe" : "Error enviando los datos");

@@ -73,6 +73,7 @@ export const encryptString = (str: string) => {
 }
 
 export const decryptString = (str: string) => {
+    console.log(str)
     return decodeURIComponent(atob(str))
 }
 
