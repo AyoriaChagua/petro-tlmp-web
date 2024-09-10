@@ -26,4 +26,5 @@ export { default as CheckBoxSelector } from './UI/CheckBoxSelector';
 export { default as FileInput } from './UI/FileInput';
 export { default as FolderButton } from './UI/FolderButton';
 export { default as FileUpload } from './common/FileUpload';
-export { default as FileDownloadCard } from './UI/FileDownloadCard'
+export { default as FileDownloadCard } from './UI/FileDownloadCard';
+export { default as OrderPdfGenerator } from './common/OrderPdfGenerator';

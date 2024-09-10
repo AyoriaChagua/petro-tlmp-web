@@ -1,16 +1,16 @@
-import { Button, ExternalLink, ReportLayout, Table } from "../../../components";
+import { Button, ExternalLink, OrderPdfGenerator, ReportLayout, Table } from "../../../components";
 import { OrderWithDocumentsI } from "../../../types/reports";
 import { TableColumn } from "../../../types/common/table";
 import { encryptString } from "../../../utils/functions";
-import { GrDocumentPdf, GrDocumentStore } from "react-icons/gr";
-import { FaPaperclip, FaRegEdit } from "react-icons/fa";
+import {  GrDocumentStore } from "react-icons/gr";
+import {  FaRegEdit } from "react-icons/fa";
 import { IoCopyOutline } from "react-icons/io5";
 import { formatCurrency, splitVoucher } from "../../../utils/formats";
 import { formatDate1 } from "../../../utils/dates";
 import { useOrderDocumentReport } from "../../../hooks/useOrderDocumentReport";
 import { MdOutlinePayments } from "react-icons/md";
 import React from "react";
-import { BiDownload, BiFolderOpen } from "react-icons/bi";
+import { BiDownload } from "react-icons/bi";
 import { getApiBaseUrl } from "../../../api/config";
 import { useAuth } from "../../../context/AuthContext";
 import { BsFolder } from "react-icons/bs";
@@ -66,12 +66,7 @@ export default function OrderDocumentReport() {
         {
             key: "actions", label: "Acciones", actions: (orderDocument) => (
                 <div className="flex flex-row justify-center items-center gap-1 ">
-                    <Button
-                        icon={GrDocumentPdf}
-                        styleType="primary"
-                        type="button"
-                        title="Descargar PDF"
-                    />
+                    <OrderPdfGenerator/>
                     {
                         roles?.includes("LOGISTICA") &&
                         <>

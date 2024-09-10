@@ -17,8 +17,8 @@ export const exportToExcelGeneralReport = async (
             'CIA', 'Correlativo', 'Tipo de Orden', 'Periodo', 'Usuario', 'Fecha', 'Observaciones',
             'RUC Proveedor', 'Proveedor', 'Centro de Costo',
             'Afecto IGV', 'Moneda', 'Total', 'Impuesto', 'Percepción/Detracción', 'Productos',
-            'N° Documento', 'Subtotal Doc', 'Total Doc', 'Estado Doc', 'Glosa',
-            'Código SUNAT', 'Impuesto',
+            'N° Documento', 'Subtotal Doc', 'Impuesto', 'Total Doc', 'Estado Doc', 'Glosa',
+            'Código SUNAT', 
             'Fecha Pago', 'Monto Pagado'
         ];
 
@@ -59,11 +59,11 @@ export const exportToExcelGeneralReport = async (
                 order.products,
                 doc?.orderDocumentNumber ?? '',
                 doc?.subtotal ? formatCurrency(doc?.subtotal) : '',
+                doc?.taxCalc ? formatCurrency(doc?.taxCalc) : doc?.retentionCalc ? formatCurrency(doc?.retentionCalc) : '',
                 doc?.total ? formatCurrency(doc?.total) : '',
                 doc?.documentStatus ?? '',
                 doc?.annotation ?? '',
                 doc?.sunatCode ?? '',
-                doc?.taxCalc ? formatCurrency(doc?.taxCalc) : doc?.retentionCalc ? formatCurrency(doc?.retentionCalc) : '',
                 payment?.paymentDate ? formatDate1(formatDateForInput(payment?.paymentDate.split('T')[0])) : '',
                 payment?.paidAmount ? formatCurrency(payment?.paidAmount) : '',
             ]);
