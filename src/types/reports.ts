@@ -69,6 +69,7 @@ export interface PaymentI {
     documentPaymentId: number
     paymentFile: DocumentFile
     paymentId: number
+    currency: string
 }
 
 export interface DocumentFile {

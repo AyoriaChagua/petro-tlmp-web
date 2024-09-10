@@ -1,7 +1,8 @@
 import { useParams } from "react-router-dom";
 import { decryptString } from "../../../utils/functions";
 import { useDocumentPayment } from "../../../hooks/useDocumentPayment";
-import { Button, FileInput, IconButton, Input } from "../../../components";
+import { Button, CustomSelect, FileInput, IconButton, Input } from "../../../components";
+import { currencyOptions } from "../../../utils/constants";
 
 export default function CreatePaymentDocument() {
     const { companyId, orderDocumentNumber } = useParams<{
@@ -18,7 +19,8 @@ export default function CreatePaymentDocument() {
         handleRemovePayment,
         handleInputChange,
         onSubmit,
-        handleInputFileChange
+        handleInputFileChange,
+        handleOptionSelection
     } = useDocumentPayment({
         companyId: decryptedCompanyId,
         orderDocumentNumber: decryptedDocumentNumber
@@ -57,6 +59,19 @@ export default function CreatePaymentDocument() {
                                     onChange={(event) => handleInputChange(event, "issueDate", index)}
                                     value={form.issueDate}
                                     required
+                                />
+                                <CustomSelect
+                                    id="currency"
+                                    label="Moneda"
+                                    options={currencyOptions}
+                                    onChange={(option) => handleOptionSelection(option, index, "currencyValue", "currencyLabel")}
+                                    value={form.currencyValue ? {
+                                        label: form.currencyLabel,
+                                        value: form.currencyValue
+                                    } : undefined}
+                                    typeForm="create"
+                                    placeholder=""
+                                    isRequired={true}
                                 />
                                 <FileInput
                                     id={`file-${index}`}

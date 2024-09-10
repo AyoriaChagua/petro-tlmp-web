@@ -1,12 +1,10 @@
+import { FileResponseI } from "../../types/file";
 import { axiosInstance } from "../config";
 
 export const postFile = {
     createFile: async (formData: FormData) => {
         try {
-            const response = await axiosInstance.post<{
-                fileName: string,
-                id: number
-            }>("/file-mp", formData, {
+            const response = await axiosInstance.post<FileResponseI>("/file-mp", formData, {
                 headers: {
                     'Content-Type': 'multipart/form-data',
                 },

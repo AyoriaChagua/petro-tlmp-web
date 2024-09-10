@@ -19,3 +19,5 @@ export interface CheckboxOption {
 }
 
 export type OptionTypeParam = SingleValue<OptionType> | MultiValue<OptionType>
+
+export type FileTypeMP = "AA" | "AF" | "AO" | "AP" | "OA"

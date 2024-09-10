@@ -149,7 +149,7 @@ export default function OrderDocumentReport() {
                                         length: orderDocument.documents.reduce((maxLength, doc) => {
                                             return doc.payments ? Math.max(maxLength, doc.payments.length) : maxLength;
                                         }, 0)
-                                    }).map((_, index) => (<th key={index} className="border px-4 py-2 " colSpan={3}>
+                                    }).map((_, index) => (<th key={index} className="border px-4 py-2 " colSpan={4}>
                                         Pago {index + 1}
                                     </th>))
                                     }
@@ -194,7 +194,7 @@ export default function OrderDocumentReport() {
                                                     </ExternalLink>
                                                 )}
                                                 {
-                                                    (roles?.includes("TESORERIA") || roles?.includes("MESA DE PARTES")) && (
+                                                    (roles?.includes("TESORERIA")) && (
                                                         <ExternalLink
                                                             to={`/document-mp-voucher-payment/create/${encryptString(orderDocument.companyId)}/${encryptString(doc.orderDocumentNumber)}`}
                                                             onClick={() => handleClickToCreateDocumentPayment({
@@ -220,6 +220,9 @@ export default function OrderDocumentReport() {
                                             <>
                                                 {doc.payments.map((payment, paymentIndex) => (
                                                     <React.Fragment key={paymentIndex}>
+                                                        <td className="border px-4 py-2">
+                                                            {searchCurrencySymbol(payment.currency)}
+                                                        </td>
                                                         <td className="border px-4 py-2">
                                                             {formatCurrency(payment.paidAmount)}
                                                         </td>

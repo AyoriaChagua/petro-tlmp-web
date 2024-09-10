@@ -4,6 +4,7 @@ export interface PaymentDocumentRequestI {
     paidAmount: number
     paymentDate: string
     systemUser: string
+    currency: string
 }
 
 
@@ -114,6 +115,14 @@ export interface PaymentResponseI {
     systemUser: string
     systemDate: string
     isActive: boolean
+}
+
+export interface PaymentDocumentFormI {
+    amountPaid: string;
+    issueDate: string;
+    currencyLabel: string;  
+    currencyValue: string;
+    file: File
 }
 
 export interface OrderDocumentToEditResponseI {

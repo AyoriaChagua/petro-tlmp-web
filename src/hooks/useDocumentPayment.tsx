@@ -1,11 +1,13 @@
 import { useEffect, useState } from "react";
 import { getOrderDocument } from "../api/order-document/get";
-import { PaymentResponseI } from "../types/order-document";
+import { PaymentDocumentFormI, PaymentResponseI } from "../types/order-document";
 import { showErrorMessage, showSuccessMessage } from "../utils/alerts";
 import { postOrderDocument } from "../api/order-document/post";
 import { useAuth } from "../context/AuthContext";
 import { postFile } from "../api/file/post";
 import { formatDate2 } from "../utils/dates";
+import { MultiValue, SingleValue } from "react-select";
+import { OptionType } from "../types/common/inputs";
 
 interface ParamsToCreate {
     readonly companyId: string;
@@ -17,13 +19,11 @@ export const useDocumentPayment = ({ companyId, orderDocumentNumber }: ParamsToC
     const { user } = useAuth();
     const [paymentDocuments, setPaymentDocuments] = useState<PaymentResponseI[]>([]);
 
-    const [paymentDocumentForm, setPaymentDocumentForm] = useState<{
-        amountPaid: string;
-        issueDate: string;
-        file: File
-    }[]>([{
+    const [paymentDocumentForm, setPaymentDocumentForm] = useState<PaymentDocumentFormI[]>([{
         amountPaid: "",
         issueDate: formatDate2(new Date()),
+        currencyLabel: "SOLES",
+        currencyValue: "PEN",
         file: new File([], "")
     }])
 
@@ -38,6 +38,8 @@ export const useDocumentPayment = ({ companyId, orderDocumentNumber }: ParamsToC
         setPaymentDocumentForm(prevState => [...prevState, {
             amountPaid: "",
             issueDate: formatDate2(new Date()),
+            currencyLabel: "SOLES",  
+            currencyValue: "PEN",
             file: new File([], "")
         }])
     };
@@ -59,6 +61,22 @@ export const useDocumentPayment = ({ companyId, orderDocumentNumber }: ParamsToC
         }));
     };
 
+    const handleOptionSelection =(option : SingleValue<OptionType> | MultiValue<OptionType>, index: number, field1: keyof PaymentDocumentFormI, field2?: keyof PaymentDocumentFormI) => {
+        const singleOption = option as SingleValue<OptionType>
+        if(singleOption) {
+            setPaymentDocumentForm(prevState => prevState.map((form, i) => {
+                if (i === index) {
+                    return {
+                        ...form,
+                        [field1]: singleOption?.value!,
+                        [field2!]: singleOption?.label!
+                    };
+                }
+                return form;
+            }));
+        }
+    }
+
     const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>, field: keyof {
         amountPaid: string;
         issueDate: string;
@@ -76,14 +94,15 @@ export const useDocumentPayment = ({ companyId, orderDocumentNumber }: ParamsToC
         }));
     };
 
-    const createPaymentDocuments = async (paidAmount: number, paymentDate: string) => {
+    const createPaymentDocuments = async (paidAmount: number, paymentDate: string, currency: string) => {
         try {
             const data = await postOrderDocument.createPaymentDocument({
                 companyId,
                 orderDocumentNumber,
                 paidAmount,
                 paymentDate,
-                systemUser: user!.id
+                systemUser: user!.id,
+                currency
             });
 
             if (data) {
@@ -98,9 +117,12 @@ export const useDocumentPayment = ({ companyId, orderDocumentNumber }: ParamsToC
 
     const onSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
+        console.log(paymentDocumentForm)
         try {
             await Promise.all(paymentDocumentForm.map(async (form) => {
-                const data = await createPaymentDocuments(parseInt(form.amountPaid), form.issueDate);
+                console.log(form)
+                const data = await createPaymentDocuments(parseInt(form.amountPaid), form.issueDate, form.currencyValue);
+                console.log(data)
 
                 if (data) {
                     const formData = new FormData();
@@ -129,6 +151,7 @@ export const useDocumentPayment = ({ companyId, orderDocumentNumber }: ParamsToC
         setPaymentDocumentForm,
         handleInputFileChange,
         handleInputChange,
-        onSubmit
+        onSubmit,
+        handleOptionSelection
     }
 }
