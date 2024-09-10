@@ -42,4 +42,5 @@ export const initialOrderLSI: OrderLSI = {
     perception: null,
     detraction: null,
     retention: null,
+    costCenter: null
 }

@@ -1,9 +1,7 @@
 import React, { useCallback, useState } from 'react'
 import { DropEvent, FileRejection, useDropzone } from 'react-dropzone';
-import { postFile } from '../../../api/file/post';
 import { FileTypeMP } from '../../../types/common/inputs';
-import { showErrorMessage, showSuccessMessage } from '../../../utils/alerts';
-import { useAuth } from '../../../context/AuthContext';
+import { showErrorMessage } from '../../../utils/alerts';
 
 
 interface Props {
@@ -19,7 +17,7 @@ export default function FileUpload({
     const [files, setFiles] = useState<File[]>([]);
     const [uploading, setUploading] = useState<boolean>(false);
 
-    const onDrop = useCallback((acceptedFiles: File[], fileRejections: FileRejection[], event: DropEvent) => {
+    const onDrop = useCallback((acceptedFiles: File[], _: FileRejection[], __: DropEvent) => {
         setFiles(acceptedFiles);
     }, []);
 
