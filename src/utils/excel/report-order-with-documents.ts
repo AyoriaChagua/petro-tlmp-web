@@ -19,7 +19,7 @@ export const exportToExcelGeneralReport = async (
             'Afecto IGV', 'Moneda', 'Total', 'Impuesto', 'Percepción/Detracción', 'Productos',
             'N° Documento', 'Subtotal Doc', 'Impuesto', 'Total Doc', 'Estado Doc', 'Glosa',
             'Código SUNAT', 
-            'Fecha Pago', 'Monto Pagado'
+            'Moneda', 'Fecha Pago', 'Monto Pagado'
         ];
 
         const headerRow = ws.addRow(headers);
@@ -64,6 +64,7 @@ export const exportToExcelGeneralReport = async (
                 doc?.documentStatus ?? '',
                 doc?.annotation ?? '',
                 doc?.sunatCode ?? '',
+                payment?.currency ? getCurrencySymbol(payment.currency): '',
                 payment?.paymentDate ? formatDate1(formatDateForInput(payment?.paymentDate.split('T')[0])) : '',
                 payment?.paidAmount ? formatCurrency(payment?.paidAmount) : '',
             ]);
@@ -81,14 +82,10 @@ export const exportToExcelGeneralReport = async (
             if (order.documents.length === 0) {
                 addOrderRow(order);
             } else {
-                order.documents.forEach(doc => {
-                    if (doc.payments && doc.payments.length > 0) {
-                        doc.payments.forEach(payment => {
-                            addOrderRow(order, doc, payment);
-                        });
-                    } else {
-                        addOrderRow(order, doc);
-                    }
+                order.documents.forEach((doc, index) => {
+                    
+                        addOrderRow(order, doc, order.payments[index]);
+                    
                 })
             }
         });
@@ -118,8 +115,9 @@ export const exportToExcelGeneralReport = async (
             'V': 15,
             'W': 15,
             'X': 15,
-            'Y': 15,
-            'Z': 15
+            'Y': 10,
+            'Z': 15,
+            'AA': 15
         };
 
         ws.columns.forEach((column, index) => {
@@ -133,8 +131,8 @@ export const exportToExcelGeneralReport = async (
 
         let startRow = 2;
         data.forEach(order => {
-            const rowCount = order.documents.reduce((acc, doc) =>
-                acc + Math.max(1, doc.payments?.length || 0), 0) || 1;
+            const rowCount = order.documents.reduce((acc) =>
+                acc + Math.max(1,  0), 0) || 1;
 
             if (rowCount > 1) {
                 for (let col = 1; col <= 16; col++) {
@@ -146,20 +144,7 @@ export const exportToExcelGeneralReport = async (
             startRow += rowCount;
         });
 
-        startRow = 2;
-        data.forEach(order => {
-           order.documents.forEach(doc => {
-            const rowCount = doc.payments?.length || 1;
-            if (rowCount > 1) {
-                for (let col = 17; col <= 23; col++) {
-                    ws.mergeCells(startRow, col, startRow + rowCount - 1, col);
-                    const cell = ws.getCell(startRow, col);
-                    cell.alignment = { vertical: 'middle', horizontal: 'center' };
-                }
-            }
-            startRow += rowCount;
-           })
-        });
+        
 
         const buffer = await wb.xlsx.writeBuffer();
         const blob = new Blob([buffer], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });

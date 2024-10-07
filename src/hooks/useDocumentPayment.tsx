@@ -1,20 +1,22 @@
 import { useEffect, useState } from "react";
-import { getOrderDocument } from "../api/order-document/get";
 import { PaymentDocumentFormI, PaymentResponseI } from "../types/order-document";
 import { showErrorMessage, showSuccessMessage } from "../utils/alerts";
-import { postOrderDocument } from "../api/order-document/post";
 import { useAuth } from "../context/AuthContext";
 import { postFile } from "../api/file/post";
 import { formatDate2 } from "../utils/dates";
 import { MultiValue, SingleValue } from "react-select";
 import { OptionType } from "../types/common/inputs";
+import { getOrder } from "../api/order/get";
+import { postOrder } from "../api/order/post";
 
 interface ParamsToCreate {
     readonly companyId: string;
-    readonly orderDocumentNumber: string
+    readonly orderTypeId: string;
+    readonly period: string;
+    readonly correlative: string;
 }
 
-export const useDocumentPayment = ({ companyId, orderDocumentNumber }: ParamsToCreate) => {
+export const useDocumentPayment = (params: ParamsToCreate) => {
 
     const { user } = useAuth();
     const [paymentDocuments, setPaymentDocuments] = useState<PaymentResponseI[]>([]);
@@ -29,10 +31,10 @@ export const useDocumentPayment = ({ companyId, orderDocumentNumber }: ParamsToC
 
     useEffect(() => {
         (async () => {
-            const data = await getOrderDocument.findPaymentsByDocument(companyId, orderDocumentNumber);
+            const data = await getOrder.payments(params);
             setPaymentDocuments(data);
         })();
-    }, [companyId, orderDocumentNumber]);
+    }, [params]);
 
     const handleAddPayment = () => {
         setPaymentDocumentForm(prevState => [...prevState, {
@@ -96,9 +98,11 @@ export const useDocumentPayment = ({ companyId, orderDocumentNumber }: ParamsToC
 
     const createPaymentDocuments = async (paidAmount: number, paymentDate: string, currency: string) => {
         try {
-            const data = await postOrderDocument.createPaymentDocument({
-                companyId,
-                orderDocumentNumber,
+            const data = await postOrder.createPayment({
+                companyId: params.companyId,
+                orderTypeId: params.orderTypeId,
+                period: params.period,
+                correlative: params.correlative,
                 paidAmount,
                 paymentDate,
                 systemUser: user!.id,

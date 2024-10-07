@@ -84,8 +84,8 @@ export default function AppRoutes() {
                     }
 
                     {
-                        roles?.includes("TESORERIA") &&
-                        <Route path="document-mp-voucher-payment/create/:companyId/:orderDocumentNumber" element={<CreatePaymentDocument />} />
+                       // roles?.includes("TESORERIA") &&
+                        <Route path="document-mp-voucher-payment/create/:companyId/:orderTypeId/:correlative/:period" element={<CreatePaymentDocument />} />
                     }
                     <Route path="file-folder-mp/:folderType/:numberReference" element={<FileFolder />} />
                     <Route path="reports/order-document" element={<OrderDocumentReport />} />

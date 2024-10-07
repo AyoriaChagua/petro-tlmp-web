@@ -21,7 +21,7 @@ export const useOrderDocumentReport = () => {
     };
 
     const handleClickToCreateDocumentPayment = (document: DocumentLSI) => {
-        localStorage.setItem(`order-document-payment-${document.companyId}-${document.orderDocumentNumber}`, JSON.stringify(document));
+        localStorage.setItem(`order-document-payment-${document.companyId}-${document.orderTypeId}-${document.period}-${document.correlative}`, JSON.stringify(document));
     }
 
     const findLargePayementList = () => {
@@ -41,16 +41,9 @@ export const useOrderDocumentReport = () => {
             retentionCalc: null,
             taxCalc: null,
             invoiceFile: undefined,
-            payments: []
         };
-        const list = orderWithDocuments.map((orderDocument) => {
-            return orderDocument.documents.reduce<DocumentI>((acc, doc) => {
-                const currentPaymentsLength = doc.payments?.length || 0;
-                const accPaymentsLength = acc.payments?.length || 0;
-                return currentPaymentsLength > accPaymentsLength ? doc : acc;
-            }, initialDocument)
-        });
-        return list;
+       
+        return initialDocument;
     }
 
     return {

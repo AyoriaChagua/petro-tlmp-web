@@ -1,6 +1,8 @@
 export interface PaymentDocumentRequestI {
-    orderDocumentNumber: string
-    companyId: string
+    companyId: string,
+    correlative: string,
+    period: string,
+    orderTypeId: string,
     paidAmount: number
     paymentDate: string
     systemUser: string
@@ -72,7 +74,9 @@ export interface OrderLSI {
 
 export interface DocumentLSI {
     companyId: string
-    orderDocumentNumber: string
+    orderTypeId: string,
+    period: string,
+    correlative: string,
 }
 
 export interface DocumentFormI {
@@ -108,9 +112,11 @@ export interface DocumentFormI {
 
 export interface PaymentResponseI {
     paymentId: number
-    orderDocumentNumber: string
     companyId: string
-    paymentDate: Date
+    orderTypeId: string
+    period: string
+    correlative: string
+    paymentDate: string
     paidAmount: number
     systemUser: string
     systemDate: string

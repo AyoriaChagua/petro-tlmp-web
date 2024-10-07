@@ -14,8 +14,16 @@ export interface QueryFieldsI {
     isPettyCash?: boolean
 }
 
+export interface FieldsPDF {
+    companyId: string;
+    orderTypeId: string;
+    period: string;
+    correlative: string;
+}
+
 export interface OrderWithDocumentsI extends OrderReportI {
     documents: DocumentI[]
+    payments: PaymentI[]
 }
 
 export interface OrderReportI {
@@ -57,7 +65,6 @@ export interface DocumentI {
     retentionCalc: number | null
     taxCalc?: number | null
     invoiceFile?: DocumentFile
-    payments?: PaymentI[]
 }
 
 export interface PaymentI {
@@ -65,12 +72,11 @@ export interface PaymentI {
     paymentDate: string
     paidAmount: number
     isActive: boolean
-    orderDocumentNumber: string
-    documentPaymentId: number
-    paymentFile: DocumentFile
+    paymentFile: DocumentFile | null
     paymentId: number
     currency: string
 }
+
 
 export interface DocumentFile {
     id: number

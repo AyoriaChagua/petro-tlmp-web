@@ -7,6 +7,12 @@ export const orderTypeOptions: OptionType[] = [
 ]
 
 
+export enum OrderTypeEnum {
+    "O/C" = 'ORDEN DE COMPRA',
+    "O/P" = 'ORDEN DE PAGO',
+    "O/S" = 'ORDEN DE SERVICIO',
+}
+
 export const shortOrderTypeOptions: OptionType[] = [
     { label: "Compra", value: "O/C" },
     { label: "Pago", value: "O/P" },

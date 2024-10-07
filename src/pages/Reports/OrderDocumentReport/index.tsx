@@ -1,19 +1,20 @@
-import { Button, ExternalLink, OrderPdfGenerator, ReportLayout, Table } from "../../../components";
-import { OrderWithDocumentsI } from "../../../types/reports";
+import { Button, ExternalLink, ReportLayout, Table } from "../../../components";
+import { FieldsPDF, OrderWithDocumentsI } from "../../../types/reports";
 import { TableColumn } from "../../../types/common/table";
 import { encryptString } from "../../../utils/functions";
-import {  GrDocumentStore } from "react-icons/gr";
-import {  FaRegEdit } from "react-icons/fa";
+import { GrDocumentStore } from "react-icons/gr";
+import { FaRegEdit, FaRegFilePdf } from "react-icons/fa";
 import { IoCopyOutline } from "react-icons/io5";
 import { formatCurrency, splitVoucher } from "../../../utils/formats";
 import { formatDate1 } from "../../../utils/dates";
 import { useOrderDocumentReport } from "../../../hooks/useOrderDocumentReport";
 import { MdOutlinePayments } from "react-icons/md";
-import React from "react";
-import { BiDownload } from "react-icons/bi";
-import { getApiBaseUrl } from "../../../api/config";
+//import React from "react";
+//import { BiDownload } from "react-icons/bi";
+//import { getApiBaseUrl } from "../../../api/config";
 import { useAuth } from "../../../context/AuthContext";
 import { BsFolder } from "react-icons/bs";
+import { getOrder } from "../../../api/order/get";
 
 export default function OrderDocumentReport() {
 
@@ -26,6 +27,10 @@ export default function OrderDocumentReport() {
     } = useOrderDocumentReport();
 
     const { roles } = useAuth();
+
+    const handleDownloadPDF = async (fields: FieldsPDF) => {
+        await getOrder.generatePdf(fields);
+    }
 
     const columns: TableColumn<OrderWithDocumentsI>[] = [
         { key: "orderTypeId", label: "Tipo Orden" },
@@ -66,9 +71,20 @@ export default function OrderDocumentReport() {
         {
             key: "actions", label: "Acciones", actions: (orderDocument) => (
                 <div className="flex flex-row justify-center items-center gap-1 ">
-                    <OrderPdfGenerator/>
+                    <Button
+                        icon={FaRegFilePdf}
+                        styleType="primary"
+                        type="button"
+                        title="Editar Orden"
+                        onClick={()=>handleDownloadPDF({
+                            companyId: orderDocument.companyId.trim(),
+                            correlative: orderDocument.correlative.trim(),
+                            orderTypeId: orderDocument.orderTypeId.trim(),
+                            period: orderDocument.period.trim()
+                        })}
+                    />
                     {
-                        roles?.includes("LOGISTICA") &&
+                       ( roles?.includes("LOGISTICA") === null) &&
                         <>
                             <Button
                                 icon={FaRegEdit}
@@ -106,6 +122,22 @@ export default function OrderDocumentReport() {
                             <GrDocumentStore /> +
                         </ExternalLink>
                     }
+                    {
+                       // (roles?.includes("TESORERIA")) && (
+                            <ExternalLink
+                                to={`/document-mp-voucher-payment/create/${encryptString(orderDocument.companyId)}/${encryptString(orderDocument.orderTypeId)}/${encryptString(orderDocument.correlative)}/${encryptString(orderDocument.period)}`}
+                                onClick={() => handleClickToCreateDocumentPayment({
+                                    companyId: orderDocument.companyId,
+                                    orderTypeId: orderDocument.orderTypeId,
+                                    period: orderDocument.period,
+                                    correlative: orderDocument.correlative,
+                                })}
+                                color="green"
+                                title="Registrar pago"
+                            ><MdOutlinePayments className="text-base" />
+                            </ExternalLink>
+                        //)
+                    }
                     <ExternalLink
                         to={`/file-folder-mp/order/${encryptString(JSON.stringify({
                             companyId: orderDocument.companyId,
@@ -140,14 +172,7 @@ export default function OrderDocumentReport() {
                                     <th className="px-4 py-2">Fecha Comprobante</th>
                                     <th className="px-4 py-2">Estado Comprobante</th>
                                     <th className="px-4 py-2">Acciones</th>
-                                    {Array.from({
-                                        length: orderDocument.documents.reduce((maxLength, doc) => {
-                                            return doc.payments ? Math.max(maxLength, doc.payments.length) : maxLength;
-                                        }, 0)
-                                    }).map((_, index) => (<th key={index} className="border px-4 py-2 " colSpan={4}>
-                                        Pago {index + 1}
-                                    </th>))
-                                    }
+
                                 </tr>
                             </thead>
                             <tbody>
@@ -188,20 +213,6 @@ export default function OrderDocumentReport() {
                                                         <FaRegEdit />
                                                     </ExternalLink>
                                                 )}
-                                                {
-                                                    (roles?.includes("TESORERIA")) && (
-                                                        <ExternalLink
-                                                            to={`/document-mp-voucher-payment/create/${encryptString(orderDocument.companyId)}/${encryptString(doc.orderDocumentNumber)}`}
-                                                            onClick={() => handleClickToCreateDocumentPayment({
-                                                                companyId: orderDocument.companyId,
-                                                                orderDocumentNumber: doc.orderDocumentNumber,
-                                                            })}
-                                                            color="green"
-                                                            title="Registrar pago"
-                                                        ><MdOutlinePayments className="text-base" />
-                                                        </ExternalLink>
-                                                    )
-                                                }
                                                 <ExternalLink
                                                     to={`/file-folder-mp/document/${encryptString(doc.orderDocumentNumber)}`}
                                                     color="blue"
@@ -211,46 +222,51 @@ export default function OrderDocumentReport() {
                                                 </ExternalLink>
                                             </div>
                                         </td>
-                                        {(doc.payments && doc.payments?.length > 0) && (
-                                            <>
-                                                {doc.payments.map((payment, paymentIndex) => (
-                                                    <React.Fragment key={paymentIndex}>
-                                                        <td className="border px-4 py-2">
-                                                            {searchCurrencySymbol(payment.currency)}
-                                                        </td>
-                                                        <td className="border px-4 py-2">
-                                                            {formatCurrency(payment.paidAmount)}
-                                                        </td>
-                                                        <td className="border px-4 py-2">
-                                                            {formatDate1(payment.paymentDate.split("T")[0])}
-                                                        </td>
-                                                        <td className="border px-4 py-2">
-                                                            {
-                                                                payment.paymentFile && (
-                                                                    <ExternalLink
-                                                                        to={`${getApiBaseUrl()}/file-mp/download/${payment.paymentFile.id}`}
-                                                                        color="blue"
-                                                                    >
-                                                                        <BiDownload className="text-base" />
-                                                                    </ExternalLink>
-                                                                )
-                                                            }
-                                                        </td>
-                                                    </React.Fragment>
-                                                ))}
-
-                                            </>
-                                        )}
                                     </tr>
                                 ))}
                             </tbody>
                         </table>
                     ) : (
-                        <span>sin documentos</span>
+                        <span>Sin documentos</span>
                     )}
                 </>
             )
         },
+        {
+            key: "actions", label: "Pagos", actions: (orderDocument) => (
+                <>
+                    {orderDocument.payments.length > 0 ? (
+                        <table className="min-w-full bg-white">
+                            <thead>
+                                <tr className="bg-gray-100">
+                                    <th className="px-4 py-2">Fecha de pago</th>
+                                    <th className="px-4 py-2">Moneda</th>
+                                    <th className="px-4 py-2">Monto pagado</th>
+                                    <th className="px-4 py-2">Acciones</th>
+                                    {/*</tr>{searchCurrencySymbol(payment.currency)}
+                                                        </td>
+                                                        <td className="border px-4 py-2">
+                                                            {formatCurrency(payment.paidAmount)}</td>*/}
+
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {orderDocument.payments.map((pay, docIndex) => (
+                                    <tr key={docIndex}>
+                                        <td className="border px-4 py-2">{formatDate1(pay.paymentDate.split("T")[0])}</td>
+                                        <td className="border px-4 py-2">{searchCurrencySymbol(orderDocument.currency)}</td>
+                                        <td className="border px-4 py-2">{formatCurrency(pay.paidAmount)}</td>
+                                        <td className="border px-4 py-2">
+
+                                        </td>
+                                    </tr>
+                                ))}
+                            </tbody>
+                        </table>
+                    ) : (<span>Sin pagos</span>)}
+                </>
+            )
+        }
     ]
 
     return (

@@ -5,13 +5,17 @@ import { Button, CustomSelect, FileInput, IconButton, Input } from "../../../com
 import { currencyOptions } from "../../../utils/constants";
 
 export default function CreatePaymentDocument() {
-    const { companyId, orderDocumentNumber } = useParams<{
+    const { companyId, period, correlative, orderTypeId } = useParams<{
         companyId: string;
-        orderDocumentNumber: string;
+        period: string;
+        correlative: string;
+        orderTypeId: string;
     }>();
 
     const decryptedCompanyId = decryptString(companyId!);
-    const decryptedDocumentNumber = decryptString(orderDocumentNumber!);
+    const decryptedPeriod = decryptString(period!);
+    const decryptedCorrelative = decryptString(correlative!);
+    const decryptedOrderTypeId = decryptString(orderTypeId!);
 
     const {
         paymentDocumentForm,
@@ -23,13 +27,15 @@ export default function CreatePaymentDocument() {
         handleOptionSelection
     } = useDocumentPayment({
         companyId: decryptedCompanyId,
-        orderDocumentNumber: decryptedDocumentNumber
+        correlative: decryptedCorrelative,
+        orderTypeId: decryptedOrderTypeId,
+        period: decryptedPeriod
     });
 
     return (
         <div className="flex flex-col w-full gap-3">
             <h2 className="text-2xl font-semibold text-gray-500">
-                Pagos <span className="text-base font-normal">({decryptedDocumentNumber})</span>
+                Pagos <span className="text-base font-normal">({decryptedCorrelative})</span>
             </h2>
             <div className="relative p-4 w-full mt-4 border border-gray-300 rounded-xl">
                 <div className="absolute -top-5 -right-2 z-10">
