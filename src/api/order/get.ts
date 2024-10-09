@@ -1,5 +1,5 @@
 import { PaymentResponseI } from "../../types/order-document";
-import { FieldsPDF, OrderWithDocumentsI, QueryFieldsI } from "../../types/reports"
+import { FieldsOrderID, OrderWithDocumentsI, QueryFieldsI } from "../../types/reports"
 import { OrderTypeEnum } from "../../utils/constants";
 import { axiosAuthInstance } from "../config"
 
@@ -13,7 +13,7 @@ export const getOrder = {
         }
     },
 
-    generatePdf: async (params: FieldsPDF) => {
+    generatePdf: async (params: FieldsOrderID) => {
         try {
             const response = await axiosAuthInstance.get("/order-mp/pdf", {
                 params,
@@ -31,14 +31,14 @@ export const getOrder = {
             document.body.appendChild(link);
             link.click();
             link.remove(); 
-    
         } catch (error) {
             throw new Error((error as Error).message);
         }
     },
-    payments: async (params: FieldsPDF) => {
+    
+    payments: async (params: FieldsOrderID) => {
         try {
-            const response = await axiosAuthInstance.get<PaymentResponseI[]>("/payment-documents/order", { params });
+            const response = await axiosAuthInstance.get<PaymentResponseI[]>("/order-payment", { params });
             if(response.status !== 200) {
                 throw new Error("No se pudo obtener los pagos");
             }

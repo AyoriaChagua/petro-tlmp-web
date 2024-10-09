@@ -8,6 +8,8 @@ import { DocumentLSI, OrderLSI } from "../types/order-document";
 
 export const useOrderDocumentReport = () => {
     const [orderWithDocuments, setOrderWithDocuments] = useState<OrderWithDocumentsI[]>([]);
+    const [downloadingStates, setDownloadingStates] = useState<{ [key: string]: boolean }>({});
+
     const receiveData = (data: OrderWithDocumentsI[] | ReportResponseI[]) => {
         setOrderWithDocuments((data as OrderWithDocumentsI[]));
     };
@@ -48,6 +50,8 @@ export const useOrderDocumentReport = () => {
 
     return {
         orderWithDocuments,
+        downloadingStates,
+        setDownloadingStates,
         receiveData,
         searchCurrencySymbol,
         handleClickToCreateDocument,

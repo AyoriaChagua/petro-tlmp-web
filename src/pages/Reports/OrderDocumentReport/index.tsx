@@ -1,5 +1,5 @@
-import { Button, ExternalLink, ReportLayout, Table } from "../../../components";
-import { FieldsPDF, OrderWithDocumentsI } from "../../../types/reports";
+import { Button, ExternalLink, Loader, ReportLayout, Table } from "../../../components";
+import { FieldsOrderID, OrderWithDocumentsI } from "../../../types/reports";
 import { TableColumn } from "../../../types/common/table";
 import { encryptString } from "../../../utils/functions";
 import { GrDocumentStore } from "react-icons/gr";
@@ -15,6 +15,7 @@ import { MdOutlinePayments } from "react-icons/md";
 import { useAuth } from "../../../context/AuthContext";
 import { BsFolder } from "react-icons/bs";
 import { getOrder } from "../../../api/order/get";
+import { showErrorMessage } from "../../../utils/alerts";
 
 export default function OrderDocumentReport() {
 
@@ -24,12 +25,24 @@ export default function OrderDocumentReport() {
         searchCurrencySymbol,
         handleClickToCreateDocument,
         handleClickToCreateDocumentPayment,
+        downloadingStates,
+        setDownloadingStates
     } = useOrderDocumentReport();
 
     const { roles } = useAuth();
 
-    const handleDownloadPDF = async (fields: FieldsPDF) => {
-        await getOrder.generatePdf(fields);
+    const handleDownloadPDF = async (fields: FieldsOrderID) => {
+        const key = `${fields.companyId}-${fields.correlative}`;
+        setDownloadingStates(prev => ({ ...prev, [key]: true }));
+        try {
+            await getOrder.generatePdf(fields);
+        } catch (error) {
+            showErrorMessage("Error al generar el PDF");
+            setDownloadingStates(prev => ({ ...prev, [key]: false }));
+        } finally {
+            setDownloadingStates(prev => ({ ...prev, [key]: false }));
+        }
+
     }
 
     const columns: TableColumn<OrderWithDocumentsI>[] = [
@@ -71,20 +84,31 @@ export default function OrderDocumentReport() {
         {
             key: "actions", label: "Acciones", actions: (orderDocument) => (
                 <div className="flex flex-row justify-center items-center gap-1 ">
-                    <Button
-                        icon={FaRegFilePdf}
-                        styleType="primary"
-                        type="button"
-                        title="Editar Orden"
-                        onClick={()=>handleDownloadPDF({
-                            companyId: orderDocument.companyId.trim(),
-                            correlative: orderDocument.correlative.trim(),
-                            orderTypeId: orderDocument.orderTypeId.trim(),
-                            period: orderDocument.period.trim()
-                        })}
-                    />
                     {
-                       ( roles?.includes("LOGISTICA") === null) &&
+                        
+                        (downloadingStates[`${orderDocument.companyId}-${orderDocument.correlative}`]) ? (
+                            <div className="w-9">
+                                <Loader size="small" type="spiner" />
+                            </div>
+                        ) : (
+
+                            <Button
+                                icon={FaRegFilePdf}
+                                styleType="primary"
+                                type="button"
+                                title="Editar Orden"
+                                onClick={
+                                    () => handleDownloadPDF({
+                                        companyId: orderDocument.companyId.trim(),
+                                        correlative: orderDocument.correlative.trim(),
+                                        orderTypeId: orderDocument.orderTypeId.trim(),
+                                        period: orderDocument.period.trim()
+                                    })}
+                            />
+                        )
+                    }
+                    {
+                        (roles?.includes("LOGISTICA") === null) &&
                         <>
                             <Button
                                 icon={FaRegEdit}
@@ -123,19 +147,19 @@ export default function OrderDocumentReport() {
                         </ExternalLink>
                     }
                     {
-                       // (roles?.includes("TESORERIA")) && (
-                            <ExternalLink
-                                to={`/document-mp-voucher-payment/create/${encryptString(orderDocument.companyId)}/${encryptString(orderDocument.orderTypeId)}/${encryptString(orderDocument.correlative)}/${encryptString(orderDocument.period)}`}
-                                onClick={() => handleClickToCreateDocumentPayment({
-                                    companyId: orderDocument.companyId,
-                                    orderTypeId: orderDocument.orderTypeId,
-                                    period: orderDocument.period,
-                                    correlative: orderDocument.correlative,
-                                })}
-                                color="green"
-                                title="Registrar pago"
-                            ><MdOutlinePayments className="text-base" />
-                            </ExternalLink>
+                        // (roles?.includes("TESORERIA")) && (
+                        <ExternalLink
+                            to={`/document-mp-voucher-payment/create/${encryptString(orderDocument.companyId)}/${encryptString(orderDocument.orderTypeId)}/${encryptString(orderDocument.correlative)}/${encryptString(orderDocument.period)}`}
+                            onClick={() => handleClickToCreateDocumentPayment({
+                                companyId: orderDocument.companyId,
+                                orderTypeId: orderDocument.orderTypeId,
+                                period: orderDocument.period,
+                                correlative: orderDocument.correlative,
+                            })}
+                            color="green"
+                            title="Registrar pago"
+                        ><MdOutlinePayments className="text-base" />
+                        </ExternalLink>
                         //)
                     }
                     <ExternalLink

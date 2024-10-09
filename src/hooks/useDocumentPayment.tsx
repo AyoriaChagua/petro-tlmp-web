@@ -21,13 +21,13 @@ export const useDocumentPayment = (params: ParamsToCreate) => {
     const { user } = useAuth();
     const [paymentDocuments, setPaymentDocuments] = useState<PaymentResponseI[]>([]);
 
-    const [paymentDocumentForm, setPaymentDocumentForm] = useState<PaymentDocumentFormI[]>([{
+    const [paymentDocumentForm, setPaymentDocumentForm] = useState<PaymentDocumentFormI>({
         amountPaid: "",
         issueDate: formatDate2(new Date()),
         currencyLabel: "SOLES",
         currencyValue: "PEN",
         file: new File([], "")
-    }])
+    })
 
     useEffect(() => {
         (async () => {
@@ -36,46 +36,27 @@ export const useDocumentPayment = (params: ParamsToCreate) => {
         })();
     }, [params]);
 
-    const handleAddPayment = () => {
-        setPaymentDocumentForm(prevState => [...prevState, {
-            amountPaid: "",
-            issueDate: formatDate2(new Date()),
-            currencyLabel: "SOLES",  
-            currencyValue: "PEN",
-            file: new File([], "")
-        }])
-    };
 
-    const handleRemovePayment = (index: number) => {
-        setPaymentDocumentForm(prevState => prevState.filter((_, i) => i !== index));
-    };
 
-    const handleInputFileChange = (event: React.ChangeEvent<HTMLInputElement>, index: number) => {
+
+    const handleInputFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         const { files } = event.target;
-        setPaymentDocumentForm(prevState => prevState.map((form, i) => {
-            if (i === index) {
-                return {
-                    ...form,
-                    file: files ? files[0] : new File([], "")
-                };
-            }
-            return form;
-        }));
+        if (files && files.length > 0) {
+            setPaymentDocumentForm(prevState => ({
+                ...prevState,
+                file: files ? files[0] : new File([], "")
+            }));
+        }
     };
 
-    const handleOptionSelection =(option : SingleValue<OptionType> | MultiValue<OptionType>, index: number, field1: keyof PaymentDocumentFormI, field2?: keyof PaymentDocumentFormI) => {
+    const handleOptionSelection = (option: SingleValue<OptionType> | MultiValue<OptionType>, field1: keyof PaymentDocumentFormI, field2?: keyof PaymentDocumentFormI) => {
         const singleOption = option as SingleValue<OptionType>
-        if(singleOption) {
-            setPaymentDocumentForm(prevState => prevState.map((form, i) => {
-                if (i === index) {
-                    return {
-                        ...form,
-                        [field1]: singleOption?.value!,
-                        [field2!]: singleOption?.label!
-                    };
-                }
-                return form;
-            }));
+        if (singleOption) {
+            setPaymentDocumentForm(prevState => ({
+                ...prevState,
+                [field1]: singleOption?.value!,
+                [field2!]: singleOption?.label!
+            }))
         }
     }
 
@@ -83,16 +64,11 @@ export const useDocumentPayment = (params: ParamsToCreate) => {
         amountPaid: string;
         issueDate: string;
         file: File
-    }, index: number) => {
+    }) => {
         const { value } = event.target;
-        setPaymentDocumentForm(prevState => prevState.map((form, i) => {
-            if (i === index) {
-                return {
-                    ...form,
-                    [field]: value
-                };
-            }
-            return form;
+        setPaymentDocumentForm(prevState => ({
+            ...prevState,
+            [field]: value
         }));
     };
 
@@ -123,25 +99,24 @@ export const useDocumentPayment = (params: ParamsToCreate) => {
         e.preventDefault();
         console.log(paymentDocumentForm)
         try {
-            await Promise.all(paymentDocumentForm.map(async (form) => {
-                console.log(form)
-                const data = await createPaymentDocuments(parseInt(form.amountPaid), form.issueDate, form.currencyValue);
-                console.log(data)
 
-                if (data) {
-                    const formData = new FormData();
-                    formData.append('file', form.file);
-                    formData.append('fileTypeId', "AP");
-                    formData.append('systemUser', user!.id);
-                    formData.append('paymentId', data.paymentId.toString());
+            const data = await createPaymentDocuments(parseFloat(paymentDocumentForm.amountPaid), paymentDocumentForm.issueDate, paymentDocumentForm.currencyValue);
 
-                    const response = await postFile.createFile(formData);
+            if (data && paymentDocumentForm.file) {
+                const formData = new FormData();
+                formData.append('file', paymentDocumentForm.file);
+                formData.append('fileTypeId', "AP");
+                formData.append('systemUser', user!.id?.toUpperCase());
+                formData.append('paymentId', data.paymentId.toString());
 
-                    if (response) {
-                        showSuccessMessage("El pago fue creado exitosamente");
-                    }
+                const response = await postFile.createFile(formData);
+
+                if (response) {
+                    showSuccessMessage("El pago fue creado exitosamente");
                 }
-            }));
+            } else if (data) {
+                showSuccessMessage("El pago fue creado exitosamente");
+            }
         } catch (error) {
             showErrorMessage((error as Error).message);
         }
@@ -150,8 +125,6 @@ export const useDocumentPayment = (params: ParamsToCreate) => {
     return {
         paymentDocuments,
         paymentDocumentForm,
-        handleAddPayment,
-        handleRemovePayment,
         setPaymentDocumentForm,
         handleInputFileChange,
         handleInputChange,

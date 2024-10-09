@@ -76,7 +76,7 @@ export default function ReportLayout({
             text="Exportar"
             type="button"
             icon={RiFileExcel2Line}
-            onClick={()=>handleExport(reportType === "general" ? orderWithDocuments : documentReport)}
+            onClick={() => handleExport(reportType === "general" ? orderWithDocuments : documentReport)}
             disabled={orderWithDocuments.length === 0 && documentReport.length === 0}
           />
           <Button
@@ -88,8 +88,15 @@ export default function ReportLayout({
           />
         </div>
       </div>
-      <div className={`filter-container ${showFilter ? 'show' : ''}`}>
-
+      <div 
+        className={`
+          mt-4 
+          transition-all duration-300 ease-in-out
+          ${showFilter 
+            ? 'opacity-100 visible' 
+            : 'opacity-0 invisible h-0'}
+        `}
+      >
         <div className="grid grid-cols-1 sm:grid-cols-3 md:grid-cols-5 md:gap-x-20 md:gap-y-5 gap-x-5 gap-y-3  border border-gray-200 rounded-lg p-5">
           <div className="col-span-1">
             <CustomDateRange

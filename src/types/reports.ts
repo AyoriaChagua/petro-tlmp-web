@@ -14,7 +14,7 @@ export interface QueryFieldsI {
     isPettyCash?: boolean
 }
 
-export interface FieldsPDF {
+export interface FieldsOrderID {
     companyId: string;
     orderTypeId: string;
     period: string;

@@ -118,8 +118,8 @@ export interface PaymentResponseI {
     correlative: string
     paymentDate: string
     paidAmount: number
+    currency: string
     systemUser: string
-    systemDate: string
     isActive: boolean
 }
 

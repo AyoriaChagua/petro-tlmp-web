@@ -9,9 +9,10 @@ type ButtonProps = {
     readonly isFilled?: boolean | undefined | null;
     readonly title?: string;
     readonly disabled?: boolean
+    readonly className?: string
 };
 
-export default function Button({ styleType, text, icon: Icon, onClick, type, isFilled, title, disabled }: ButtonProps) {
+export default function Button({ styleType, text, icon: Icon, onClick, type, isFilled, title, disabled, className }: ButtonProps) {
     let baseClasses = `font-medium rounded-lg text-lg px-2 py-1.5 mb-2 focus:outline-none focus:ring-4 text-center mt-2`;
     let typeClasses = "";
     let disabledClasses = disabled ? "opacity-50 cursor-not-allowed" : "";
@@ -45,7 +46,7 @@ export default function Button({ styleType, text, icon: Icon, onClick, type, isF
     return (
         <button
             type={type}
-            className={`${baseClasses} ${typeClasses} ${disabledClasses}`}
+            className={`${baseClasses} ${typeClasses} ${disabledClasses} ${className}`}
             onClick={onClick}
             title={title}
             disabled={disabled}
