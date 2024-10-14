@@ -37,6 +37,8 @@ export default function OrderDocumentReport() {
         try {
             await getOrder.generatePdf(fields);
         } catch (error) {
+            console.error(error);
+            
             showErrorMessage("Error al generar el PDF");
             setDownloadingStates(prev => ({ ...prev, [key]: false }));
         } finally {

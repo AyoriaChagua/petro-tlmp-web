@@ -31,7 +31,7 @@ export default function Navbar() {
     const userMenuRef = useRef<HTMLDivElement | null>(null);
     const { companySelected, logout, user, companies, setCompanySelected, roles } = useAuth();
 
-    const adminItems = {
+    const maintananceItem = {
         name: 'Mantenimiento',
         path: '/maintanance',
         dropdown: [
@@ -45,15 +45,22 @@ export default function Navbar() {
         ],
     }
 
-    const logisticItems = {
+    const createOrderItem = {
         name: 'Crear orden',
         path: '/order-mp/create',
     }
 
-    const receptionOfficeItems = [
-        { name: 'General', path: '/reports/order-document' },
-        { name: 'Caja chica', path: '/reports/petty-cash' },
-        { name: 'Compras', path: '/reports/purchasing' },
+    const reportItem = {
+        name: 'Reportes',
+        path: '/reports',
+        dropdown: [
+            { name: 'General', path: '/reports/order-document' },
+            { name: 'Compras', path: '/reports/purchasing' },
+            { name: 'Caja chica', path: '/reports/petty-cash' },
+        ],
+    }
+
+    const providerItem = [
         { name: 'Proveedores', path: '/maintanance/providers' },
     ]
 
@@ -62,29 +69,19 @@ export default function Navbar() {
             name: 'Petroamerica',
             path: '/dashboard',
         },
-
-        {
-            name: 'Reportes',
-            path: '/reports',
-            dropdown: [
-                { name: 'General', path: '/reports/order-document' },
-                { name: 'Compras', path: '/reports/purchasing' },
-                { name: 'Caja chica', path: '/reports/petty-cash' },
-            ],
-        },
+        reportItem
     ];
 
     if (roles?.includes('ADMINISTRADOR')) {
-        navItems.splice(1, 0, adminItems);
+        navItems.splice(1, 0, maintananceItem);
     }
 
     if (roles?.includes("LOGISTICA")) {
-        navItems.splice(2, 0, logisticItems);
+        navItems.splice(2, 0, createOrderItem);
     }
 
-    if(roles?.includes("MESA DE PARTES")) {
-        receptionOfficeItems.map((item) => navItems.splice(1, 0, item));
-        navItems.pop();
+    if (roles?.includes("MESA DE PARTES") && !roles?.includes('ADMINISTRADOR')) {
+        providerItem.map((item) => navItems.splice(1, 0, item));
     }
 
 
