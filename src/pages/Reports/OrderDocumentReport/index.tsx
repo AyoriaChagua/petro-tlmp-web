@@ -165,7 +165,7 @@ export default function OrderDocumentReport() {
                         //)
                     }
                     <ExternalLink
-                        to={`/file-folder-mp/order/${encryptString(JSON.stringify({
+                        to={`/file-folder-mp/${encryptString(JSON.stringify({
                             companyId: orderDocument.companyId,
                             orderTypeId: orderDocument.orderTypeId,
                             period: orderDocument.period,
@@ -239,13 +239,6 @@ export default function OrderDocumentReport() {
                                                         <FaRegEdit />
                                                     </ExternalLink>
                                                 )}
-                                                <ExternalLink
-                                                    to={`/file-folder-mp/document/${encryptString(doc.orderDocumentNumber)}`}
-                                                    color="blue"
-                                                    title="Carpeta de archivos"
-                                                >
-                                                    <BsFolder className="text-base" />
-                                                </ExternalLink>
                                             </div>
                                         </td>
                                     </tr>

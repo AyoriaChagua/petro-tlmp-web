@@ -1,10 +1,11 @@
-import { FileResponseI } from "../../types/file";
+import { FileResponseI, SearchFieldFilesI } from "../../types/file";
 import { axiosInstance } from "../config";
 
 export const getFiles = {
-    byOrder: async (correlative: string, orderTypeId: string, period: string, companyId: string) => {
+    byOrder: async (fields: SearchFieldFilesI) => {
         try {
-            const response = await axiosInstance.get<FileResponseI[]>(`/file-mp/by-order/${correlative}/${orderTypeId}/${period}/${companyId}`);
+            const response = await axiosInstance.get<FileResponseI[]>(`/file-mp/by-order`, { params: fields });
+            console.log(response)
             return response.data;
         } catch (error) {
             throw new Error("No se pudieron obtener los archivos");

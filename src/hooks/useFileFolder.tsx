@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react"
-import { ExtensionFileMP, FileMPI, FolderType } from "../types/file"
+import { ExtensionFileMP, FileMPI, FolderType, SearchFieldFilesI } from "../types/file"
 import { decryptString } from "../utils/functions";
 import { FileTypeMP } from "../types/common/inputs";
 import { useAuth } from "../context/AuthContext";
@@ -8,7 +8,10 @@ import { showErrorMessage, showSuccessMessage } from "../utils/alerts";
 import { getFiles } from "../api/file/get";
 import { deleteFile } from "../api/file/delete";
 
-export const useFileFolder = (folderType: FolderType, numberReference: string) => {
+export const useFileFolder = (numberReference: string) => {
+
+    const [folderType, setFolderType] = useState<FolderType>("order");
+    const [fileTypeId, setFileTypeID] = useState("");
 
     const [orderReference, setOrderReference] = useState({
         correlative: "",
@@ -17,23 +20,24 @@ export const useFileFolder = (folderType: FolderType, numberReference: string) =
         companyId: ""
     });
 
+
     const [filesMP, setFilesMP] = useState<FileMPI[]>([]);
-    const [showPaymentsFiles, setShowPaymentsFiles] = useState(false);
 
     const { user, companySelected } = useAuth();
 
-    const getFilesByOrder = async (
-        correlative: string = orderReference.correlative,
-        orderTypeId: string = orderReference.orderTypeId,
-        period: string = orderReference.period,
-        companyId: string = orderReference.companyId
-    ) => {
-        const data = await getFiles.byOrder(
+    const getFilesByType = async ({
+        correlative = orderReference.correlative,
+        orderTypeId = orderReference.orderTypeId,
+        period = orderReference.period,
+        companyId = orderReference.companyId
+    }: SearchFieldFilesI) => {
+        const data = await getFiles.byOrder({
             correlative,
-            orderTypeId,
+            orderTypeId: orderTypeId.replace("%2F", "/").trim(),
             period,
-            companyId
-        );
+            companyId,
+            fileTypeId
+        });
         const filesFromData: FileMPI[] = data.map((file) => {
             return {
                 id: file.id,
@@ -42,62 +46,40 @@ export const useFileFolder = (folderType: FolderType, numberReference: string) =
                 extensionFile: file.fileName.split('.').pop() as ExtensionFileMP
             }
         })
-        setFilesMP(filesFromData);
-    };
 
-    const getByDocument = async () => {
-        const data = await getFiles.byDocument(decryptString(numberReference), companySelected?.value!);
-        const filesFromData: FileMPI[] = data.map((file) => {
-            return {
-                id: file.id,
-                name: file.fileName,
-                fileTypeId: file.fileTypeId as FileTypeMP,
-                extensionFile: file.fileName.split('.').pop() as ExtensionFileMP
-            }
-        })
-        setFilesMP(filesFromData);
-    };
-
-    const getFilesByPayment = async () => {
-        const data = await getFiles.byPayment(decryptString(numberReference), companySelected?.value!);
-        console.log(data)
-        const filesFromData: FileMPI[] = data.map((file) => {
-            return {
-                id: file.id,
-                name: file.fileName,
-                fileTypeId: file.fileTypeId as FileTypeMP,
-                extensionFile: file.fileName.split('.').pop() as ExtensionFileMP
-            }
-        })
         setFilesMP(filesFromData);
     };
 
 
     useEffect(() => {
-        if (folderType === "order") {
-            const orderReferenceDecrypt = JSON.parse(decryptString(numberReference))
-            setOrderReference(orderReferenceDecrypt);
-            getFilesByOrder(
-                orderReferenceDecrypt.correlative,
-                orderReferenceDecrypt.orderTypeId.replace("/", "%2F"),
-                orderReferenceDecrypt.period,
-                orderReferenceDecrypt.companyId
-            );
-        } else if (folderType === "document") {
-            getByDocument();
-        }
-    }, [folderType, numberReference]);
-
-    useEffect(() => {
-        if (showPaymentsFiles) {
-            getFilesByPayment();
-        } else {
-            getByDocument().catch(() => {
-                setFilesMP([]);
+        const orderReferenceDecrypt = JSON.parse(decryptString(numberReference))
+        setOrderReference(orderReferenceDecrypt);
+        if (fileTypeId) {
+            getFilesByType({
+                correlative: orderReferenceDecrypt.correlative,
+                orderTypeId: orderReferenceDecrypt.orderTypeId.replace("/", "%2F"),
+                period: orderReferenceDecrypt.period,
+                companyId: orderReferenceDecrypt.companyId,
+                fileTypeId
             });
         }
-    }, [showPaymentsFiles])
-    
+    }, [fileTypeId, numberReference]);
+
+
+    useEffect(() => {
+        setFilesMP([]);
+        switch (folderType) {
+            case "order":
+                setFileTypeID("AO");
+                break;
+            case "document":
+                setFileTypeID("AF");
+                break;
+            case "payment":
+                setFileTypeID("AP");
+                break;
+        }
+    }, [folderType]);
 
 
     const handleSubmit = async (files: File[], fileTypeId: FileTypeMP) => {
@@ -108,8 +90,7 @@ export const useFileFolder = (folderType: FolderType, numberReference: string) =
                 formData.append('file', file);
                 formData.append('fileTypeId', fileTypeId);
                 formData.append('systemUser', user?.id!);
-                if (folderType === "document") formData.append('orderDocumentNumber', decryptString(numberReference));
-                if (orderReference.companyId  || folderType === "document") formData.append('companyId', companySelected?.value!);
+                if (orderReference.companyId) formData.append('companyId', companySelected?.value!);
                 if (orderReference.orderTypeId) formData.append('orderTypeId', orderReference.orderTypeId);
                 if (orderReference.period) formData.append('period', orderReference.period);
                 if (orderReference.correlative) formData.append('correlative', orderReference.correlative);
@@ -140,10 +121,10 @@ export const useFileFolder = (folderType: FolderType, numberReference: string) =
 
     const handleDeleteFile = async (id: number) => {
         try {
-            const res = await deleteFile.delete(id);    
-            if(res.status === 200) {
+            const res = await deleteFile.delete(id);
+            if (res.status === 200) {
                 setFilesMP(filesMP.filter(file => file.id !== id))
-            }else {
+            } else {
                 throw new Error('No se pudo eliminar el archivo');
             }
         } catch (error) {
@@ -159,7 +140,7 @@ export const useFileFolder = (folderType: FolderType, numberReference: string) =
         handleSubmit,
         filesMP,
         handleDeleteFile,
-        showPaymentsFiles,
-        setShowPaymentsFiles
+        setFolderType,
+        folderType
     }
 }

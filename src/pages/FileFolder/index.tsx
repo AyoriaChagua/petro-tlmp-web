@@ -4,10 +4,7 @@ import { FileDownloadCard, FileUpload, FolderButton } from '../../components';
 import { useFileFolder } from '../../hooks/useFileFolder';
 
 export default function FileFolder() {
-    const { folderType, numberReference } = useParams<{
-        folderType: FolderType;
-        numberReference: string;
-    }>();
+    const { numberReference } = useParams<{ numberReference: string; }>();
 
     const {
         numberReference: numberReferenceDecrypt,
@@ -15,30 +12,22 @@ export default function FileFolder() {
         handleSubmit,
         filesMP,
         handleDeleteFile,
-        setShowPaymentsFiles,
-        showPaymentsFiles
-    } = useFileFolder(folderType!, numberReference!);
+        setFolderType,
+        folderType
+    } = useFileFolder(numberReference!);
 
     return (
         <div className='flex flex-col gap-5'>
             <div className='font-semibold text-gray-400 text-xl'>Carpetas</div>
             <div className='flex gap-4'>
-                {
-                    folderType === "document" ?
-                        (
-                            <>
-                                <FolderButton name={"Documento"} onClick={() => setShowPaymentsFiles(false)} isOpen={!showPaymentsFiles} />
-                                <FolderButton name={"Pagos"} onClick={() => setShowPaymentsFiles(true)} isOpen={showPaymentsFiles} />
-                            </>
-                        ) : (
-                            <FolderButton name={"Orden"} onClick={() => { }} isOpen={true} />
-                        )
-                }
+                <FolderButton name={"Orden"} onClick={() => setFolderType("order")} isOpen={folderType === "order"} />
+                <FolderButton name={"Documento"} onClick={() => setFolderType("document")} isOpen={folderType === "document"} />
+                <FolderButton name={"Pagos"} onClick={() => setFolderType("payment")} isOpen={folderType === "payment"} />
             </div>
             <div className='font-semibold text-gray-400 text-xl'>
                 Archivos
                 <span className='text-gray-500 text-base font-normal'>
-                    ({folderType === "document" ? numberReferenceDecrypt : orderReference?.orderTypeId + "  #" + orderReference?.correlative})
+                    ({orderReference?.orderTypeId + "  #" + orderReference?.correlative})
                 </span>
             </div>
             <div className='grid lg:grid-cols-6 md:grid-cols-3 grid-cols-1 gap-2'>
@@ -50,11 +39,11 @@ export default function FileFolder() {
                         <div className='text-center m-auto text-xl text-gray-500 font-medium'>Sin archivos</div>
                     }
                 </div>
-                {!showPaymentsFiles &&
+                {!(folderType === "payment") &&
                     <div className="lg:col-span-2 md:col-span-1 col-span-1 flex  flex-col gap-2 bg-gray-100 rounded-lg p-5 flex-wrap">
                         <FileUpload
                             onSubmit={handleSubmit}
-                            fileTypeId={folderType === "document" ? "AF" : showPaymentsFiles ? "AP" : "AO"}
+                            fileTypeId={folderType === "document" ? "AF" : "AO"}
                         />
                     </div>
                 }

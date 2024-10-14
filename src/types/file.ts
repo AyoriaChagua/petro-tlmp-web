@@ -23,6 +23,10 @@ export interface FileMPI {
     extensionFile: ExtensionFileMP
 }
 
-export type FolderType = "order" | "document"
+export type FolderType = "order" | "document" | "payment"
 
 export type ExtensionFileMP = "png" | "jpg" | "jpeg" | "pdf" | "doc" | "docx" | "xls" | "xlsx" | "ppt" | "pptx" | "odt" | "ods" | "odp" | "txt" | "csv" | "xml" 
+
+export interface SearchFieldFilesI  {
+    correlative: string, orderTypeId: string, period: string, companyId: string, fileTypeId: string
+}
