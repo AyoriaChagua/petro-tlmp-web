@@ -1,5 +1,4 @@
 import { useParams } from 'react-router-dom';
-import { FolderType } from '../../types/file';
 import { FileDownloadCard, FileUpload, FolderButton } from '../../components';
 import { useFileFolder } from '../../hooks/useFileFolder';
 
@@ -7,7 +6,6 @@ export default function FileFolder() {
     const { numberReference } = useParams<{ numberReference: string; }>();
 
     const {
-        numberReference: numberReferenceDecrypt,
         orderReference,
         handleSubmit,
         filesMP,
