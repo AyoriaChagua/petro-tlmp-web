@@ -18,8 +18,7 @@ export const exportToExcelGeneralReport = async (
             'RUC Proveedor', 'Proveedor', 'Centro de Costo',
             'Afecto IGV', 'Moneda', 'Total', 'Impuesto', 'Percepción/Detracción', 'Productos',
             'N° Documento', 'Subtotal Doc', 'Impuesto', 'Total Doc', 'Estado Doc', 'Glosa',
-            'Código SUNAT', 
-            'Moneda', 'Fecha Pago', 'Monto Pagado'
+            'Código SUNAT', 'Moneda', 'Fecha Pago', 'Monto Pagado'
         ];
 
         const headerRow = ws.addRow(headers);
@@ -50,7 +49,7 @@ export const exportToExcelGeneralReport = async (
                 order.observations,
                 order.providerRuc,
                 order.providerDescription,
-                order.costcenterAlias ? order.costcenterAlias : order.costCenterId,
+                order.costCenterDescription,
                 order.isAffectedIGV ? 'Sí' : 'No',
                 getCurrencySymbol(order.currency),
                 formatCurrency(order.total),
@@ -100,7 +99,7 @@ export const exportToExcelGeneralReport = async (
             'G': 50,
             'H': 20,
             'I': 40,
-            'J': 20,
+            'J': 30,
             'K': 15,
             'L': 15,
             'M': 15,
