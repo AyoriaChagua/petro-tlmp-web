@@ -16,7 +16,7 @@ export const exportToExcelGeneralReport = async (
         const headers = [
             'CIA', 'Correlativo', 'Tipo de Orden', 'Periodo', 'Usuario', 'Fecha', 'Observaciones',
             'RUC Proveedor', 'Proveedor', 'Centro de Costo',
-            'Afecto IGV', 'Moneda', 'Total', 'Impuesto', 'Percepción/Detracción', 'Productos',
+            'Afecto IGV', 'Moneda', 'Total', 'Impuesto', 'Percepción','Detracción', 'Productos',
             'N° Documento', 'Subtotal Doc', 'Impuesto', 'Total Doc', 'Estado Doc', 'Glosa',
             'Código SUNAT', 'Moneda', 'Fecha Pago', 'Monto Pagado'
         ];
@@ -54,7 +54,8 @@ export const exportToExcelGeneralReport = async (
                 getCurrencySymbol(order.currency),
                 formatCurrency(order.total),
                 order.tax ? formatCurrency(order.tax) : order.retention ? formatCurrency(order.retention) : '',
-                order.detraction ? formatCurrency(order.detraction) : order.perception ? formatCurrency(order.perception) : '',
+                order.perceptionCalc ? formatCurrency(order.perceptionCalc) : '',
+                order.detractionCalc ? formatCurrency(order.detractionCalc) : '',
                 order.products,
                 doc?.orderDocumentNumber ?? '',
                 doc?.subtotal ? formatCurrency(doc?.subtotal) : '',
@@ -105,18 +106,19 @@ export const exportToExcelGeneralReport = async (
             'M': 15,
             'N': 15,
             'O': 15,
-            'P': 50,
-            'Q': 15,
+            'P': 15,
+            'Q': 50,
             'R': 15,
-            'S': 25,
-            'T': 15,
-            'U': 40,
-            'V': 15,
+            'S': 15,
+            'T': 25,
+            'U': 15,
+            'V': 40,
             'W': 15,
             'X': 15,
-            'Y': 10,
-            'Z': 15,
-            'AA': 15
+            'Y': 15,
+            'Z': 10,
+            'AA': 15,
+            'AB': 15
         };
 
         ws.columns.forEach((column, index) => {
@@ -124,7 +126,7 @@ export const exportToExcelGeneralReport = async (
             if (columnWidths[columnLetter]) {
                 column.width = columnWidths[columnLetter];
             } else {
-                column.width = 15;
+                column.width = 16;
             }
         });
 
@@ -134,7 +136,7 @@ export const exportToExcelGeneralReport = async (
                 acc + Math.max(1,  0), 0) || 1;
 
             if (rowCount > 1) {
-                for (let col = 1; col <= 16; col++) {
+                for (let col = 1; col <= 17; col++) {
                     ws.mergeCells(startRow, col, startRow + rowCount - 1, col);
                     const cell = ws.getCell(startRow, col);
                     cell.alignment = { vertical: 'middle', horizontal: 'center' };

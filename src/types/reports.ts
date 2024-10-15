@@ -43,9 +43,11 @@ export interface OrderReportI {
     products: string
     period: string
     tax: number | null,
-    detraction: number | null,
     retention: number | null,
+    detraction: number | null,
     perception: number | null,
+    detractionCalc: number | null,
+    perceptionCalc: number | null,
     isAffectedIGV: boolean
 }
 
