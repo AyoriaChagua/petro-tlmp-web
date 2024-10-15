@@ -70,7 +70,7 @@ export default function OrderDocumentReport() {
         },
         {
             key: "actions", label: "Destino", actions: (orderDocument) => (
-                <>{orderDocument.costcenterAlias || orderDocument.costCenterId}</>
+                <>{orderDocument.costCenterDescription}</>
             )
         },
         {
