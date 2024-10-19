@@ -261,7 +261,6 @@ export default function OrderDocumentReport() {
                                     <th className="px-4 py-2">Fecha de pago</th>
                                     <th className="px-4 py-2">Moneda</th>
                                     <th className="px-4 py-2">Monto pagado</th>
-                                    <th className="px-4 py-2">Acciones</th>
                                     {/*</tr>{searchCurrencySymbol(payment.currency)}
                                                         </td>
                                                         <td className="border px-4 py-2">
@@ -275,9 +274,6 @@ export default function OrderDocumentReport() {
                                         <td className="border px-4 py-2">{formatDate1(pay.paymentDate.split("T")[0])}</td>
                                         <td className="border px-4 py-2">{searchCurrencySymbol(orderDocument.currency)}</td>
                                         <td className="border px-4 py-2">{formatCurrency(pay.paidAmount)}</td>
-                                        <td className="border px-4 py-2">
-
-                                        </td>
                                     </tr>
                                 ))}
                             </tbody>

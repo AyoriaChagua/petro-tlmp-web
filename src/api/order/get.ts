@@ -42,6 +42,7 @@ export const getOrder = {
             if(response.status !== 200) {
                 throw new Error("No se pudo obtener los pagos");
             }
+            console.log(JSON.stringify(response.data, null, 2));
             return response.data;
         } catch (error) {
             throw new Error((error as Error).message);

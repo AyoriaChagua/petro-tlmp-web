@@ -27,7 +27,7 @@ const Table = <T,>({ columns, data }: TableProps<T>) => {
                             {columns.map((column, index) => (
                                 <td
                                     key={index}
-                                    className="px-4 py-2 whitespace-nowrap text-sm text-gray-700"
+                                    className="px-4 py-1 whitespace-nowrap text-sm text-gray-700"
                                 >
                                     {column.key === "actions" && column.actions
                                         ? column.actions(row)

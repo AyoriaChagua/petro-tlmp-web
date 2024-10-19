@@ -9,6 +9,13 @@ export interface PaymentDocumentRequestI {
     currency: string
 }
 
+export interface PaymentDocumentRequestUpdateI {
+    paidAmount: number
+    paymentDate: string
+    systemUser: string
+    currency: string
+}
+
 
 export interface PaymentDocumentResponseI extends PaymentDocumentRequestI {
     systemDate: Date
@@ -121,6 +128,7 @@ export interface PaymentResponseI {
     currency: string
     systemUser: string
     isActive: boolean
+    fileId?: number
 }
 
 export interface PaymentDocumentFormI {
@@ -128,7 +136,7 @@ export interface PaymentDocumentFormI {
     issueDate: string;
     currencyLabel: string;  
     currencyValue: string;
-    file: File
+    file: File | null
 }
 
 export interface OrderDocumentToEditResponseI {

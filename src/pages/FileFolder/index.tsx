@@ -20,7 +20,6 @@ export default function FileFolder() {
             <div className='flex gap-4'>
                 <FolderButton name={"Orden"} onClick={() => setFolderType("order")} isOpen={folderType === "order"} />
                 <FolderButton name={"Documento"} onClick={() => setFolderType("document")} isOpen={folderType === "document"} />
-                <FolderButton name={"Pagos"} onClick={() => setFolderType("payment")} isOpen={folderType === "payment"} />
             </div>
             <div className='font-semibold text-gray-400 text-xl'>
                 Archivos

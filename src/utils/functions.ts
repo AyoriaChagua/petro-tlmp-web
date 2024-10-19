@@ -68,6 +68,19 @@ export const getCurrencySymbol = (currency: string) => {
     }
 }
 
+export const getCurrencyDescription = (currency: string) => {
+    switch (currency) {
+        case "PEN":
+            return "SOLES"
+        case "USD":
+            return "DOLARES"
+        case "EUR":
+            return "EUROS"
+        default:
+            return "-"
+    }
+}
+
 export const encryptString = (str: string) => {
     return btoa(encodeURIComponent(str))
 }

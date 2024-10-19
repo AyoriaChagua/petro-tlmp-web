@@ -8,6 +8,8 @@ import { MultiValue, SingleValue } from "react-select";
 import { OptionType } from "../types/common/inputs";
 import { getOrder } from "../api/order/get";
 import { postOrder } from "../api/order/post";
+import { getCurrencyDescription } from "../utils/functions";
+import { deleteOrder } from "../api/order/delete";
 
 interface ParamsToCreate {
     readonly companyId: string;
@@ -17,27 +19,32 @@ interface ParamsToCreate {
 }
 
 export const useDocumentPayment = (params: ParamsToCreate) => {
-
-    const { user } = useAuth();
-    const [paymentDocuments, setPaymentDocuments] = useState<PaymentResponseI[]>([]);
-
-    const [paymentDocumentForm, setPaymentDocumentForm] = useState<PaymentDocumentFormI>({
+    const initialFormState = {
         amountPaid: "",
         issueDate: formatDate2(new Date()),
         currencyLabel: "SOLES",
         currencyValue: "PEN",
-        file: new File([], "")
-    })
+        file: null
+    }
+    const { user } = useAuth();
+    const [paymentDocuments, setPaymentDocuments] = useState<PaymentResponseI[]>([]);
+
+    const [paymentDocumentForm, setPaymentDocumentForm] = useState<PaymentDocumentFormI>(initialFormState)
+
+    const [paymentIdToUpdate, setPaymentIdToUpdate] = useState(0);
+    const [uploadOnlyFile, setUploadOnlyFile] = useState(false);
+
+
+    const fetchData = async () => {
+        const data = await getOrder.payments(params);
+        setPaymentDocuments(data);
+    }
 
     useEffect(() => {
-        (async () => {
-            const data = await getOrder.payments(params);
-            setPaymentDocuments(data);
-        })();
-    }, [params]);
-
-
-
+        if (params) {
+            fetchData();
+        }
+    }, []);
 
     const handleInputFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         const { files } = event.target;
@@ -86,41 +93,115 @@ export const useDocumentPayment = (params: ParamsToCreate) => {
             });
 
             if (data) {
-                return data
+                await handleFileUpload(data.paymentId);
             } else {
                 throw new Error("No se pudo crear el documento de pago");
             }
         } catch (error) {
             showErrorMessage("No se pudo crear el documento de pago");
         }
+    };
+
+    const handleFileUpload = async (paymentId: number) => {
+        if (paymentDocumentForm.file) {
+            const formData = new FormData();
+            formData.append('file', paymentDocumentForm.file);
+            formData.append('fileTypeId', "AP");
+            formData.append('systemUser', user!.id?.toUpperCase());
+            formData.append('paymentId', paymentId.toString());
+
+            formData.append('companyId', params.companyId);
+            formData.append('orderTypeId', params.orderTypeId);
+            formData.append('period', params.period);
+            formData.append('correlative', params.correlative);
+
+            const response = await postFile.createFile(formData);
+            if (response) {
+                showSuccessMessage("El pago fue creado exitosamente");
+            }
+        } else {
+            showSuccessMessage("El pago fue creado exitosamente, pero no se adjuntó ningún archivo.");
+        }
+    };
+
+
+    const updatePaymentDocument = async (paidAmount: number, paymentDate: string, currency: string) => {
+        try {
+            const data = await postOrder.updatePayment(paymentIdToUpdate, {
+                paidAmount,
+                paymentDate,
+                systemUser: user!.id,
+                currency
+            });
+
+            if (data) {
+                showSuccessMessage("El pago fue actualizado exitosamente");
+            } else {
+                throw new Error("No se pudo actualizar el documento de pago");
+            }
+        } catch (error) {
+            showErrorMessage("No se pudo actualizar el documento de pago");
+        }
     }
 
     const onSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
-        console.log(paymentDocumentForm)
         try {
-
-            const data = await createPaymentDocuments(parseFloat(paymentDocumentForm.amountPaid), paymentDocumentForm.issueDate, paymentDocumentForm.currencyValue);
-
-            if (data && paymentDocumentForm.file) {
-                const formData = new FormData();
-                formData.append('file', paymentDocumentForm.file);
-                formData.append('fileTypeId', "AP");
-                formData.append('systemUser', user!.id?.toUpperCase());
-                formData.append('paymentId', data.paymentId.toString());
-
-                const response = await postFile.createFile(formData);
-
-                if (response) {
-                    showSuccessMessage("El pago fue creado exitosamente");
-                }
-            } else if (data) {
-                showSuccessMessage("El pago fue creado exitosamente");
+            if (!Boolean(paymentIdToUpdate)) {
+                await createPaymentDocuments(parseFloat(paymentDocumentForm.amountPaid), paymentDocumentForm.issueDate, paymentDocumentForm.currencyValue);
+            } else if (Boolean(paymentIdToUpdate) && uploadOnlyFile) {
+                await handleFileUpload(paymentIdToUpdate);
+            } else if (Boolean(paymentIdToUpdate) && !uploadOnlyFile) {
+                await updatePaymentDocument(parseFloat(paymentDocumentForm.amountPaid), paymentDocumentForm.issueDate, paymentDocumentForm.currencyValue)
             }
         } catch (error) {
             showErrorMessage((error as Error).message);
+        } finally {
+            setPaymentDocumentForm(initialFormState);
+            setPaymentIdToUpdate(0);
+            setUploadOnlyFile(false);
+            fetchData();
         }
     };
+
+    const handlePaymentEdit = (payment: PaymentResponseI) => {
+        if (payment.paymentId === paymentIdToUpdate && !uploadOnlyFile) {
+            setPaymentIdToUpdate(0);
+            setPaymentDocumentForm(initialFormState);
+            setUploadOnlyFile(false);
+        } else {
+            setUploadOnlyFile(false);
+            setPaymentIdToUpdate(payment.paymentId);
+            setPaymentDocumentForm({
+                amountPaid: payment.paidAmount.toString(),
+                issueDate: payment.paymentDate.split("T")[0],
+                currencyLabel: getCurrencyDescription(payment.currency),
+                currencyValue: payment.currency,
+                file: null
+            })
+        }
+    }
+
+    const handlePaymentFileSelect = (payment: PaymentResponseI) => {
+        if (payment.paymentId === paymentIdToUpdate && uploadOnlyFile) {
+            setPaymentIdToUpdate(0);
+            setUploadOnlyFile(false);
+        } else {
+            setPaymentIdToUpdate(payment.paymentId);
+            setUploadOnlyFile(true);
+        }
+    }
+
+    const handleDeletePayment  = async (paymentId: number) => {
+        try {
+            await deleteOrder.payment(paymentId);
+        } catch (error) {
+            showErrorMessage("No se pudo eliminar el documento de pago");
+        } finally {
+            fetchData();
+        }
+    }
+
 
     return {
         paymentDocuments,
@@ -129,6 +210,11 @@ export const useDocumentPayment = (params: ParamsToCreate) => {
         handleInputFileChange,
         handleInputChange,
         onSubmit,
-        handleOptionSelection
+        handleOptionSelection,
+        paymentIdToUpdate,
+        handlePaymentFileSelect,
+        handlePaymentEdit,
+        uploadOnlyFile,
+        handleDeletePayment
     }
 }
