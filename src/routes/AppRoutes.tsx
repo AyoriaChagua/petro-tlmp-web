@@ -22,6 +22,7 @@ import {
     FileFolder
 } from "../pages";
 import { useAuth } from "../context/AuthContext";
+import ExchangeRate from "../pages/Maintanance/ExchangeRate";
 
 const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
     const { isAuthenticated } = useAuth();
@@ -65,7 +66,7 @@ export default function AppRoutes() {
                             <Route path="maintanance/correlative-control" element={<CorrelativeControl />} />
                         </>
                     }
-
+                    <Route path="maintanance/exchange-rate" element={<ExchangeRate />} />
 
                     {
                         roles?.includes("LOGISTICA") &&
@@ -84,7 +85,7 @@ export default function AppRoutes() {
                     }
 
                     {
-                       // roles?.includes("TESORERIA") &&
+                        // roles?.includes("TESORERIA") &&
                         <Route path="document-mp-voucher-payment/create/:companyId/:orderTypeId/:correlative/:period" element={<CreatePaymentDocument />} />
                     }
                     <Route path="file-folder-mp/:numberReference" element={<FileFolder />} />

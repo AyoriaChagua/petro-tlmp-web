@@ -28,3 +28,4 @@ export { default as FolderButton } from './UI/FolderButton';
 export { default as FileUpload } from './common/FileUpload';
 export { default as FileDownloadCard } from './UI/FileDownloadCard';
 export { default as OrderPdfGenerator } from './common/OrderPdfGenerator';
+export {default as TablePagination } from './UI/TablePagination';

@@ -31,7 +31,7 @@ export default function Navbar() {
     const userMenuRef = useRef<HTMLDivElement | null>(null);
     const { companySelected, logout, user, companies, setCompanySelected, roles } = useAuth();
 
-    const maintananceItem = {
+    const maintananceAdminItem = {
         name: 'Mantenimiento',
         path: '/maintanance',
         dropdown: [
@@ -41,7 +41,16 @@ export default function Navbar() {
             { name: 'Aprobadores', path: '/maintanance/approving-personnel' },
             { name: 'Área solicitante', path: '/maintanance/requesting-area' },
             { name: 'Documentos SUNAT', path: '/maintanance/sunat-documents' },
-            { name: 'Usuarios', path: '/maintanance/users' },
+            { name: 'Usuarios', path: '/maintanance/users' }
+        ],
+    }
+
+    const maintananceExchangeRateItem = { name: 'Tipo cambio', path: '/maintanance/exchange-rate' }
+    const maintananceGeneralItem = {
+        name: 'Mantenimiento',
+        path: '/maintanance',
+        dropdown: [
+            maintananceExchangeRateItem
         ],
     }
 
@@ -60,9 +69,8 @@ export default function Navbar() {
         ],
     }
 
-    const providerItem = [
-        { name: 'Proveedores', path: '/maintanance/providers' },
-    ]
+    const providerItem =  { name: 'Proveedores', path: '/maintanance/providers' }
+    
 
     const navItems: NavItem[] = [
         {
@@ -73,16 +81,19 @@ export default function Navbar() {
     ];
 
     if (roles?.includes('ADMINISTRADOR')) {
-        navItems.splice(1, 0, maintananceItem);
+        navItems.splice(1, 0, { ...maintananceAdminItem, dropdown: [...maintananceAdminItem.dropdown, maintananceExchangeRateItem] });
     }
 
     if (roles?.includes("LOGISTICA")) {
-        navItems.splice(2, 0, createOrderItem);
+        navItems.splice(3, 0, createOrderItem);
     }
 
-    if (roles?.includes("MESA DE PARTES") && !roles?.includes('ADMINISTRADOR')) {
-        providerItem.map((item) => navItems.splice(1, 0, item));
+    if ((roles?.includes("MESA DE PARTES") || roles?.includes("LOGISTICA")) && !roles?.includes('ADMINISTRADOR')) {
+        maintananceGeneralItem.dropdown.push(providerItem);
+        navItems.splice(1, 0, maintananceGeneralItem);
     }
+
+
 
 
     useEffect(() => {

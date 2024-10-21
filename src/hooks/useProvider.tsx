@@ -70,7 +70,7 @@ export const useProvider = () => {
                         modifiedUser: user?.id!
                     } as ProviderRequestToUpdate;
                     const responseProviderUpdated = await putProviderMP.updateProvider(onlyProvider, formProvider.ruc);
-                    
+
                     formProvider.accounts
                         .filter(account => account.accountNumber) // Filtra cuentas que tengan un accountNumber válido
                         .forEach(async account => {
@@ -86,7 +86,7 @@ export const useProvider = () => {
                                 await postProviderMP.createProviderAccounts([{ ...account, supplierRUC: formProvider.ruc }]);
                             }
                         });
-    
+
                     responseProviderUpdated && showSuccessMessage("Proveedor actualizado satisfactoriamente");
                 }
                 setUpdateProvider(false);
@@ -111,10 +111,10 @@ export const useProvider = () => {
                             systemUser: user?.id!
                         }));
                     const responseNewAccounts = await postProviderMP.createProviderAccounts(onlyAccounts);
-                    if(responseNewAccounts){
+                    if (responseNewAccounts) {
                         fetchProviders();
                         setFormProvider(initialProvider);
-                    } 
+                    }
                 }
                 showSuccessMessage("Proveedor creado satisfactoriamente");
             }
@@ -229,7 +229,7 @@ export const useProvider = () => {
             await fetchProviders();
             setTimeout(() => {
                 setIsLoading(false);
-            }, 300);
+            }, 275);
         };
 
         loadProviders();
@@ -252,37 +252,12 @@ export const useProvider = () => {
         }
     }, [querySearch, numberProviders.quantity, paginationOptions.itemsPerPage, paginationOptions.currentPage]);
 
-    const goToNextPage = () => {
-        if (paginationOptions.currentPage < paginationOptions.totalPages) {
-            setPaginationOptions(prevState => ({
-                ...prevState,
-                currentPage: prevState.currentPage + 1
-            }));
-        }
-    };
-
-    const goToPreviousPage = () => {
-        if (paginationOptions.currentPage > 1) {
-            setPaginationOptions(prevState => ({
-                ...prevState,
-                currentPage: prevState.currentPage - 1
-            }));
-        }
-    };
-
-    const goToLastPage = () => {
+    const handlePageChange = (page: number) => {
         setPaginationOptions(prevState => ({
             ...prevState,
-            currentPage: prevState.totalPages
+            currentPage: page
         }));
-    };
-
-    const goToFirstPage = () => {
-        setPaginationOptions(prevState => ({
-            ...prevState,
-            currentPage: 1
-        }));
-    };
+    }
 
     const changeItemsPerPage = (newItemsPerPage: number) => {
         if (newItemsPerPage !== paginationOptions.itemsPerPage) {
@@ -302,10 +277,7 @@ export const useProvider = () => {
         openDropdownId,
         numberProviders,
         paginationOptions,
-        goToNextPage,
-        goToPreviousPage,
-        goToLastPage,
-        goToFirstPage,
+        handlePageChange,
         changeItemsPerPage,
         querySearch,
         setQuerySearch,

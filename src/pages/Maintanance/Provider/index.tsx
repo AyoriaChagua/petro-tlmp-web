@@ -1,9 +1,7 @@
-import { GrCaretNext, GrCaretPrevious } from "react-icons/gr";
-import { Button, CustomSelect, IconButton, Input, Loader, MaintananceLayout, Table } from "../../../components";
+import { Button, CustomSelect, IconButton, Input, Loader, MaintananceLayout, Table, TablePagination } from "../../../components";
 import { useProvider } from "../../../hooks/useProvider";
 import { TableColumn } from "../../../types/common/table";
 import { ProviderAccount, ProviderMP } from "../../../types/provider";
-import { TbPlayerTrackNext, TbPlayerTrackPrev } from "react-icons/tb";
 import { OptionType } from "../../../types/common/inputs";
 import { bankOptions, typeAccountOptions } from "../../../utils/constants";
 
@@ -16,10 +14,7 @@ export default function Provider() {
         openDropdownId,
         toggleDropdown,
         changeItemsPerPage,
-        goToFirstPage,
-        goToLastPage,
-        goToNextPage,
-        goToPreviousPage,
+        handlePageChange,
         querySearch,
         setQuerySearch,
         handleInputChangeNewProvider,
@@ -106,60 +101,13 @@ export default function Provider() {
                         />
                     </div>
                     <Table<ProviderMP> columns={columns} data={providers} />
-                    <nav className="flex items-center flex-column flex-wrap md:flex-row justify-between pt-4" aria-label="Table navigation">
-                        <span className="text-sm font-normal text-gray-500 mb-4 md:mb-0 block w-full md:inline md:w-auto">
-                            Página <span className="font-semibold text-gray-900">{paginationOptions.currentPage}</span> de <span className="font-semibold text-gray-900">{paginationOptions.totalPages}</span>
-                        </span>
-                        <div className="flex items-center">
-                            <select
-                                className="mr-4 p-2 border rounded"
-                                value={paginationOptions.itemsPerPage}
-                                onChange={(e) => changeItemsPerPage(Number(e.target.value.toUpperCase()))}
-                            >
-                                {[10, 15, 20, 25, 30].map(value => (
-                                    <option key={value} value={value}>{value}</option>
-                                ))}
-                            </select>
-                            <ul className="inline-flex -space-x-px rtl:space-x-reverse text-sm h-8">
-                                <li className="flex flex-row">
-                                    <button
-                                        type="button"
-                                        onClick={goToFirstPage}
-                                        disabled={paginationOptions.currentPage === 1}
-                                        className="flex items-center justify-center px-3 h-8 ms-0 leading-tight text-gray-500 bg-white border border-gray-300 rounded-s-lg hover:bg-gray-100 hover:text-gray-700 disabled:opacity-50 disabled:cursor-not-allowed"
-                                    >
-                                        <TbPlayerTrackPrev />
-                                    </button>
-                                    <button
-                                        type="button"
-                                        onClick={goToPreviousPage}
-                                        disabled={paginationOptions.currentPage === 1}
-                                        className="flex items-center justify-center px-3 h-8 ms-0 leading-tight text-gray-500 bg-white border border-gray-300 hover:bg-gray-100 hover:text-gray-700 disabled:opacity-50 disabled:cursor-not-allowed"
-                                    >
-                                        <GrCaretPrevious />
-                                    </button>
-                                </li>
-                                <li className="flex flex-row">
-                                    <button
-                                        type="button"
-                                        onClick={goToNextPage}
-                                        disabled={paginationOptions.currentPage === paginationOptions.totalPages}
-                                        className="flex items-center justify-center px-3 h-8 leading-tight text-gray-500 bg-white border border-gray-300 hover:bg-gray-100 hover:text-gray-700 disabled:opacity-50 disabled:cursor-not-allowed"
-                                    >
-                                        <GrCaretNext />
-                                    </button>
-                                    <button
-                                        type="button"
-                                        onClick={goToLastPage}
-                                        disabled={paginationOptions.currentPage === paginationOptions.totalPages}
-                                        className="flex items-center justify-center px-3 h-8 leading-tight text-gray-500 bg-white border border-gray-300 rounded-e-lg hover:bg-gray-100 hover:text-gray-700 disabled:opacity-50 disabled:cursor-not-allowed"
-                                    >
-                                        <TbPlayerTrackNext />
-                                    </button>
-                                </li>
-                            </ul>
-                        </div>
-                    </nav>
+                    <TablePagination 
+                        currentPage={paginationOptions.currentPage}
+                        totalPages={paginationOptions.totalPages}
+                        itemsPerPage={paginationOptions.itemsPerPage}
+                        onPageChange={handlePageChange}
+                        onItemsPerPageChange={changeItemsPerPage}
+                    />
                 </div>
                 <form className="flex w-full flex-col py-3" onSubmit={handleSubmit}>
                     <Input
